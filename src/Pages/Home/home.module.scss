@@ -2,36 +2,45 @@
 
 .homeContainer {
   padding: 16px;
-  .cardContainer {
+  .cardEventContainer {
     display: flex;
     align-items: center;
-    gap: 10%;
-    .cardItem {
-      width: 20%;
-      padding: 16px;
-      color: $whiteColor;
-      border-radius: 8px;
-      .cardLabel {
-        font-size: 12px;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        font-weight: 600;
-        line-height: 1.1;
+    height: 320px;
+    .cardContainer {
+      margin-right: 40px;
+      .cardItem {
+        margin-bottom: 16px;
+        padding: 16px;
+        color: $whiteColor;
+        border-radius: 8px;
+        box-shadow: 0 8px 6px 2px gray;
+        .cardLabel {
+          font-size: 12px;
+          text-transform: uppercase;
+          margin-bottom: 10px;
+          font-weight: 600;
+          line-height: 1.1;
+        }
+        .labelValue {
+          margin: 12px 0;
+          font-size: 24px;
+          display: block;
+        }
       }
-      .labelValue {
-        margin: 12px 0;
-        font-size: 24px;
-        display: block;
+      .primaryCard {
+        background-color: $primaryCardColor;
+      }
+      .secondaryCard {
+        background-color: $secondaryCardColor;
+      }
+      .tertiaryCard {
+        background-color: $tertiaryCardColor;
       }
     }
-    .primaryCard {
-      background-color: $primaryCardColor;
-    }
-    .secondaryCard {
-      background-color: $secondaryCardColor;
-    }
-    .tertiaryCard {
-      background-color: $tertiaryCardColor;
+    .eventParentContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
   .bookingFormContainer {
@@ -95,4 +104,7 @@
 .formValidationError {
   color: red;
   margin-top: 4px;
+}
+
+.eventParentContainer {
 }

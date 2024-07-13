@@ -255,7 +255,7 @@ function AddRoom() {
           <div className={style.btnContainer}>
             <button
               className={style.resetBtn}
-              onclick={() => setRoomData(initialState)}
+              onClick={() => setRoomData(initialState)}
             >
               Reset
             </button>

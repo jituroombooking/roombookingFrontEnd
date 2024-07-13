@@ -7,21 +7,20 @@ import { logoutUser } from "../../Redux/Slice/login";
 
 import style from "./header.module.scss";
 
-function Header({ openCloseDrawer, drawerOpenClose }) {
+function Header() {
   const AuthSlice = useSelector((state) => state.login);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(AuthSlice, " <>?");
   return (
     <div className={style.headerContainer}>
       {JSON.stringify(AuthSlice.loginData) != "{}" && (
         <button
           className={style.buttonToggleMenu}
-          onClick={() => openCloseDrawer(!drawerOpenClose)}
+          // onClick={() => openCloseDrawer(!drawerOpenClose)}
         >
+          {/* <div className={style.menuLine} />
           <div className={style.menuLine} />
-          <div className={style.menuLine} />
-          <div className={style.menuLine} />
+          <div className={style.menuLine} /> */}
         </button>
       )}
       {JSON.stringify(AuthSlice.loginData) != "{}" ? (

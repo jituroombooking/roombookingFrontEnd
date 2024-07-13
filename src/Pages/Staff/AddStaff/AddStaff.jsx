@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Loading from "../../../Component/Loading/Loading";
 import { addStaff } from "../../../Redux/Slice/staff";
-
-import style from "./addStaff.module.scss";
 import { validateEmail } from "../../../util/util";
 
+import style from "./addStaff.module.scss";
+
 const initialState = {
-  userName: "",
+  fullName: "",
   mobileNumber: "",
   email: "",
   role: "staff",
@@ -24,6 +24,14 @@ function AddStaff() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.staffEditData && staffData.userName === "") {
+      console.log(location.state.staffEditData);
+      setStaffData(location.state.staffEditData);
+    }
+  }, []);
 
   const submitStaffData = () => {
     if (
@@ -51,12 +59,12 @@ function AddStaff() {
               <div className={style.formItem}>
                 <input
                   className={style.eventInput}
-                  value={staffData.name}
+                  value={staffData.fullName}
                   onChange={(e) =>
-                    setStaffData({ ...staffData, name: e.target.value })
+                    setStaffData({ ...staffData, fullName: e.target.value })
                   }
                 />
-                {formvalidation && staffData.name === "" && (
+                {formvalidation && staffData.fullName === "" && (
                   <div className={style.formValidationError}>
                     Full name is required
                   </div>
@@ -112,7 +120,7 @@ function AddStaff() {
           <div className={style.btnContainer}>
             <button
               className={style.resetBtn}
-              onclick={() => setStaffData(initialState)}
+              onClick={() => setStaffData(initialState)}
             >
               Reset
             </button>

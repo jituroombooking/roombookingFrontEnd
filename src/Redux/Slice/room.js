@@ -166,10 +166,19 @@ const roomSlice = createSlice({
       };
     });
     builder.addCase(deleteRoom.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
       return {
         ...state,
-        roomData: payload.data,
+        roomData: existingArray.roomData.filter((f) => f._id !== payload.data),
         error: false,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteRoom.pending, (state, { payload }) => {
+      const existingArray = current(state);
+      return {
+        ...state,
+        loading: true,
       };
     });
     builder.addCase(deleteRoom.rejected, (state, { payload }) => {
@@ -177,6 +186,7 @@ const roomSlice = createSlice({
         ...state,
         error: true,
         erromrMessage: payload.data,
+        loading: false,
       };
     });
     builder.addCase(viewSingleRoom.fulfilled, (state, { payload }) => {

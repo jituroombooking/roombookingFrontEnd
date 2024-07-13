@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 
 import { apiList } from "../../API/apiIndex";
 import { onAuthenticated } from "../../API/axios";
@@ -17,6 +17,32 @@ export const addStaff = createAsyncThunk(
   }
 );
 
+export const getStaff = createAsyncThunk(
+  "staff/getStaff",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.getStaff,
+      method: "get",
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const deleteStaff = createAsyncThunk(
+  "staff/deleteStaff",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: `${apiList.deleteStaff}/${data}`,
+      method: "delete",
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const staffSlice = createSlice({
   name: "staff",
   initialState: {
@@ -27,9 +53,12 @@ const staffSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(addStaff.fulfilled, (state, { payload }) => {
+      const existingState = current(state);
       return {
         ...state,
-        staffData: payload.data,
+        staffData: !existingState.staffData
+          ? payload.data
+          : [...existingState.staffData, payload.data[0]],
         loading: false,
       };
     });
@@ -41,6 +70,47 @@ const staffSlice = createSlice({
       };
     });
     builder.addCase(addStaff.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(getStaff.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        staffData: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getStaff.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getStaff.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(deleteStaff.fulfilled, (state, { payload }) => {
+      const existingState = current(state);
+      return {
+        ...state,
+        staffData: existingState.staffData.filter((f) => f._id != payload.data),
+        loading: false,
+      };
+    });
+    builder.addCase(deleteStaff.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteStaff.pending, (state, { payload }) => {
       return {
         ...state,
         loading: true,

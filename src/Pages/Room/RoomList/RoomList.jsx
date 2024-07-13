@@ -7,16 +7,14 @@ import { deleteRoom, getRooms } from "../../../Redux/Slice/room";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
+import Loading from "../../../Component/Loading/Loading";
 
 import style from "./roomList.module.scss";
 import "react-tooltip/dist/react-tooltip.css";
-import Loading from "../../../Component/Loading/Loading";
 
 function RoomList() {
   const roomsSlice = useSelector((state) => state.room);
   const authData = useSelector((state) => state.login);
-
-  console.log(authData, " <>?");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();

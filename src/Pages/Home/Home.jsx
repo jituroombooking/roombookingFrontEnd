@@ -1,14 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReactDatePicker from "react-datepicker";
+import moment from "moment";
 
 import { getRoomCount } from "../../Redux/Slice/room";
 import { validatemobile } from "../../util/util";
 import { bookRoom } from "../../Redux/Slice/booking";
 import Loading from "../../Component/Loading/Loading";
+import { getEventData } from "../../Redux/Slice/event";
+import LeftArrow from "../../util/Assets/Icon/leftArrow.png";
+import RightArrow from "../../util/Assets/Icon/rightArrow.png";
 
 import style from "./home.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
+import EventList from "../Event/EventList/EventList";
 
 const initialState = {
   fullName: "",
@@ -32,6 +37,7 @@ function Home() {
   const roomSlice = useSelector((state) => state.room);
   const authData = useSelector((state) => state.login);
   const BookingSlice = useSelector((state) => state.booking);
+  const EventSlice = useSelector((state) => state.event);
 
   const dispatch = useDispatch();
 
@@ -40,7 +46,13 @@ function Home() {
       dispatch(getRoomCount());
     }
   }, []);
-  console.log(roomSlice, "<>?");
+
+  useEffect(() => {
+    if (!EventSlice.eventData) {
+      dispatch(getEventData());
+    }
+  }, [EventSlice.eventData]);
+  console.log(EventSlice, "<>?");
 
   const submitBookingData = () => {
     if (
@@ -64,30 +76,35 @@ function Home() {
         <Loading />
       ) : (
         <>
-          <div className={style.cardContainer}>
-            <div className={`${style.cardItem} ${style.primaryCard}`}>
-              <label className={style.cardLabel}>Total no.of rooms</label>
-              <div>
-                <label className={style.labelValue}>
-                  {roomSlice.roomData?.totalNoRoom || roomData.totalNoRoom}
-                </label>
+          <div className={style.cardEventContainer}>
+            <div className={style.cardContainer}>
+              <div className={`${style.cardItem} ${style.primaryCard}`}>
+                <label className={style.cardLabel}>Total no.of rooms</label>
+                <div>
+                  <label className={style.labelValue}>
+                    {roomSlice.roomData?.totalNoRoom || roomData.totalNoRoom}
+                  </label>
+                </div>
+              </div>
+              <div className={`${style.cardItem} ${style.secondaryCard}`}>
+                <label className={style.cardLabel}>Alotted rooms</label>
+                <div>
+                  <label className={style.labelValue}>
+                    {roomSlice.roomData?.allotedRoom || roomData.allotedRoom}
+                  </label>
+                </div>
+              </div>
+              <div className={`${style.cardItem} ${style.tertiaryCard}`}>
+                <label className={style.cardLabel}>Empty rooms</label>
+                <div>
+                  <label className={style.labelValue}>
+                    {roomSlice.roomData?.emptyRoom || roomData.emptyRoom}
+                  </label>
+                </div>
               </div>
             </div>
-            <div className={`${style.cardItem} ${style.secondaryCard}`}>
-              <label className={style.cardLabel}>Alotted rooms</label>
-              <div>
-                <label className={style.labelValue}>
-                  {roomSlice.roomData?.allotedRoom || roomData.allotedRoom}
-                </label>
-              </div>
-            </div>
-            <div className={`${style.cardItem} ${style.tertiaryCard}`}>
-              <label className={style.cardLabel}>Empty rooms</label>
-              <div>
-                <label className={style.labelValue}>
-                  {roomSlice.roomData?.emptyRoom || roomData.emptyRoom}
-                </label>
-              </div>
+            <div className={style.eventParentContainer}>
+              <EventList showHeading={false} />
             </div>
           </div>
           {authData?.loginData.role === "superAdmin" ||
@@ -224,7 +241,7 @@ function Home() {
               <div className={style.btnContainer}>
                 <button
                   className={style.resetBtn}
-                  onclick={() => setBookingData({ ...initialState })}
+                  onClick={() => setBookingData({ ...initialState })}
                 >
                   Reset
                 </button>
@@ -233,7 +250,7 @@ function Home() {
                   className={style.submitbtn}
                   onClick={() => submitBookingData()}
                 >
-                  Add Room
+                  Book Room
                 </button>
               </div>
             </div>

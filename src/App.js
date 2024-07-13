@@ -46,22 +46,29 @@ function App() {
 
   const { pathname } = useLocation();
 
+  console.log(authData, " <>?");
+
   return (
     <div className={style.mainApp}>
-      {(authData?.loginData?.role === "superAdmin" ||
-        authData?.loginData?.role === "staff") && (
-        <div
-          className={`${style.navigation}
+      {authData?.loginData &&
+        (authData?.loginData?.role === "superAdmin" ||
+          authData?.loginData?.role === "staff") && (
+          <div
+            className={`${style.navigation}
           ${
             openleftNav
               ? style.largVerticalNavigation
               : style.verticalNavigation
           }
         `}
-        >
-          <LeftNavigation openleftNav={openleftNav} />
-        </div>
-      )}
+          >
+            <LeftNavigation
+              openCloseDrawer={(openCloseFlag) => setOpenLeftNav(openCloseFlag)}
+              drawerOpenClose={openleftNav}
+              openleftNav={openleftNav}
+            />
+          </div>
+        )}
       <div
         className={`${
           openleftNav

@@ -50,7 +50,7 @@ export const routeData = [
     id: 5,
     name: "Staff",
     route: "/staffList",
-    subRoutes: ["/addStaff", "/updateProfile"],
+    subRoutes: ["/addStaff", "/updateProfile", "/staffList"],
     img: Staff,
     role: ["admin"],
   },

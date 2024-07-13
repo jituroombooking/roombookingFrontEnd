@@ -23,6 +23,34 @@ export const signinUser = createAsyncThunk(
   }
 );
 
+export const updateProfile = createAsyncThunk(
+  "login/updateProfile",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.updateProfile,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  "login/updatePassword",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.updatePassword,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const loginSlice = createSlice({
   name: "login",
   initialState: {
@@ -58,6 +86,53 @@ const loginSlice = createSlice({
       };
     });
     builder.addCase(signinUser.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loginFlag: false,
+        loginData: { role: "" },
+        loading: false,
+        errMsg: "No User Found !",
+      };
+    });
+    builder.addCase(updateProfile.fulfilled, (state, { payload }) => {
+      sessionStorage.setItem("loginData", JSON.stringify(payload.data));
+      return {
+        ...state,
+        loginFlag: true,
+        loginData: payload.data,
+        error: false,
+        loading: false,
+      };
+    });
+    builder.addCase(updateProfile.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(updateProfile.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loginFlag: false,
+        loginData: { role: "" },
+        loading: false,
+        errMsg: "No User Found !",
+      };
+    });
+    builder.addCase(updatePassword.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        error: false,
+        loading: false,
+      };
+    });
+    builder.addCase(updatePassword.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(updatePassword.rejected, (state, { payload }) => {
       return {
         ...state,
         loginFlag: false,

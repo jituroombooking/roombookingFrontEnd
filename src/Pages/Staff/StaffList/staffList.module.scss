@@ -21,4 +21,78 @@
       font-size: 600;
     }
   }
+  .staffTableContainer {
+    margin-top: 32px;
+    .roomTable {
+      width: 100%;
+      border-collapse: collapse;
+      .tableHeaderRow {
+        border-bottom: 1px solid $borderColor;
+        .tableHeaderRowItem {
+          text-align: left;
+          font-size: 20px;
+          color: #6c757d;
+          font-weight: 600;
+          padding: 16px;
+          &:nth-child(1) {
+            width: 15%;
+          }
+          &:nth-child(2) {
+            width: 15%;
+          }
+          &:nth-child(3) {
+            width: 15%;
+          }
+          &:nth-child(4) {
+            width: 15%;
+          }
+          &:nth-child(5) {
+            width: 10%;
+          }
+          &:nth-child(6) {
+            width: 30%;
+          }
+        }
+      }
+      .tableDataRow {
+        padding: 8px 16px;
+        &:nth-child(even) {
+          background-color: #dadcdd;
+        }
+        .tableDataRowItem {
+          text-align: left;
+          font-size: 17px;
+          font-weight: 500;
+          padding: 16px;
+          .actionIcon {
+            height: 24px;
+            cursor: pointer;
+            &:first-child {
+              margin-right: 8px;
+            }
+          }
+        }
+        .roomCircleContainer {
+          display: grid;
+          grid-template-columns: repeat(10, 1fr);
+          gap: 4px;
+          .roomCircle {
+            cursor: pointer;
+            border-radius: 50%;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: $whiteColor;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+
+.noData {
+  text-align: center;
+  margin-top: 32px;
 }

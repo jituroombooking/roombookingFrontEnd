@@ -5,6 +5,10 @@
   .itemActive {
     background-color: $primaryBtnColor;
   }
+  .naviIconBtn {
+    height: 72px;
+    background-color: $headerBgColor;
+  }
   .pageNavigationItem {
     padding: 12px 24px;
     display: flex;
@@ -21,5 +25,22 @@
       font-size: 16px;
       cursor: pointer;
     }
+  }
+}
+
+.buttonToggleMenu {
+  border: none;
+  color: #8391a2;
+  width: 60px;
+  background-color: transparent;
+  font-size: 24px;
+  margin-bottom: 48px;
+  cursor: pointer;
+  z-index: 1;
+  .menuLine {
+    width: 35px;
+    height: 4px;
+    background-color: $menuLineColor;
+    margin: 5px 0;
   }
 }

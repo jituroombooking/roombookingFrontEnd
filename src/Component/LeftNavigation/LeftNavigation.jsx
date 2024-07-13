@@ -5,13 +5,27 @@ import { Tooltip } from "react-tooltip";
 import { routeData } from "../../util/Assets/Data/routesData";
 
 import style from "./leftNavigation.module.scss";
+import { useSelector } from "react-redux";
 
-function LeftNavigation({ openleftNav }) {
+function LeftNavigation({ openleftNav, openCloseDrawer, drawerOpenClose }) {
+  const AuthSlice = useSelector((state) => state.login);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   return (
     <ul className={style.pageNavigationList}>
+      <li className={style.naviIconBtn}>
+        {JSON.stringify(AuthSlice.loginData) != "{}" && (
+          <button
+            className={style.buttonToggleMenu}
+            onClick={() => openCloseDrawer(!drawerOpenClose)}
+          >
+            <div className={style.menuLine} />
+            <div className={style.menuLine} />
+            <div className={style.menuLine} />
+          </button>
+        )}
+      </li>
       {routeData.map((m) => (
         <li
           key={m.id}

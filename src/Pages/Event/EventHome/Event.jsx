@@ -1,29 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
-
-import style from "./event.module.scss";
-import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
-import { addEvent } from "../../../Redux/Slice/event";
+import { useLocation } from "react-router-dom";
+
+import { addEvent, editEvent } from "../../../Redux/Slice/event";
 import Loading from "../../../Component/Loading/Loading";
+
+import "react-datepicker/dist/react-datepicker.css";
+import style from "./event.module.scss";
 
 const initialState = {
   eventStartDate: new Date(),
   eventEndDate: new Date(),
   eventName: "",
   eventVenue: "",
+  speakerName: "",
 };
 
 function DayEvent() {
   const [eventData, setEventData] = useState({ ...initialState });
 
   const EventSlice = useSelector((state) => state.event);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.editEventData && eventData.eventName === "") {
+      setEventData(location.state.editEventData);
+    }
+  }, []);
 
   const dispatch = useDispatch();
 
   const submitEventData = () => {
     console.log(eventData);
     dispatch(addEvent(eventData));
+  };
+
+  const editEventData = () => {
+    dispatch(editEvent(eventData));
   };
 
   return (
@@ -34,7 +48,19 @@ function DayEvent() {
         <>
           <div className={style.formRow}>
             <div className={style.formItem}>
-              <labal className={style.eventLabel}>Event Name*</labal>
+              <label className={style.eventLabel}>Spearker Name*</label>
+              <div className={style.formItem}>
+                <input
+                  className={style.eventInput}
+                  value={eventData.speakerName}
+                  onChange={(e) =>
+                    setEventData({ ...eventData, speakerName: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+            <div className={style.formItem}>
+              <label className={style.eventLabel}>Event Name*</label>
               <div className={style.formItem}>
                 <input
                   className={style.eventInput}
@@ -45,6 +71,9 @@ function DayEvent() {
                 />
               </div>
             </div>
+          </div>
+
+          <div className={style.formRow}>
             <div className={style.formItem}>
               <labal className={style.eventLabel}>Event Venue*</labal>
               <div className={style.formItem}>
@@ -92,8 +121,13 @@ function DayEvent() {
             >
               Reset
             </button>
-            <button className={style.submitbtn} onClick={submitEventData}>
-              Submit
+            <button
+              className={style.submitbtn}
+              onClick={
+                location.state?.editEventData ? editEventData : submitEventData
+              }
+            >
+              {location.state?.editEventData ? "Update" : "Submit"} Event
             </button>
           </div>
         </>

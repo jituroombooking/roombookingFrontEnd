@@ -9,6 +9,8 @@ const eventv1 = `${v1}/event`;
 
 export const apiList = {
   login: signinV1,
+  updateProfile: `${signinV1}/updateProfile`,
+  updatePassword: `${signinV1}/updatePassword`,
   addRoom: `${roomV1}/addRoom`,
   getRoom: roomV1,
   getRoomCount: `${roomV1}/count`,
@@ -24,5 +26,9 @@ export const apiList = {
   getAttendence: `${attendence}`,
   addEvent: `${eventv1}/add`,
   getEventData: `${eventv1}`,
+  editEventData: `${eventv1}/edit`,
+  deleteEventData: `${eventv1}/delete`,
   addStaff: `${signinV1}/addStaff`,
+  getStaff: `${signinV1}/getStaff`,
+  deleteStaff: `${signinV1}/deleteStaff`,
 };
