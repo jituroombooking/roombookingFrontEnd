@@ -95,7 +95,7 @@ const roomSlice = createSlice({
     builder.addCase(addRoom.fulfilled, (state, { payload }) => {
       return {
         ...state,
-        roomData: payload.data,
+        // roomData: payload.data,
         loading: false,
         error: false,
       };

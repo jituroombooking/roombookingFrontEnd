@@ -21,9 +21,9 @@ function RoomList() {
 
   useEffect(() => {
     console.log(!roomsSlice.rooms, " <>? MAIN");
-    if (!roomsSlice.rooms) {
-      dispatch(getRooms());
-    }
+    // if (!roomsSlice.rooms) {
+    dispatch(getRooms());
+    // }
   }, [roomsSlice.rooms]);
 
   const generateRoomCircle = (rm, index) => (
@@ -78,7 +78,7 @@ function RoomList() {
                     <th className={style.tableHeaderRowItem}>Bhavan name</th>
                     <th className={style.tableHeaderRowItem}>Landmark</th>
                     <th className={style.tableHeaderRowItem}>Room</th>
-                    <th className={style.tableHeaderRowItem}>Bed</th>
+                    <th className={style.tableHeaderRowItem}>Beds</th>
                     <th className={style.tableHeaderRowItem}>Amount</th>
                     <th className={style.tableHeaderRowItem}>Room Number</th>
 
@@ -91,10 +91,10 @@ function RoomList() {
                       <td className={style.tableDataRowItem}>{m.bhavanName}</td>
                       <td className={style.tableDataRowItem}>{m.landmark}</td>
                       <td className={style.tableDataRowItem}>
-                        {m.rooms.length}
+                        {m.rooms.length || 0}
                       </td>
                       <td className={style.tableDataRowItem}>
-                        {m.noOfBedperRoom}
+                        {m.rooms.length}X{m.noOfBedperRoom}
                       </td>
                       <td className={style.tableDataRowItem}>{m.roomAmount}</td>
                       <td

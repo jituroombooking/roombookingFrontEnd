@@ -59,7 +59,7 @@ function ViewBooking() {
                 </div>
                 <div className={style.productContainer}>
                   <label className={style.productDetialsLabel}>
-                    Empty Room
+                    Empty Beds
                   </label>
                   <label className={style.productDetialsValue}>
                     {rm.noOfBed - rm.bookerIds.length}
