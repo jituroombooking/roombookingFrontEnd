@@ -22,23 +22,9 @@ import Loading from "../../../Component/Loading/Loading";
 import QrScaan from "../../../util/Assets/Icon/qrScan.png";
 import Scanner from "../Scanner/Scanner";
 import AttendenceView from "../../../util/Assets/Icon/eye.png";
+import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./labourList.module.scss";
-
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#d11fb6",
-    color: "white",
-  },
-  section: {
-    margin: 10,
-    padding: 10,
-  },
-  viewer: {
-    width: window.innerWidth, //the pdf viewer will take up all of the width and height
-    height: window.innerHeight,
-  },
-});
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -183,6 +169,11 @@ function LabourList() {
       {openScanner.flag && (
         <div className={style.scannerContainer}>
           <div className={style.scannerInnerContainer}>
+            <img
+              src={CloseIcon}
+              onClick={() => setOpenScanner(false)}
+              className={style.scannerCloseIcon}
+            />
             <Scanner
               onClose={(data) => {
                 if (data) {

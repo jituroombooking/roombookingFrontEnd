@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import Loading from "../../../Component/Loading/Loading";
 import { addStaff } from "../../../Redux/Slice/staff";
-import { validateEmail } from "../../../util/util";
+import { staffPost, validateEmail } from "../../../util/util";
 
 import style from "./addStaff.module.scss";
 
@@ -21,6 +21,9 @@ function AddStaff() {
   const [formvalidation, setFormValidation] = useState(false);
 
   const StaffSlice = useSelector((state) => state.staff);
+  const AuthSlice = useSelector((state) => state.login);
+
+  console.log(AuthSlice);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -115,6 +118,37 @@ function AddStaff() {
                 )}
               </div>
             </div>
+            {AuthSlice.loginData.role === "superAdmin" && (
+              <div className={style.formItem}>
+                <labal className={style.eventLabel}>Staff Post*</labal>
+                <div className={style.formItem}>
+                  <select
+                    className={style.select}
+                    onChange={(e) => {
+                      setStaffData({
+                        ...staffData,
+                        role: e.target.value,
+                      });
+                    }}
+                  >
+                    {staffPost.map((m, i) => (
+                      <option
+                        className={style.selectOption}
+                        key={i}
+                        value={m.vale}
+                      >
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                  {formvalidation && staffData.role === "" && (
+                    <div className={style.formValidationError}>
+                      Staff Post is required
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className={style.btnContainer}>
@@ -124,22 +158,12 @@ function AddStaff() {
             >
               Reset
             </button>
-
-            {/* {state?.roomEditData ? (
-              <button
-                className={style.submitbtn}
-                // onClick={() => updateRoomData()}
-              >
-                Update Room
-              </button>
-            ) : ( */}
             <button
               className={style.submitbtn}
               onClick={() => submitStaffData()}
             >
-              Add Room
+              Add Staff
             </button>
-            {/* )} */}
           </div>
         </div>
       )}

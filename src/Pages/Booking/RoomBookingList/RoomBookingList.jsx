@@ -1,18 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+// import { Viewer, Worker } from "@react-pdf-viewer/core";
+// import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+
+// import "@react-pdf-viewer/core/lib/styles/index.css";
+// import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 
 import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import { deleteBookedRoom, getBookedRooms } from "../../../Redux/Slice/booking";
+import IDProofIcon from "../../../util/Assets/Icon/id.png";
+import CloseIcon from "../../../util/Assets/Icon/cross.png";
+// import ReactPDF from "react-pdf";
 
 import style from "./roomBookingList.module.scss";
 
 function RoomBookingList() {
+  const [idProof, setIdproof] = useState({ flag: false, id: "" });
   const RoomBookingSlice = useSelector((state) => state.booking);
   const AuthDataSlice = useSelector((state) => state.login);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -26,8 +34,8 @@ function RoomBookingList() {
       {RoomBookingSlice.loading ? (
         <Loading />
       ) : (
-        <>
-          <div className={style.roomHeading}>
+        <div>
+          <div className={`${style.roomHeading} `}>
             <img
               src={refreshIcon}
               onClick={() => dispatch(getBookedRooms())}
@@ -62,6 +70,7 @@ function RoomBookingList() {
                   >
                     Mobile Number
                   </th>
+                  <th className={style.tableHeaderRowItem}>Id Proof</th>
                   <th
                     scope="col"
                     rowspan="2"
@@ -104,6 +113,15 @@ function RoomBookingList() {
                     </td>
                     <td className={style.tableDataRowItem}>{m.mobileNumber}</td>
                     <td className={style.tableDataRowItem}>
+                      <img
+                        src={IDProofIcon}
+                        className={style.idProof}
+                        onClick={() =>
+                          setIdproof({ flag: true, id: m.identityProof })
+                        }
+                      />
+                    </td>
+                    <td className={style.tableDataRowItem}>
                       {moment().format("YYYY/MM/DD", m.bookingFrom)}
                     </td>
                     <td className={style.tableDataRowItem}>
@@ -127,7 +145,36 @@ function RoomBookingList() {
                 <div className={style.noData}>No Data !</div>
               )}
           </div>
-        </>
+        </div>
+      )}
+      {idProof.flag && (
+        <div className={style.idProofParentContainer}>
+          <div className={style.idProofContainer}>
+            <div className={style.header}>
+              <img
+                src={CloseIcon}
+                className={style.idProof}
+                onClick={() => setIdproof({ flag: false, id: "" })}
+              />
+            </div>
+            <div>
+              {idProof.id.split(".").pop() === "pdf" ? (
+                <embed
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof.id}`}
+                  type="application/pdf"
+                  width="100%"
+                  height="600px"
+                ></embed>
+              ) : (
+                <img
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof.id}`}
+                  alt="userId"
+                  className={style.userIdImg}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

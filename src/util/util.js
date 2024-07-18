@@ -15,6 +15,17 @@ export const labourPost = [
   },
 ];
 
+export const staffPost = [
+  {
+    label: "Admin",
+    vale: "admin",
+  },
+  {
+    label: "Staff",
+    vale: "staff",
+  },
+];
+
 export const getAllDaysInMonth = (month, year) =>
   Array.from(
     { length: new Date(year, month, 0).getDate() },

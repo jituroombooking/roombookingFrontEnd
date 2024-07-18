@@ -161,6 +161,7 @@ function Home() {
                   <div className={style.formItem}>
                     <input
                       type="file"
+                      accept="image/jpeg,image/gif,image/png,application/pdf"
                       className={style.eventInput}
                       onChange={(e) =>
                         setBookingData({
