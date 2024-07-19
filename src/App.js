@@ -38,6 +38,12 @@ const AddStaff = React.lazy(() => import("./Pages/Staff/AddStaff/AddStaff"));
 const UpdateProfile = React.lazy(() =>
   import("./Pages/Staff/UpdateProfile/UpdateProfile")
 );
+const AddLabourPost = React.lazy(() =>
+  import("./Pages/Labour/AddLabourPost/AddLabourPost")
+);
+const AddEventMemories = React.lazy(() =>
+  import("./Pages/Event/EventMemory/EventMemory")
+);
 
 function App() {
   const [openleftNav, setOpenLeftNav] = useState(false);
@@ -205,6 +211,22 @@ function App() {
               element={
                 <Suspense fallback={<Loading />}>
                   <UpdateProfile />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/addLabourPost"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <AddLabourPost />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/addEventMemories"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <AddEventMemories />
                 </Suspense>
               }
             />

@@ -1,4 +1,7 @@
 import moment from "moment";
+import nature1 from "./Assets/Image/event1.jpg";
+import nature2 from "./Assets/Image/event2.jpg";
+import nature3 from "./Assets/Image/event3.jpeg";
 
 export const validatemobile = (mobileNumber) => {
   return mobileNumber.match(/^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/);
@@ -75,3 +78,56 @@ export const validateEmail = (email) => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
+
+export const eventdata = [
+  {
+    id: 0,
+    title: "Nature Image",
+    img: nature1,
+  },
+  {
+    id: 1,
+    title: "Nature Image",
+    img: nature2,
+  },
+  {
+    id: 2,
+    title: "Nature Image",
+    img: nature3,
+  },
+  {
+    id: 3,
+    title: "Nature Image",
+    img: nature1,
+  },
+  {
+    id: 4,
+    title: "Nature Image",
+    img: nature2,
+  },
+  {
+    id: 5,
+    title: "Nature Image",
+    img: nature3,
+  },
+  {
+    id: 6,
+    title: "Nature Image",
+    img: nature1,
+  },
+  {
+    id: 7,
+    title: "Nature Image",
+    img: nature2,
+  },
+  {
+    id: 8,
+    title: "Nature Image",
+    img: nature3,
+  },
+  {
+    id: 9,
+    title: "Nature Image",
+    img: nature1,
+  },
+];

@@ -25,11 +25,13 @@ import AttendenceView from "../../../util/Assets/Icon/eye.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./labourList.module.scss";
+import ReactToaster from "../../Component/ReactToaster";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
   const [qrUrl, setQrUrl] = useState({ id: "", name: "", imgUrl: "" });
   const [openScanner, setOpenScanner] = useState({ flag: false, data: "" });
+  const [idProof, setIdproof] = useState({ flag: false, id: "" });
 
   const LabourSlice = useSelector((state) => state.labour);
   const authData = useSelector((state) => state.login);
@@ -76,6 +78,12 @@ function LabourList() {
         />
         <button
           className={style.addRoomBtn}
+          onClick={() => navigate("/addLabourPost")}
+        >
+          Add Labour Post
+        </button>
+        <button
+          className={style.addRoomBtn}
           onClick={() => navigate("/addLabour")}
         >
           Add Labour
@@ -113,6 +121,9 @@ function LabourList() {
                           src={IDProofIcon}
                           className={style.idProof}
                           alt="id"
+                          onClick={() =>
+                            setIdproof({ flag: true, id: m.labourIdProof })
+                          }
                         />
                       </td>
                       <td className={style.tableDataRowItem}>
@@ -189,6 +200,35 @@ function LabourList() {
                 }
               }}
             />
+          </div>
+        </div>
+      )}
+      {idProof.flag && (
+        <div className={style.idProofParentContainer}>
+          <div className={style.idProofContainer}>
+            <div className={style.header}>
+              <img
+                src={CloseIcon}
+                className={style.idProof}
+                onClick={() => setIdproof({ flag: false, id: "" })}
+              />
+            </div>
+            <div>
+              {idProof.id.split(".").pop() === "pdf" ? (
+                <embed
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/493a3a44-1f1c-419d-80c0-9c99017b7ba4.pdf`}
+                  type="application/pdf"
+                  width="100%"
+                  height="600px"
+                ></embed>
+              ) : (
+                <img
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/${idProof.id}`}
+                  alt="userId"
+                  className={style.userIdImg}
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

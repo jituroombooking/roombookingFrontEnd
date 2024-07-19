@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { labourPost, validatemobile } from "../../../util/util";
 import { useDispatch, useSelector } from "react-redux";
-import { addLabour } from "../../../Redux/Slice/labour";
+import { addLabour, getLabourPost } from "../../../Redux/Slice/labour";
 import Loading from "../../../Component/Loading/Loading";
 
 import style from "./addLabour.module.scss";
@@ -21,6 +21,12 @@ function AddLabour() {
 
   const LabourSlice = useSelector((state) => state.labour);
 
+  useEffect(() => {
+    if (!LabourSlice.labourPost) {
+      dispatch(getLabourPost());
+    }
+  }, [LabourSlice.labourPost]);
+
   const dispatch = useDispatch();
 
   const submitLabourData = () => {
@@ -37,6 +43,17 @@ function AddLabour() {
       setLabourData(initialState);
     }
   };
+
+  const labourPostList = Array.isArray(LabourSlice.labourPost)
+    ? LabourSlice.labourPost.map((m) => {
+        return {
+          label: m.labourPost,
+          value: m.labourPost,
+        };
+      })
+    : [];
+
+  console.log(labourPostList);
 
   return (
     <div className={style.addLabourContainer}>
@@ -100,6 +117,7 @@ function AddLabour() {
                 <div className={style.formItem}>
                   <input
                     type="file"
+                    accept="image/jpeg,image/gif,image/png,application/pdf"
                     className={style.eventInput}
                     onChange={(e) =>
                       setLabourData({
@@ -151,7 +169,7 @@ function AddLabour() {
                     }}
                   >
                     <option className={style.selectOption}>Select Post</option>
-                    {labourPost.map((m, i) => (
+                    {labourPostList.map((m, i) => (
                       <option
                         className={style.selectOption}
                         key={i}

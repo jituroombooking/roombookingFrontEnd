@@ -4,10 +4,15 @@
   padding: 16px;
   .cardEventContainer {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     height: 320px;
+    justify-content: flex-end;
     .cardContainer {
-      margin-right: 40px;
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
       .cardItem {
         margin-bottom: 16px;
         padding: 16px;
@@ -107,4 +112,21 @@
 }
 
 .eventParentContainer {
+}
+
+.eventCard {
+  margin-bottom: 40px;
+  display: flex;
+  width: 240px;
+
+  .eventImg {
+    margin: 8px;
+    height: 140px;
+    width: 100%;
+  }
+}
+.twoColContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

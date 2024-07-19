@@ -1,0 +1,94 @@
+@import "../../../variable.module.scss";
+
+.addStaffContainer {
+  padding: 24px;
+  background-color: $whiteColor;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 12px 2px gray;
+  height: 50vh;
+  .labourPostList {
+  }
+  .formRow {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+    .formItem {
+      width: 80%;
+      .eventLabel {
+        display: block;
+        margin-bottom: 8px;
+      }
+    }
+  }
+  .formDevider {
+    margin-top: 16px;
+    width: 100%;
+    height: 1px;
+    background-color: $borderColor;
+  }
+  .btnContainer {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .resetBtn {
+      margin-right: 40px;
+    }
+    .submitbtn {
+      background-color: $secondaryBtnColor;
+      color: $whiteColor;
+    }
+  }
+}
+
+.eventInput {
+  width: 100%;
+}
+
+.container {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  .labourPostList {
+    .labourPostListUl {
+      list-style: none;
+      .labourPostItem {
+        padding: 16px;
+        border: 1px solid;
+        border-radius: 8px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .iconContainer {
+          .icon {
+            cursor: pointer;
+            height: 32px;
+            margin-right: 16px;
+            :last-child {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+  .labourPostForm {
+  }
+}
+
+.formValidationError {
+  color: red;
+  margin-top: 4px;
+}
+
+.select {
+  border-radius: 4px;
+  font-size: 18px;
+  // height: 32px;
+  padding: 8px 16px;
+  border: 1px solid #92969a;
+  width: 100%;
+}

@@ -31,4 +31,7 @@ export const apiList = {
   addStaff: `${signinV1}/addStaff`,
   getStaff: `${signinV1}/getStaff`,
   deleteStaff: `${signinV1}/deleteStaff`,
+  getLabourPost: `${labourV1}/labourPost`,
+  addLabourPost: `${labourV1}/addLabourPost`,
+  deleteLabourPost: `${labourV1}/deletePost`,
 };

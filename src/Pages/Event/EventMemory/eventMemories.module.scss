@@ -1,0 +1,72 @@
+@import "../../../variable.module.scss";
+
+.eventMemoryContainer {
+  padding: 24px;
+  background-color: $whiteColor;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 12px 2px gray;
+  .formRow {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+    .formItem {
+      width: 50%;
+      .genRoomBtn {
+        background-color: $primaryBtnColor;
+        color: $whiteColor;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      input[type="checkbox"] {
+        width: 5% !important;
+      }
+      .paidCheckbox::after {
+        content: attr(value);
+        margin: 8px 63px;
+        vertical-align: top;
+        white-space: nowrap;
+        display: inline-block;
+      }
+      div[class^="react-datepicker-wrapper"] {
+        width: 100%;
+      }
+      .eventLabel {
+        display: block;
+        margin-bottom: 8px;
+      }
+      .eventInput {
+      }
+      .dateInput {
+        width: 100%;
+      }
+      .select {
+        border-radius: 4px;
+        font-size: 18px;
+        // height: 32px;
+        padding: 8px 16px;
+        border: 1px solid #92969a;
+        width: 100%;
+      }
+    }
+  }
+  .formDevider {
+    margin-top: 16px;
+    width: 100%;
+    height: 1px;
+    background-color: $borderColor;
+  }
+  .btnContainer {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .resetBtn {
+      margin-right: 40px;
+    }
+    .submitbtn {
+      background-color: $secondaryBtnColor;
+      color: $whiteColor;
+    }
+  }
+}

@@ -16,6 +16,9 @@
       margin-right: 24px;
     }
     .addRoomBtn {
+      // &:first-child {
+      margin-right: 8px;
+      // }
       background-color: $primaryBtnColor;
       color: $whiteColor;
       font-size: 600;
@@ -105,4 +108,33 @@
   padding-top: 16px;
   padding-left: 16px;
   z-index: 10;
+}
+
+.idProof {
+  height: 32px;
+  cursor: pointer;
+}
+.idProofParentContainer {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: hsl(300deg 2.04% 11.3% / 76%);
+  z-index: 100;
+  .idProofContainer {
+    width: 700px;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+  }
+}
+.userIdImg {
+  width: 100%;
 }
