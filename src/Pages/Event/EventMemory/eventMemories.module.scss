@@ -6,47 +6,65 @@
   border-radius: 8px;
   margin-bottom: 32px;
   box-shadow: 0 8px 12px 2px gray;
-  .formRow {
-    display: flex;
-    align-items: center;
-    margin-bottom: 32px;
-    .formItem {
-      width: 50%;
-      .genRoomBtn {
-        background-color: $primaryBtnColor;
-        color: $whiteColor;
-        font-size: 16px;
-        font-weight: 600;
+  min-height: 50vh;
+  .mainContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    .eventListContainer {
+      .eventMemoryList {
+        padding-left: 0;
+        list-style: none;
+        height: 400px;
+        overflow-y: auto;
+        .eventMemoryItem {
+          padding: 8px;
+          border: 1px solid;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .imgTitleContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .eventTitle {
+              font-size: 24px;
+              font-weight: 600;
+            }
+            .eventImg {
+              height: 80px;
+            }
+          }
+          .iconContainer {
+            display: flex;
+            align-items: center;
+            .actionIcon {
+              height: 40px;
+              cursor: pointer;
+            }
+          }
+        }
       }
-      input[type="checkbox"] {
-        width: 5% !important;
-      }
-      .paidCheckbox::after {
-        content: attr(value);
-        margin: 8px 63px;
-        vertical-align: top;
-        white-space: nowrap;
-        display: inline-block;
-      }
-      div[class^="react-datepicker-wrapper"] {
-        width: 100%;
-      }
-      .eventLabel {
-        display: block;
-        margin-bottom: 8px;
-      }
-      .eventInput {
-      }
-      .dateInput {
-        width: 100%;
-      }
-      .select {
-        border-radius: 4px;
-        font-size: 18px;
-        // height: 32px;
-        padding: 8px 16px;
-        border: 1px solid #92969a;
-        width: 100%;
+    }
+    .eventFormContainer {
+      .formRow {
+        display: flex;
+        align-items: center;
+        margin-bottom: 32px;
+        .formItem {
+          width: 50%;
+          .genRoomBtn {
+            background-color: $primaryBtnColor;
+            color: $whiteColor;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          .eventLabel {
+            display: block;
+            margin-bottom: 8px;
+          }
+        }
       }
     }
   }
@@ -69,4 +87,7 @@
       color: $whiteColor;
     }
   }
+}
+.displyImg {
+  height: 200px;
 }

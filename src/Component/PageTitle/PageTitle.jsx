@@ -9,8 +9,9 @@ import style from "./pageTitle.module.scss";
 function PageTitle() {
   const AuthSlice = useSelector((state) => state.login);
 
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
   const navigate = useNavigate();
+  console.log(state, " <>? Page Title");
 
   const goBack = () => {
     if (window.history.length && window.history.length > 1) {
@@ -30,7 +31,7 @@ function PageTitle() {
           alt="back arrow"
         />
       )}
-      {pathname.split("/").pop()}
+      {(state?.pageTitle && state?.pageTitle) || pathname.split("/").pop()}
     </div>
   );
 }

@@ -2,21 +2,16 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import QRCode from "qrcode";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  PDFViewer,
-} from "@react-pdf/renderer";
-import moment from "moment";
 
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
-import { getLabourList, markAttendence } from "../../../Redux/Slice/labour";
+import {
+  deleteLabour,
+  getLabourList,
+  markAttendence,
+} from "../../../Redux/Slice/labour";
 import QR from "../../../util/Assets/Icon/qr.png";
 import Loading from "../../../Component/Loading/Loading";
 import QrScaan from "../../../util/Assets/Icon/qrScan.png";
@@ -26,6 +21,7 @@ import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./labourList.module.scss";
 import ReactToaster from "../../Component/ReactToaster";
+import { toast, ToastContainer } from "react-toastify";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -94,6 +90,7 @@ function LabourList() {
           <Loading />
         ) : (
           <div className={style.labourTableContainer}>
+            <ToastContainer />
             {Array.isArray(LabourSlice.labourData) && (
               <>
                 <table className={style.labourTable}>
@@ -146,6 +143,14 @@ function LabourList() {
                           alt="QR"
                           src={editIcon}
                           className={style.actionIcon}
+                          onClick={() => {
+                            navigate("/addLabour", {
+                              state: {
+                                editLabourData: m,
+                                pageTitle: "Edit Labour",
+                              },
+                            });
+                          }}
                         />
                         <img
                           onClick={() =>
@@ -163,6 +168,19 @@ function LabourList() {
                           alt="delete icon"
                           src={deleteIcon}
                           className={style.actionIcon}
+                          onClick={() => {
+                            dispatch(
+                              deleteLabour({
+                                labourId: m._id,
+                                imgId: m.labourIdProof,
+                              })
+                            ).then((delRes) => {
+                              if (delRes.payload.status === 200) {
+                                console.log("Delete <>?");
+                                toast.success("delete sucessfully");
+                              }
+                            });
+                          }}
                         />
                       </td>
                     </tr>
@@ -189,7 +207,6 @@ function LabourList() {
               onClose={(data) => {
                 if (data) {
                   const date = new Date();
-                  date.setDate(date.getDate() - 2);
                   setOpenScanner({ flag: false, data });
                   dispatch(
                     markAttendence({
@@ -216,7 +233,7 @@ function LabourList() {
             <div>
               {idProof.id.split(".").pop() === "pdf" ? (
                 <embed
-                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/493a3a44-1f1c-419d-80c0-9c99017b7ba4.pdf`}
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/${idProof.id}`}
                   type="application/pdf"
                   width="100%"
                   height="600px"

@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 
 import { apiList } from "../../API/apiIndex";
 import { onAuthenticated } from "../../API/axios";
+import { toast } from "react-toastify";
 
 export const addLabour = createAsyncThunk(
   "labour/addLabour",
@@ -84,6 +85,33 @@ export const deletePostItem = createAsyncThunk(
   }
 );
 
+export const deleteLabour = createAsyncThunk(
+  "labour/deleteLabour",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: `${apiList.deleteLabour}/${data.labourId}/${data.imgId}`,
+      method: "delete",
+    };
+    return onAuthenticated(payload, false)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const updateLabour = createAsyncThunk(
+  "labour/updateLabour",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: `${apiList.updateLabour}`,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload, true)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const labourSlice = createSlice({
   name: "labour",
   initialState: {
@@ -95,10 +123,13 @@ const labourSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(addLabour.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
       return {
         ...state,
         loading: false,
-        labourData: payload.data,
+        labourData: existingArray.labourData
+          ? [...existingArray.labourData, payload.data[0]]
+          : payload.data,
       };
     });
     builder.addCase(addLabour.pending, (state, { payload }) => {
@@ -212,6 +243,31 @@ const labourSlice = createSlice({
       };
     });
     builder.addCase(deletePostItem.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteLabour.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      console.log(payload.data, " <>? Redux");
+      return {
+        ...state,
+        labourData: existingArray.labourData
+          ? existingArray.labourData.filter((f) => f._id !== payload.data)
+          : null,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteLabour.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(deleteLabour.rejected, (state, { payload }) => {
+      toast.error("Error in deletion");
       return {
         ...state,
         error: payload.data,

@@ -8,7 +8,7 @@ import { getRoomCount } from "../../Redux/Slice/room";
 import { eventdata, validatemobile } from "../../util/util";
 import { bookRoom } from "../../Redux/Slice/booking";
 import Loading from "../../Component/Loading/Loading";
-import { getEventData } from "../../Redux/Slice/event";
+import { getEventData, getEventMemories } from "../../Redux/Slice/event";
 import LeftArrow from "../../util/Assets/Icon/leftArrow.png";
 import RightArrow from "../../util/Assets/Icon/rightArrow.png";
 import EventList from "../Event/EventList/EventList";
@@ -33,11 +33,12 @@ const roomData = {
   emptyRoom: 0,
 };
 var settings = {
-  dots: true,
+  dots: false,
   infinite: true,
   speed: 500,
   slidesToShow: 5,
   slidesToScroll: 1,
+  autoplay: true,
 };
 
 function Home() {
@@ -56,6 +57,12 @@ function Home() {
       dispatch(getRoomCount());
     }
   }, []);
+
+  useEffect(() => {
+    if (!EventSlice.eventMemory) {
+      dispatch(getEventMemories());
+    }
+  }, [EventSlice.eventMemory]);
 
   useEffect(() => {
     if (!EventSlice.eventData) {
@@ -87,14 +94,19 @@ function Home() {
       ) : (
         <>
           <div className={style.mainEventMemorisContainer}>
-            <center>Event Photos</center>
-            <Slider {...settings}>
-              {eventdata.map((m) => (
-                <div className={style.eventCard} key={m.id}>
-                  <img src={m.img} className={style.eventImg} alt="eventimg" />
-                  <div>{m.title}</div>
-                </div>
-              ))}
+            <label className={style.pageHeading}>Event Photos</label>
+            <Slider {...settings} className={style.sliderContainer}>
+              {Array.isArray(EventSlice.eventMemory) &&
+                EventSlice.eventMemory.map((m) => (
+                  <div className={style.eventCard} key={m.id}>
+                    <img
+                      src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/event/${m.eventImg}`}
+                      className={style.eventImg}
+                      alt="eventimg"
+                    />
+                    <div className={style.eventTitle}>{m.eventTitle}</div>
+                  </div>
+                ))}
             </Slider>
           </div>
           <div className={style.twoColContainer}>
@@ -130,7 +142,8 @@ function Home() {
               </div>
             </div>
             {authData?.loginData.role === "superAdmin" ||
-            authData?.loginData.role === "staff" ? (
+            authData?.loginData.role === "staff" ||
+            authData?.loginData.role === "admin" ? (
               <></>
             ) : (
               <div className={style.bookingFormContainer}>

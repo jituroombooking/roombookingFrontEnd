@@ -56,11 +56,39 @@ export const editEvent = createAsyncThunk(
   }
 );
 
+export const getEventMemories = createAsyncThunk(
+  "event/getEventMemories",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.getEventMemory,
+      method: "get",
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const addEventMemory = createAsyncThunk(
+  "event/addEventMemory",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.addEventMemory,
+      method: "post",
+      data,
+    };
+    return onAuthenticated(payload, true)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const eventSlice = createSlice({
   name: "event",
   initialState: {
     loading: false,
     eventData: null,
+    eventMemory: null,
     error: "",
   },
   reducers: {},
@@ -154,6 +182,30 @@ const eventSlice = createSlice({
       };
     });
     builder.addCase(editEvent.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(getEventMemories.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      console.log(payload.data, " <>? SLICE");
+      return {
+        ...state,
+        eventMemory: existingArray.eventMemory
+          ? [...existingArray.eventMemory, payload.data[0]]
+          : payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getEventMemories.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getEventMemories.pending, (state, { payload }) => {
       return {
         ...state,
         loading: true,

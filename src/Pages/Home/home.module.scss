@@ -111,14 +111,29 @@
   margin-top: 4px;
 }
 
-.eventParentContainer {
+.mainEventMemorisContainer {
+  .pageHeading {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .sliderContainer {
+    div[class="slick-list"] {
+      div[class="slick-track"] {
+        div[class="slick-slide"] {
+          padding-right: 16px;
+        }
+      }
+    }
+  }
 }
 
 .eventCard {
   margin-bottom: 40px;
   display: flex;
-  width: 240px;
-
+  width: 160px;
+  .eventTitle {
+    text-align: center;
+  }
   .eventImg {
     margin: 8px;
     height: 140px;
@@ -126,6 +141,7 @@
   }
 }
 .twoColContainer {
+  padding-top: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
