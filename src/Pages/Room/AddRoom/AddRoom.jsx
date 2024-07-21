@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 import { addRoom, updateRoom } from "../../../Redux/Slice/room";
+import Loading from "../../../Component/Loading/Loading";
 
 import style from "./addRoom.module.scss";
-import Loading from "../../../Component/Loading/Loading";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = {
   bhavanName: "",
@@ -70,10 +71,14 @@ function AddRoom() {
       );
       roomData.rooms = generatedRooms;
       console.log(roomData, " <>?");
-      dispatch(addRoom(roomData));
-      setRoomData(initialState);
-      setGeneratedRooms([]);
-      setFormValidation(false);
+      dispatch(addRoom(roomData)).then((addRes) => {
+        if (addRes.payload.status === 200) {
+          toast.success("Room added successfully");
+          setRoomData(initialState);
+          setGeneratedRooms([]);
+          setFormValidation(false);
+        }
+      });
     }
   };
 
@@ -98,6 +103,7 @@ function AddRoom() {
         <Loading />
       ) : (
         <div className={style.bulkRoomUpload}>
+          <ToastContainer />
           <div className={style.formRow}>
             <div className={style.formItem}>
               <labal className={style.eventLabel}>Bhavan name*</labal>

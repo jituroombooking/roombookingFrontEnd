@@ -21,6 +21,19 @@ function PageTitle() {
     }
   };
 
+  const getPageTitle = () => {
+    let str = "";
+    const pageName = pathname.split("/").pop();
+    for (let i = 0; i < pageName.length; i++) {
+      if (pageName[i] === pageName[i].toLocaleUpperCase()) {
+        str += ` ${pageName[i]}`;
+      } else {
+        str += pageName[i];
+      }
+    }
+    return str;
+  };
+
   return (
     <div className={style.pageTitle}>
       {AuthSlice?.loginFlag && (
@@ -31,7 +44,7 @@ function PageTitle() {
           alt="back arrow"
         />
       )}
-      {(state?.pageTitle && state?.pageTitle) || pathname.split("/").pop()}
+      {(state?.pageTitle && state?.pageTitle) || getPageTitle()}
     </div>
   );
 }

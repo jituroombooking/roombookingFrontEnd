@@ -32,6 +32,8 @@ export const apiList = {
   editEventData: `${eventv1}/edit`,
   addEventMemory: `${eventMemoryv1}/add`,
   getEventMemory: `${eventMemoryv1}`,
+  editEventMemory: `${eventMemoryv1}/edit`,
+  deleteEventMemory: `${eventMemoryv1}/delete`,
   deleteEventData: `${eventv1}/delete`,
   addStaff: `${signinV1}/addStaff`,
   getStaff: `${signinV1}/getStaff`,

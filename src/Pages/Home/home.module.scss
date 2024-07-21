@@ -54,6 +54,7 @@
     background-color: $whiteColor;
     padding: 32px;
     margin: 32px 0;
+    height: 100%;
     .formRow {
       display: flex;
       align-items: center;
@@ -113,33 +114,51 @@
 
 .mainEventMemorisContainer {
   .pageHeading {
+    text-align: center;
     font-size: 32px;
     font-weight: 700;
+    display: block;
   }
   .sliderContainer {
+    width: 100%;
     div[class="slick-list"] {
+      height: 240px;
       div[class="slick-track"] {
         div[class="slick-slide"] {
-          padding-right: 16px;
+          div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
         }
       }
     }
   }
 }
-
 .eventCard {
+  cursor: pointer;
   margin-bottom: 40px;
   display: flex;
   width: 160px;
+  align-items: center;
+  justify-content: center;
   .eventTitle {
+    margin-top: 24px;
+    font-size: 24px;
+    font-weight: 700;
     text-align: center;
   }
   .eventImg {
     margin: 8px;
     height: 140px;
-    width: 100%;
+    width: 320px;
   }
 }
+.noData {
+  text-align: center;
+  margin-top: 32px;
+}
+
 .twoColContainer {
   padding-top: 40px;
   display: flex;

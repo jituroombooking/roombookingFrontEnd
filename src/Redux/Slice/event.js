@@ -83,6 +83,34 @@ export const addEventMemory = createAsyncThunk(
   }
 );
 
+export const editEventMemory = createAsyncThunk(
+  "event/editEventMemory",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.editEventMemory,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload, true)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const deleteEventMemory = createAsyncThunk(
+  "event/deleteEventMemory",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: `${apiList.deleteEventMemory}/${data._id}/${data.imgId}`,
+      method: "delete",
+      data,
+    };
+    return onAuthenticated(payload, false)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const eventSlice = createSlice({
   name: "event",
   initialState: {
@@ -188,13 +216,9 @@ const eventSlice = createSlice({
       };
     });
     builder.addCase(getEventMemories.fulfilled, (state, { payload }) => {
-      const existingArray = current(state);
-      console.log(payload.data, " <>? SLICE");
       return {
         ...state,
-        eventMemory: existingArray.eventMemory
-          ? [...existingArray.eventMemory, payload.data[0]]
-          : payload.data,
+        eventMemory: payload.data,
         loading: false,
       };
     });
@@ -206,6 +230,84 @@ const eventSlice = createSlice({
       };
     });
     builder.addCase(getEventMemories.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(editEventMemory.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      console.log(payload.data, " <>? SLICE");
+      return {
+        ...state,
+        eventMemory: existingArray.eventMemory
+          ? existingArray.eventMemory.map((m) => {
+              if (m._id === payload.data._id) {
+                return payload.data;
+              } else {
+                return m;
+              }
+            })
+          : payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(editEventMemory.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(editEventMemory.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(deleteEventMemory.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      console.log(payload.data, " <>? SLICE");
+      return {
+        ...state,
+        eventMemory: existingArray.eventMemory
+          ? existingArray.eventMemory.filter((m) => m._id !== payload.data)
+          : payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteEventMemory.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(deleteEventMemory.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(addEventMemory.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      console.log(existingArray, " <>? SLICE");
+      return {
+        ...state,
+        eventMemory: existingArray.eventMemory
+          ? [...existingArray.eventMemory, payload.data]
+          : payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(addEventMemory.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(addEventMemory.pending, (state, { payload }) => {
       return {
         ...state,
         loading: true,

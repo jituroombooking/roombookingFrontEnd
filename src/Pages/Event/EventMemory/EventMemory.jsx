@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { Slide, toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addEventMemory, getEventMemories } from "../../../Redux/Slice/event";
+import {
+  addEventMemory,
+  deleteEventMemory,
+  editEventMemory,
+  getEventMemories,
+} from "../../../Redux/Slice/event";
 import Loading from "../../../Component/Loading/Loading";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
+import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 
 import style from "./eventMemories.module.scss";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = {
   eventImage: "",
@@ -31,26 +38,48 @@ function EventMemory() {
   const dispatch = useDispatch();
 
   const submitEventData = () => {
-    if (eventData.eventImage === "" || eventData.eventTitle === "") {
+    if ((!edit && eventData.eventImage === "") || eventData.eventTitle === "") {
       setFormvalidation(true);
     } else {
-      dispatch(addEventMemory(eventData)).then((addRes) => {
-        if (addRes.payload.status === 201) {
-          toast.success("Event added successfully");
-        }
-      });
+      edit
+        ? dispatch(editEventMemory(eventData)).then((editRes) => {
+            if (editRes.payload.status === 200) {
+              setEdit(false);
+              setEventData(initialState);
+              toast.success("Event Edited successfully");
+            }
+          })
+        : dispatch(addEventMemory(eventData)).then((addRes) => {
+            if (addRes.payload.status === 201) {
+              toast.success("Event added successfully");
+              setEventData(initialState);
+            }
+          });
     }
   };
+
+  console.log(EventSlice.eventMemory, " <>? MAIN");
 
   return (
     <div className={style.eventMemoryContainer}>
       {EventSlice.loading ? (
         <Loading />
       ) : (
-        <div>
-          <ToastContainer />
+        <div className={style.parentContainer}>
+          <ToastContainer transition={Slide} />
+          <div className={style.roomHeading}>
+            <img
+              src={refreshIcon}
+              onClick={() => dispatch(getEventMemories())}
+              className={style.refreshIocn}
+            />
+          </div>
           <div className={style.mainContainer}>
             <div className={style.eventListContainer}>
+              {Array.isArray(EventSlice.eventMemory) &&
+                EventSlice.eventMemory.length === 0 && (
+                  <div className={style.noData}>No Data !</div>
+                )}
               <ul className={style.eventMemoryList}>
                 {Array.isArray(EventSlice.eventMemory) &&
                   EventSlice.eventMemory.map((m) => (
@@ -71,7 +100,11 @@ function EventMemory() {
                           alt="eventImg"
                           className={style.actionIcon}
                           onClick={() => {
-                            setEventData({ ...m, oldImg: m.eventImg });
+                            setEventData({
+                              ...m,
+                              oldImg: m.eventImg,
+                              eventImage: "",
+                            });
                             setEdit(true);
                           }}
                         />
@@ -79,6 +112,18 @@ function EventMemory() {
                           src={deleteIcon}
                           alt="eventImg"
                           className={style.actionIcon}
+                          onClick={() =>
+                            dispatch(
+                              deleteEventMemory({
+                                _id: m._id,
+                                imgId: m.eventImg,
+                              })
+                            ).then((deleteRes) => {
+                              if (deleteRes.payload.status === 200) {
+                                toast.success("Delete Sucessfully");
+                              }
+                            })
+                          }
                         />
                       </div>
                     </li>
@@ -151,7 +196,7 @@ function EventMemory() {
                   className={style.submitbtn}
                   onClick={() => submitEventData()}
                 >
-                  Add Event Memories
+                  {edit ? "Edit" : "Add"} Event Memories
                 </button>
               </div>
             </div>

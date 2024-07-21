@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReactDatePicker from "react-datepicker";
-import moment from "moment";
 import Slider from "react-slick";
+import { toast, ToastContainer } from "react-toastify";
 
 import { getRoomCount } from "../../Redux/Slice/room";
-import { eventdata, validatemobile } from "../../util/util";
+import { validatemobile } from "../../util/util";
 import { bookRoom } from "../../Redux/Slice/booking";
 import Loading from "../../Component/Loading/Loading";
 import { getEventData, getEventMemories } from "../../Redux/Slice/event";
-import LeftArrow from "../../util/Assets/Icon/leftArrow.png";
-import RightArrow from "../../util/Assets/Icon/rightArrow.png";
 import EventList from "../Event/EventList/EventList";
 
 import style from "./home.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = {
   fullName: "",
@@ -36,9 +35,10 @@ var settings = {
   dots: false,
   infinite: true,
   speed: 500,
-  slidesToShow: 5,
+  slidesToShow: 4,
   slidesToScroll: 1,
-  autoplay: true,
+  autoplay: false,
+  arrows: false,
 };
 
 function Home() {
@@ -83,7 +83,11 @@ function Home() {
       setFormValidation(true);
     } else {
       setFormValidation(false);
-      dispatch(bookRoom(boodkingData));
+      dispatch(bookRoom(boodkingData)).then((addRes) => {
+        if (addRes.payload.status === 200) {
+          toast.success("Room Booked Successfully");
+        }
+      });
     }
   };
 
@@ -94,9 +98,15 @@ function Home() {
       ) : (
         <>
           <div className={style.mainEventMemorisContainer}>
+            <ToastContainer />
             <label className={style.pageHeading}>Event Photos</label>
+            {Array.isArray(EventSlice.eventMemory) &&
+              EventSlice.eventMemory.length === 0 && (
+                <div className={style.noData}>No Data !</div>
+              )}
             <Slider {...settings} className={style.sliderContainer}>
               {Array.isArray(EventSlice.eventMemory) &&
+                EventSlice.eventMemory.length !== 0 &&
                 EventSlice.eventMemory.map((m) => (
                   <div className={style.eventCard} key={m.id}>
                     <img

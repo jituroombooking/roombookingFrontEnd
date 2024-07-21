@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Slide, toast, ToastContainer } from "react-toastify";
 import QRCode from "qrcode";
 
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
@@ -20,8 +21,7 @@ import AttendenceView from "../../../util/Assets/Icon/eye.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./labourList.module.scss";
-import ReactToaster from "../../Component/ReactToaster";
-import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -90,7 +90,7 @@ function LabourList() {
           <Loading />
         ) : (
           <div className={style.labourTableContainer}>
-            <ToastContainer />
+            <ToastContainer transition={Slide} />
             {Array.isArray(LabourSlice.labourData) && (
               <>
                 <table className={style.labourTable}>

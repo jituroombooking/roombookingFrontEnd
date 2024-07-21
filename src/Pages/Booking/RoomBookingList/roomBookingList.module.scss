@@ -10,6 +10,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    margin-bottom: 32px;
     .refreshIocn {
       cursor: pointer;
       height: 32px;
@@ -78,6 +79,9 @@
   height: 32px;
   cursor: pointer;
 }
+.mainText {
+  text-transform: capitalize;
+}
 .idProofParentContainer {
   position: fixed;
   display: flex;
@@ -90,7 +94,10 @@
   background-color: hsl(300deg 2.04% 11.3% / 76%);
   z-index: 100;
   .idProofContainer {
-    width: 700px;
+    width: 640px;
+    background-color: white;
+    padding: 16px;
+    border-radius: 16px;
     .header {
       display: flex;
       align-items: center;
@@ -101,4 +108,8 @@
 }
 .userIdImg {
   width: 100%;
+}
+
+.tableHeader {
+  font-size: 24px;
 }

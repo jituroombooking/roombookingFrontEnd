@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-// import { Viewer, Worker } from "@react-pdf-viewer/core";
-// import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+import {
+  CellProps,
+  FilterProps,
+  FilterValue,
+  IdType,
+  Row,
+  TableInstance,
+  useTable,
+} from "react-table";
 
-// import "@react-pdf-viewer/core/lib/styles/index.css";
-// import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+// const data = React.useMemo(() => makeData(20), []);
 
 import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
@@ -13,21 +19,145 @@ import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import { deleteBookedRoom, getBookedRooms } from "../../../Redux/Slice/booking";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
-// import ReactPDF from "react-pdf";
+import ReactTable from "../../../Component/ReactTable/ReactTable";
 
 import style from "./roomBookingList.module.scss";
 
 function RoomBookingList() {
   const [idProof, setIdproof] = useState({ flag: false, id: "" });
+  const [selectedId, setSelectedId] = useState([]);
+
   const RoomBookingSlice = useSelector((state) => state.booking);
   const AuthDataSlice = useSelector((state) => state.login);
+
   const dispatch = useDispatch();
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Select",
+        columns: [
+          {
+            id: "checkbox",
+            Header: <input type="checkbox" />,
+            accessor: (data) => (
+              <input
+                type="checkbox"
+                value={data._id}
+                onClick={() => setSelectedId((state) => [...state, data.id])}
+              />
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Guest Detials",
+        columns: [
+          {
+            id: "guestName",
+            Header: "Name",
+            accessor: (data) => (
+              <div className={style.mainText}>
+                {data.userBookingData.fullName}
+              </div>
+            ),
+            width: 200,
+          },
+          {
+            Header: "Total",
+            accessor: (data) => <div>{data.userBookingData.familyMember}</div>,
+          },
+          {
+            Header: "Alotted",
+            accessor: (data) => (
+              <div>{data.userBookingData.memberAllotted}</div>
+            ),
+          },
+
+          {
+            Header: "Mobile Number	",
+            accessor: (data) => <div>{data.userBookingData.mobileNumber}</div>,
+          },
+          {
+            Header: "ID Proof",
+            accessor: (data) => (
+              <img
+                src={IDProofIcon}
+                className={style.idProof}
+                onClick={() =>
+                  setIdproof({
+                    flag: true,
+                    id: data.userBookingData.identityProof,
+                  })
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Bhavan",
+        columns: [
+          {
+            id: "bhavanName",
+            Header: "Name",
+            accessor: (data) => (
+              <div className={style.mainText}>{data.bhavanData.bhavanName}</div>
+            ),
+          },
+          {
+            Header: "Room #",
+            accessor: (data) => (
+              <div className={style.mainText}>{data.roomData.roomNumber}</div>
+            ),
+          },
+          {
+            Header: "Landmark",
+            accessor: (data) => (
+              <div className={style.mainText}>{data.bhavanData.landmark}</div>
+            ),
+          },
+          {
+            Header: "No.Of Bed",
+            accessor: (data) => (
+              <div className={style.mainText}>
+                {data.bhavanData.noOfBedperRoom}
+              </div>
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Booking",
+        columns: [
+          {
+            Header: "From",
+            accessor: (data) => (
+              <span>
+                {moment(data.userBookingData.bookingFrom).format("YYYY/MM/DD")}
+              </span>
+            ),
+          },
+          {
+            Header: "Till",
+            accessor: (data) => (
+              <span>
+                {moment(data.userBookingData.bookingTill).format("YYYY/MM/DD")}
+              </span>
+            ),
+          },
+        ],
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (!RoomBookingSlice.booking) {
       dispatch(getBookedRooms());
     }
   }, [RoomBookingSlice.booking]);
+
+  console.log(RoomBookingSlice.booking, " <>?");
 
   return (
     <div className={style.roomBookingContainer}>
@@ -37,6 +167,11 @@ function RoomBookingList() {
         <div>
           <div className={`${style.roomHeading} `}>
             <img
+              src={deleteIcon}
+              className={style.refreshIocn}
+              onClick={() => console.log()}
+            />
+            <img
               src={refreshIcon}
               onClick={() => dispatch(getBookedRooms())}
               className={style.refreshIocn}
@@ -44,6 +179,13 @@ function RoomBookingList() {
           </div>
           <div className={style.roomBookingTableContainer}>
             {Array.isArray(RoomBookingSlice.booking) && (
+              <ReactTable
+                key="reactTable"
+                columns={columns}
+                data={RoomBookingSlice.booking}
+              />
+            )}
+            {/* {Array.isArray(RoomBookingSlice.booking) && (
               <table className={style.roomTable}>
                 <tr className={style.tableHeaderRow}>
                   <th
@@ -139,7 +281,7 @@ function RoomBookingList() {
                   </tr>
                 ))}
               </table>
-            )}
+            )} */}
             {Array.isArray(RoomBookingSlice.booking) &&
               RoomBookingSlice.booking.length === 0 && (
                 <div className={style.noData}>No Data !</div>

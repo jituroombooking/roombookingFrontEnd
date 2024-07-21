@@ -7,62 +7,76 @@
   margin-bottom: 32px;
   box-shadow: 0 8px 12px 2px gray;
   min-height: 50vh;
-  .mainContainer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    .eventListContainer {
-      .eventMemoryList {
-        padding-left: 0;
-        list-style: none;
-        height: 400px;
-        overflow-y: auto;
-        .eventMemoryItem {
-          padding: 8px;
-          border: 1px solid;
-          border-radius: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          .imgTitleContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            .eventTitle {
-              font-size: 24px;
-              font-weight: 600;
-            }
-            .eventImg {
-              height: 80px;
-            }
-          }
-          .iconContainer {
+  .parentContainer {
+    .roomHeading {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 32px;
+      .refreshIocn {
+        cursor: pointer;
+        height: 32px;
+        margin-right: 24px;
+      }
+    }
+    display: block;
+    .mainContainer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      .eventListContainer {
+        .eventMemoryList {
+          padding-left: 0;
+          list-style: none;
+          height: 400px;
+          overflow-y: auto;
+          .eventMemoryItem {
+            padding: 8px;
+            border: 1px solid;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            .actionIcon {
-              height: 40px;
-              cursor: pointer;
+            justify-content: space-between;
+            .imgTitleContainer {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              .eventTitle {
+                font-size: 24px;
+                font-weight: 600;
+              }
+              .eventImg {
+                height: 80px;
+              }
+            }
+            .iconContainer {
+              display: flex;
+              align-items: center;
+              .actionIcon {
+                height: 40px;
+                cursor: pointer;
+              }
             }
           }
         }
       }
-    }
-    .eventFormContainer {
-      .formRow {
-        display: flex;
-        align-items: center;
-        margin-bottom: 32px;
-        .formItem {
-          width: 50%;
-          .genRoomBtn {
-            background-color: $primaryBtnColor;
-            color: $whiteColor;
-            font-size: 16px;
-            font-weight: 600;
-          }
-          .eventLabel {
-            display: block;
-            margin-bottom: 8px;
+      .eventFormContainer {
+        .formRow {
+          display: flex;
+          align-items: center;
+          margin-bottom: 32px;
+          .formItem {
+            width: 50%;
+            .genRoomBtn {
+              background-color: $primaryBtnColor;
+              color: $whiteColor;
+              font-size: 16px;
+              font-weight: 600;
+            }
+            .eventLabel {
+              display: block;
+              margin-bottom: 8px;
+            }
           }
         }
       }
@@ -90,4 +104,9 @@
 }
 .displyImg {
   height: 200px;
+}
+
+.noData {
+  text-align: center;
+  margin-top: 32px;
 }
