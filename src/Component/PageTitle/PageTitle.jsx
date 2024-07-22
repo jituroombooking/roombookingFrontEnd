@@ -11,8 +11,6 @@ function PageTitle() {
 
   const { pathname, state } = useLocation();
   const navigate = useNavigate();
-  console.log(state, " <>? Page Title");
-
   const goBack = () => {
     if (window.history.length && window.history.length > 1) {
       navigate(-1);

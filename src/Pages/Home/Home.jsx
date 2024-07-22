@@ -52,6 +52,12 @@ function Home() {
 
   const dispatch = useDispatch();
 
+  const arr = [{ a: 1 }];
+  console.log(
+    arr.some((item) => item.a !== 1),
+    " <>?"
+  );
+
   useEffect(() => {
     if (!roomSlice.roomData) {
       dispatch(getRoomCount());
@@ -69,7 +75,6 @@ function Home() {
       dispatch(getEventData());
     }
   }, [EventSlice.eventData]);
-  console.log(EventSlice, "<>?");
 
   const submitBookingData = () => {
     if (

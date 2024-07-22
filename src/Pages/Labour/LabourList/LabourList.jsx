@@ -207,6 +207,7 @@ function LabourList() {
               onClose={(data) => {
                 if (data) {
                   const date = new Date();
+                  // date.setDate(date.getDate() - 3);
                   setOpenScanner({ flag: false, data });
                   dispatch(
                     markAttendence({

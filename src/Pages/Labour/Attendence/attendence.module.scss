@@ -59,3 +59,59 @@
 .monthHeading {
   font-size: 20px;
 }
+
+.arrowContainer {
+  display: flex;
+  justify-content: end;
+}
+
+.btnContainerTwo {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  .receiptbtn {
+    padding: 16px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: $whiteColor;
+    background-color: $secondaryBtnColor;
+    text-decoration: none;
+  }
+  .markAsPaidbtn {
+    margin-top: 8px;
+    color: $whiteColor;
+    background-color: $primaryBtnColor;
+  }
+}
+
+.idProof {
+  height: 32px;
+  cursor: pointer;
+}
+
+.idProofParentContainer {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: hsl(300deg 2.04% 11.3% / 76%);
+  z-index: 100;
+  .idProofContainer {
+    width: 640px;
+    background-color: white;
+    padding: 16px;
+    border-radius: 16px;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+  }
+}

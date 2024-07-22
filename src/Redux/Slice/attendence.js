@@ -16,6 +16,20 @@ export const getAttendence = createAsyncThunk(
   }
 );
 
+export const markAsPaid = createAsyncThunk(
+  "attendence/markAdPaid",
+  (data, { rejectWithValue, fulfillWithValue }) => {
+    const payload = {
+      url: apiList.markAsPaid,
+      method: "post",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const attendenceSlice = createSlice({
   name: "attendence",
   initialState: {
@@ -40,6 +54,26 @@ const attendenceSlice = createSlice({
       };
     });
     builder.addCase(getAttendence.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(markAsPaid.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        attendenceData: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(markAsPaid.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(markAsPaid.pending, (state, { payload }) => {
       return {
         ...state,
         loading: true,

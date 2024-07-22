@@ -14,14 +14,7 @@ function Header() {
   return (
     <div className={style.headerContainer}>
       {JSON.stringify(AuthSlice.loginData) != "{}" && (
-        <button
-          className={style.buttonToggleMenu}
-          // onClick={() => openCloseDrawer(!drawerOpenClose)}
-        >
-          {/* <div className={style.menuLine} />
-          <div className={style.menuLine} />
-          <div className={style.menuLine} /> */}
-        </button>
+        <button className={style.buttonToggleMenu}></button>
       )}
       {JSON.stringify(AuthSlice.loginData) != "{}" ? (
         <div

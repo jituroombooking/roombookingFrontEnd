@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import {
-  CellProps,
-  FilterProps,
-  FilterValue,
-  IdType,
-  Row,
-  TableInstance,
-  useTable,
-} from "react-table";
-
-// const data = React.useMemo(() => makeData(20), []);
+import { useNavigate } from "react-router-dom";
+import ReactSelect from "react-select";
 
 import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
-import { deleteBookedRoom, getBookedRooms } from "../../../Redux/Slice/booking";
+import { getBookedRooms } from "../../../Redux/Slice/booking";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
 import ReactTable from "../../../Component/ReactTable/ReactTable";
@@ -26,9 +17,16 @@ import style from "./roomBookingList.module.scss";
 function RoomBookingList() {
   const [idProof, setIdproof] = useState({ flag: false, id: "" });
   const [selectedId, setSelectedId] = useState([]);
+  const [selectedName, setSelectedName] = useState({ value: "", label: "" });
+  const [selectedBhavan, setSelectedBhavan] = useState({
+    value: "",
+    label: "",
+  });
 
   const RoomBookingSlice = useSelector((state) => state.booking);
   const AuthDataSlice = useSelector((state) => state.login);
+
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const columns = React.useMemo(
@@ -38,13 +36,20 @@ function RoomBookingList() {
         columns: [
           {
             id: "checkbox",
-            Header: <input type="checkbox" />,
+            Header: (
+              <div className={style.headerInput}>
+                <input className={style.selectInput} type="checkbox" />
+              </div>
+            ),
             accessor: (data) => (
-              <input
-                type="checkbox"
-                value={data._id}
-                onClick={() => setSelectedId((state) => [...state, data.id])}
-              />
+              <div className={style.headerInput}>
+                <input
+                  className={style.selectInput}
+                  type="checkbox"
+                  value={data._id}
+                  onClick={() => setSelectedId((state) => [...state, data.id])}
+                />
+              </div>
             ),
           },
         ],
@@ -60,17 +65,19 @@ function RoomBookingList() {
                 {data.userBookingData.fullName}
               </div>
             ),
-            width: 200,
+            width: "10%",
           },
           {
             Header: "Total",
             accessor: (data) => <div>{data.userBookingData.familyMember}</div>,
+            width: 90,
           },
           {
             Header: "Alotted",
             accessor: (data) => (
               <div>{data.userBookingData.memberAllotted}</div>
             ),
+            width: 90,
           },
 
           {
@@ -101,26 +108,60 @@ function RoomBookingList() {
             id: "bhavanName",
             Header: "Name",
             accessor: (data) => (
-              <div className={style.mainText}>{data.bhavanData.bhavanName}</div>
+              <div className={`${style.mainText} ${style.landmarkContainer}`}>
+                {data.bhavanData.map((m) => (
+                  <div className={style.landMarkItem}>{m.bhavanName}</div>
+                ))}
+              </div>
             ),
           },
           {
             Header: "Room #",
             accessor: (data) => (
-              <div className={style.mainText}>{data.roomData.roomNumber}</div>
+              <div className={`${style.mainText} ${style.roomCircleContainer}`}>
+                {data.roomData.map((m) => (
+                  <div className={style.parentRoomCircle}>
+                    <div
+                      key={`${m.roomNumber}`}
+                      className={style.roomCircle}
+                      style={{
+                        backgroundColor: m.availabel ? "#19891c" : "red",
+                      }}
+                      onClick={() => {
+                        navigate("/viewBooking", {
+                          state: {
+                            roomId: m._id,
+                          },
+                        });
+                      }}
+                    >
+                      {m.roomNumber}
+                    </div>
+                  </div>
+                ))}
+              </div>
             ),
           },
           {
             Header: "Landmark",
+            className: style.landmarkHeader,
             accessor: (data) => (
-              <div className={style.mainText}>{data.bhavanData.landmark}</div>
+              <div className={`${style.mainText} ${style.landmarkContainer}`}>
+                {data.bhavanData.map((m) => (
+                  <div className={style.landMarkItem}>{m.landmark}</div>
+                ))}
+              </div>
             ),
           },
           {
             Header: "No.Of Bed",
             accessor: (data) => (
-              <div className={style.mainText}>
-                {data.bhavanData.noOfBedperRoom}
+              <div
+                className={`${style.mainText} ${style.noOfBedperRoomContainer}`}
+              >
+                {data.bhavanData.map((m) => (
+                  <div className={style.noOfBedItem}>{m.noOfBedperRoom}</div>
+                ))}
               </div>
             ),
           },
@@ -133,7 +174,7 @@ function RoomBookingList() {
             Header: "From",
             accessor: (data) => (
               <span>
-                {moment(data.userBookingData.bookingFrom).format("YYYY/MM/DD")}
+                {moment(data.userBookingData.bookingFrom).format("DD MMM YYYY")}
               </span>
             ),
           },
@@ -141,7 +182,7 @@ function RoomBookingList() {
             Header: "Till",
             accessor: (data) => (
               <span>
-                {moment(data.userBookingData.bookingTill).format("YYYY/MM/DD")}
+                {moment(data.userBookingData.bookingTill).format("DD MMM YYYY")}
               </span>
             ),
           },
@@ -159,6 +200,34 @@ function RoomBookingList() {
 
   console.log(RoomBookingSlice.booking, " <>?");
 
+  const nameOption =
+    (Array.isArray(RoomBookingSlice.booking) &&
+      RoomBookingSlice.booking.map((m) => {
+        return {
+          label: m.userBookingData.fullName,
+          value: m.userBookingData.fullName,
+        };
+      })) ||
+    [];
+
+  const bhavanOption = [];
+  Array.isArray(RoomBookingSlice.booking) &&
+    RoomBookingSlice.booking.map((m) => {
+      m.bhavanData.map((im) => {
+        bhavanOption.push({
+          label: im.bhavanName,
+          value: im.bhavanName,
+        });
+      });
+    });
+
+  const filterData =
+    selectedName.value !== ""
+      ? RoomBookingSlice.booking.filter(
+          (f) => f.userBookingData.fullName === selectedName.value
+        )
+      : RoomBookingSlice.booking;
+
   return (
     <div className={style.roomBookingContainer}>
       {RoomBookingSlice.loading ? (
@@ -166,23 +235,58 @@ function RoomBookingList() {
       ) : (
         <div>
           <div className={`${style.roomHeading} `}>
-            <img
-              src={deleteIcon}
-              className={style.refreshIocn}
-              onClick={() => console.log()}
-            />
-            <img
-              src={refreshIcon}
-              onClick={() => dispatch(getBookedRooms())}
-              className={style.refreshIocn}
-            />
+            <div className={style.filterContainer}>
+              <ReactSelect
+                className={style.selectFilter}
+                placeholder={
+                  selectedName.value === ""
+                    ? "Filter Names"
+                    : selectedName.value
+                }
+                value={selectedName.value}
+                defaultValue={selectedBhavan.value}
+                onChange={(e) => setSelectedName(e)}
+                options={nameOption}
+              />
+              <ReactSelect
+                className={style.selectFilter}
+                placeholder="Filter Bhavan "
+                defaultValue={selectedBhavan.value}
+                value={selectedBhavan.value}
+                onChange={(e) => setSelectedBhavan(e)}
+                options={bhavanOption}
+              />
+
+              <button
+                className={style.clearFilter}
+                onClick={() => {
+                  setSelectedName({ value: "", label: "" });
+                  setSelectedBhavan({ value: "", label: "" });
+                }}
+              >
+                Clear Filter
+              </button>
+            </div>
+            <div className={style.actionContainer}>
+              <img
+                src={deleteIcon}
+                className={style.refreshIocn}
+                onClick={() => console.log()}
+              />
+              <img
+                src={refreshIcon}
+                onClick={() => dispatch(getBookedRooms())}
+                className={style.refreshIocn}
+              />
+            </div>
           </div>
           <div className={style.roomBookingTableContainer}>
             {Array.isArray(RoomBookingSlice.booking) && (
               <ReactTable
+                nameFilter={selectedName.value}
                 key="reactTable"
                 columns={columns}
-                data={RoomBookingSlice.booking}
+                data={filterData}
               />
             )}
             {/* {Array.isArray(RoomBookingSlice.booking) && (

@@ -41,4 +41,5 @@ export const apiList = {
   getLabourPost: `${labourV1}/labourPost`,
   addLabourPost: `${labourV1}/addLabourPost`,
   deleteLabourPost: `${labourV1}/deletePost`,
+  markAsPaid: `${labourV1}/paid`,
 };
