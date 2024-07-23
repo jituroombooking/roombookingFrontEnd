@@ -6,7 +6,6 @@ import style from "./scanner.module.scss";
 function Scanner({ onClose }) {
   const handleScan = (data) => {
     if (data) {
-      console.log(data);
       onClose(data.text);
     }
   };

@@ -198,8 +198,6 @@ function RoomBookingList() {
     }
   }, [RoomBookingSlice.booking]);
 
-  console.log(RoomBookingSlice.booking, " <>?");
-
   const nameOption =
     (Array.isArray(RoomBookingSlice.booking) &&
       RoomBookingSlice.booking.map((m) => {
@@ -214,12 +212,19 @@ function RoomBookingList() {
   Array.isArray(RoomBookingSlice.booking) &&
     RoomBookingSlice.booking.map((m) => {
       m.bhavanData.map((im) => {
-        bhavanOption.push({
-          label: im.bhavanName,
-          value: im.bhavanName,
-        });
+        if (
+          bhavanOption.length === 0 ||
+          bhavanOption.some((i) => i.value !== im.bhavanName)
+        ) {
+          bhavanOption.push({
+            label: im.bhavanName,
+            value: im.bhavanName,
+          });
+        }
       });
     });
+
+  console.log(bhavanOption, " <>?");
 
   const filterData =
     selectedName.value !== ""

@@ -30,7 +30,6 @@ function AddLabour() {
 
   useEffect(() => {
     if (location.state?.editLabourData) {
-      console.log(location.state?.editLabourData, " <>?");
       setLabourData({ ...location.state?.editLabourData });
     }
   }, [location.state]);
@@ -74,7 +73,6 @@ function AddLabour() {
       setFormValidation(true);
     } else {
       dispatch(addLabour(labourData)).then((addRes) => {
-        console.log(addRes.payload.status);
         if (addRes.payload.status === 201) {
           toast.success("Added sucessfully");
         }
@@ -90,8 +88,6 @@ function AddLabour() {
         };
       })
     : [];
-
-  console.log(labourPostList);
 
   return (
     <div className={style.addLabourContainer}>

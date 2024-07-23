@@ -12,7 +12,6 @@ export const signinUser = createAsyncThunk(
     };
     return onAuthenticated(payload)
       .then((res) => {
-        console.log(res, " <>?");
         if (res.status === 200) {
           return fulfillWithValue(res);
         } else {

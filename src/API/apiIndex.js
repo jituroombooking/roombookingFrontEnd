@@ -4,7 +4,7 @@ const signinV1 = `${v1}/login`;
 const roomV1 = `${v1}/room`;
 const roomBookingV1 = `${v1}/booking`;
 const labourV1 = `${v1}/labour`;
-const attendence = `${v1}/attendence`;
+const attendenceV1 = `${v1}/attendence`;
 const eventv1 = `${v1}/event`;
 const eventMemoryv1 = `${v1}/eventMemory`;
 
@@ -26,7 +26,8 @@ export const apiList = {
   updateLabour: `${labourV1}/update`,
   getLabour: `${labourV1}/`,
   markAttendence: `${labourV1}/markAttendence`,
-  getAttendence: `${attendence}`,
+  getAttendence: `${attendenceV1}`,
+  getSingleLabour: `${labourV1}`,
   addEvent: `${eventv1}/add`,
   getEventData: `${eventv1}`,
   editEventData: `${eventv1}/edit`,

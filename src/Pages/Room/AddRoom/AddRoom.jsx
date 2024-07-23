@@ -28,7 +28,6 @@ function AddRoom() {
   const AddRoomSlice = useSelector((state) => state.room);
 
   useEffect(() => {
-    console.log(state, " <>? MAIN");
     if (state?.roomEditData) {
       const { rooms, ...restProps } = state.roomEditData;
       setGeneratedRooms([...rooms]);
@@ -49,7 +48,6 @@ function AddRoom() {
         0
       );
       roomData.rooms = generatedRooms;
-      console.log(roomData, " <>?");
       dispatch(updateRoom(roomData));
       // setRoomData(initialState);
       // setGeneratedRooms([]);
@@ -70,7 +68,6 @@ function AddRoom() {
         0
       );
       roomData.rooms = generatedRooms;
-      console.log(roomData, " <>?");
       dispatch(addRoom(roomData)).then((addRes) => {
         if (addRes.payload.status === 200) {
           toast.success("Room added successfully");

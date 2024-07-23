@@ -24,8 +24,6 @@ function StaffList() {
     }
   }, [StaffSlice.staffData]);
 
-  console.log(StaffSlice.staffData, " <>?");
-
   return (
     <div className={style.staffContainer}>
       {StaffSlice.loading ? (

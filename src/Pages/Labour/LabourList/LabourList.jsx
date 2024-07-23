@@ -22,6 +22,7 @@ import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./labourList.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
+import moment from "moment";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -156,7 +157,7 @@ function LabourList() {
                           onClick={() =>
                             navigate("/attendenceView", {
                               state: {
-                                attendenceData: m,
+                                attendenceDataId: m._id,
                               },
                             })
                           }
@@ -176,7 +177,6 @@ function LabourList() {
                               })
                             ).then((delRes) => {
                               if (delRes.payload.status === 200) {
-                                console.log("Delete <>?");
                                 toast.success("delete sucessfully");
                               }
                             });
@@ -207,12 +207,16 @@ function LabourList() {
               onClose={(data) => {
                 if (data) {
                   const date = new Date();
-                  // date.setDate(date.getDate() - 3);
+                  date.setDate(date.getMonth() - 1);
+                  const OneMonthsAgo = moment().subtract(1, "months");
+
+                  console.log(OneMonthsAgo.format(), " <>?");
                   setOpenScanner({ flag: false, data });
                   dispatch(
                     markAttendence({
                       data,
-                      date: date.toISOString().split("T")[0],
+                      date: OneMonthsAgo.format().split("T")[0],
+                      // date: date.toISOString().split("T")[0],
                     })
                   );
                 }

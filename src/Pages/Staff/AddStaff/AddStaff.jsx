@@ -23,15 +23,12 @@ function AddStaff() {
   const StaffSlice = useSelector((state) => state.staff);
   const AuthSlice = useSelector((state) => state.login);
 
-  console.log(AuthSlice);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
 
   useEffect(() => {
     if (location.state?.staffEditData && staffData.userName === "") {
-      console.log(location.state.staffEditData);
       setStaffData(location.state.staffEditData);
     }
   }, []);

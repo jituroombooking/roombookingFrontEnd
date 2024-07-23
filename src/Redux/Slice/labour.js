@@ -111,6 +111,19 @@ export const updateLabour = createAsyncThunk(
       .catch((err) => rejectWithValue(err));
   }
 );
+export const getSingleLabour = createAsyncThunk(
+  "attendence/getSingleLabour",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: `${apiList.getSingleLabour}/${data.id}`,
+      method: "get",
+      // data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
 
 const labourSlice = createSlice({
   name: "labour",
@@ -118,6 +131,7 @@ const labourSlice = createSlice({
     loading: false,
     labourPost: null,
     labourData: null,
+    singleLabourData: null,
     error: "",
   },
   reducers: {},
@@ -251,7 +265,6 @@ const labourSlice = createSlice({
     });
     builder.addCase(deleteLabour.fulfilled, (state, { payload }) => {
       const existingArray = current(state);
-      console.log(payload.data, " <>? Redux");
       return {
         ...state,
         labourData: existingArray.labourData
@@ -268,6 +281,26 @@ const labourSlice = createSlice({
     });
     builder.addCase(deleteLabour.rejected, (state, { payload }) => {
       toast.error("Error in deletion");
+      return {
+        ...state,
+        error: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getSingleLabour.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        singleLabourData: payload.data,
+        loading: false,
+      };
+    });
+    builder.addCase(getSingleLabour.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(getSingleLabour.rejected, (state, { payload }) => {
       return {
         ...state,
         error: payload.data,

@@ -58,8 +58,6 @@ function EventMemory() {
     }
   };
 
-  console.log(EventSlice.eventMemory, " <>? MAIN");
-
   return (
     <div className={style.eventMemoryContainer}>
       {EventSlice.loading ? (

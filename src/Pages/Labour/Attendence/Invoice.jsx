@@ -9,6 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../../../util/Assets/Icon/room.png";
 import moment from "moment";
+import { months } from "../../../util/util";
 
 const Invoice = ({ data }) => {
   const reciept_data = {
@@ -17,6 +18,7 @@ const Invoice = ({ data }) => {
     empName: data.labourName,
     address: "739 Porter Avenue, Cade, Missouri, 1134",
     date: moment(new Date()).format("DD MMM, YYYY"),
+    salaryMonth: `${months[data.salaryMonth]} ${data.salaryYear}`,
     items: [
       {
         id: 1,
@@ -120,6 +122,9 @@ const Invoice = ({ data }) => {
           </Text>
           <Text style={styles.invoiceNumber}>
             Invoice number: {reciept_data.invoice_no}{" "}
+          </Text>
+          <Text style={styles.invoiceNumber}>
+            Salary Receipt for : {reciept_data.salaryMonth}{" "}
           </Text>
         </View>
         <View>

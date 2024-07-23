@@ -57,3 +57,12 @@
   margin-top: 16px;
   margin-bottom: 24px;
 }
+
+.actionIcon {
+  height: 24px;
+  cursor: pointer;
+  margin-right: 8px;
+  &:lest-child {
+    margin-right: 0;
+  }
+}

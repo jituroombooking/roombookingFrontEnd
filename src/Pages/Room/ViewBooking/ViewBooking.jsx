@@ -4,15 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 import { viewSingleRoom } from "../../../Redux/Slice/room";
+import deleteIcon from "../../../util/Assets/Icon/delete.png";
+import editIcon from "../../../util/Assets/Icon/edit.png";
+import Loading from "../../../Component/Loading/Loading";
 
 import style from "./viewBooking.module.scss";
-import Loading from "../../../Component/Loading/Loading";
 
 function ViewBooking() {
   const roomSlice = useSelector((state) => state.room);
+  const AuthSlice = useSelector((state) => state.login);
 
   const { state } = useLocation();
   const dispatch = useDispatch();
+
+  console.log(roomSlice.singleRoomData, " <>?");
 
   useEffect(() => {
     dispatch(viewSingleRoom(state.roomId));
@@ -75,6 +80,10 @@ function ViewBooking() {
                       </td>
                       <td className={style.tableHeaderRowItem}>Booking From</td>
                       <td className={style.tableHeaderRowItem}>Booking Till</td>
+                      {(AuthSlice?.loginData?.role === "superAdmin" ||
+                        AuthSlice?.loginData?.role === "admin") && (
+                        <td className={style.tableHeaderRowItem}>Action</td>
+                      )}
                     </tr>
                     {Array.isArray(rm.userBooking) ? (
                       <>
@@ -93,6 +102,36 @@ function ViewBooking() {
                             <td className={style.tableDataRowItem}>
                               {moment().format("YYYY/MM/DD", um.bookingTill)}
                             </td>
+                            {(AuthSlice?.loginData?.role === "superAdmin" ||
+                              AuthSlice?.loginData?.role === "admin") && (
+                              <td className={style.tableHeaderRowItem}>
+                                <img
+                                  alt="edit icon"
+                                  src={editIcon}
+                                  className={style.actionIcon}
+                                  onClick={() => {
+                                    // dispatch;
+                                  }}
+                                />
+                                <img
+                                  alt="delete icon"
+                                  src={deleteIcon}
+                                  className={style.actionIcon}
+                                  onClick={() => {
+                                    // dispatch(
+                                    //   deleteLabour({
+                                    //     labourId: m._id,
+                                    //     imgId: m.labourIdProof,
+                                    //   })
+                                    // ).then((delRes) => {
+                                    //   if (delRes.payload.status === 200) {
+                                    //     toast.success("delete sucessfully");
+                                    //   }
+                                    // });
+                                  }}
+                                />
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </>

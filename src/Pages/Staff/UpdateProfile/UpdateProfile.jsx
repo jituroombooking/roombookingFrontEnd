@@ -41,8 +41,6 @@ function UpdateProfile() {
     }
   }, []);
 
-  console.log(AuthSlice, " <>?");
-
   const updateProfileFun = () => {
     if (
       staffData.email === "" ||
@@ -66,7 +64,6 @@ function UpdateProfile() {
       setPasswordvalidation(true);
     } else {
       const { confirmPassword, ...restPasswordData } = passwordData;
-      console.log(restPasswordData, " <>?");
       dispatch(updatePassword({ _id: staffData._id, ...restPasswordData }));
     }
   };

@@ -14,6 +14,8 @@ import Invoice from "./Invoice";
 
 import style from "./attendence.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
+import { getSingleLabour } from "../../../Redux/Slice/labour";
+import moment from "moment";
 
 const styles = {
   container: {
@@ -48,6 +50,7 @@ function AttendenceView() {
     currentMonth: new Date().getMonth() + 1,
     currentYear: new Date().getFullYear(),
   });
+  const [currentLabourData, setCurrentLabourData] = useState({});
 
   const { state } = useLocation();
   const dispatch = useDispatch();
@@ -68,19 +71,28 @@ function AttendenceView() {
   const LabourSlice = useSelector((state) => state.labour);
 
   useEffect(() => {
-    dispatch(
-      getAttendence({ id: state.attendenceData._id, firstDay, lastDay })
-    );
+    dispatch(getAttendence({ id: state.attendenceDataId, firstDay, lastDay }));
   }, [monthDays.currentMonth]);
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    if (!LabourSlice.singleLabourData) {
+      dispatch(getSingleLabour({ id: state.attendenceDataId })).then(
+        (getRes) => {
+          if (getRes.payload.status === 200) {
+            setCurrentLabourData(getRes.payload.data);
+          }
+        }
+      );
+    }
+  }, [LabourSlice.singleLabourData]);
 
   const getSalaryForMonth = () => {
     let total = 0;
-    AttendenceSlice.attendenceData.forEach((fm) => {
-      if (fm.present === 1) {
-        total = total + state.attendenceData.earningPerDay;
-      }
-    });
+    Array.isArray(AttendenceSlice.attendenceData) &&
+      AttendenceSlice.attendenceData.forEach((fm) => {
+        if (fm.present === 1) {
+          total = total + currentLabourData?.earningPerDay;
+        }
+      });
     return total;
   };
 
@@ -102,26 +114,47 @@ function AttendenceView() {
     return { ...obj };
   });
 
-  const data =
-    Array.isArray(LabourSlice.labourData) &&
-    LabourSlice.labourData.filter((f) => {
-      console.log(f._id, "===", state.attendenceData._id, " <>?>");
-      return f._id === state.attendenceData._id;
+  const paymentMarking = () => {
+    // if (
+    //   !currentLabourData?.monthPaid.includes(
+    //     new Date(new Date().getFullYear(), monthDays.currentMonth - 1, 2)
+    //       .toISOString()
+    //       .split("T")[0]
+    //   ) ||
+    //   getSalaryForMonth() !== 0
+    // ) {
+    const year = new Date().getFullYear(),
+      month = monthDays.currentMonth;
+    const firstDay = new Date(year, month - 1, 2);
+    dispatch(
+      markAsPaid({
+        ...currentLabourData,
+        firstDay: firstDay.toISOString().split("T")[0],
+      })
+    ).then((markAttendenc) => {
+      if (markAttendenc.payload.status === 200) {
+        dispatch(getAttendence()).then((getAttendenceRes) => {
+          if (getAttendenceRes.payload.status === 200) {
+            toast.success("Marked Paid Successfully");
+            dispatch(
+              getSingleLabour({
+                id: state.attendenceDataId,
+              })
+            );
+          }
+        });
+      }
     });
+    // }
+  };
 
-  console.log(
-    state.attendenceData.monthPaid,
-    " <>??",
-    new Date(
-      new Date().getFullYear(),
-      monthDays.currentMonth - 1,
-      2
-    ).toISOString()
-  );
-
-  const ab = [];
-  ab.includes();
-
+  const paidStatus =
+    currentLabourData?.monthPaid > 0 &&
+    currentLabourData?.monthPaid.includes(
+      new Date(new Date().getFullYear(), monthDays.currentMonth - 1, 2)
+        .toISOString()
+        .split("T")[0]
+    );
   return (
     <div className={style.attendenceViewContainer}>
       {AttendenceSlice.loading ? (
@@ -135,40 +168,41 @@ function AttendenceView() {
                 <div className={style.labelHeading}>
                   Labour Name:
                   <span className={style.labelValue}>
-                    {state.attendenceData.labourName}
+                    {currentLabourData?.labourName}
                   </span>
                 </div>
                 <div className={style.labelHeading}>
                   Earning/Day:
                   <span className={style.labelValue}>
-                    {state.attendenceData.earningPerDay}
+                    {currentLabourData?.earningPerDay}
                   </span>
                 </div>
                 <div className={style.labelHeading}>
                   Job Title:
                   <span className={style.labelValue}>
-                    {state.attendenceData.labourPost}
+                    {currentLabourData?.labourPost}
                   </span>
                 </div>
                 <div className={style.labelHeading}>
                   Mobile Number:
                   <span className={style.labelValue}>
-                    {state.attendenceData.mobileNumber}
+                    {currentLabourData?.mobileNumber}
                   </span>
                 </div>
                 <div className={style.labelHeading}>
                   Paid:
                   <span className={style.labelValue}>
-                    {state.attendenceData.monthPaid.length > 0 &&
-                      state.attendenceData.monthPaid.find(
-                        (f) =>
-                          f ===
-                          new Date(
-                            new Date().getFullYear(),
-                            monthDays.currentMonth - 1,
-                            2
-                          ).toISOString()
-                      )}
+                    {currentLabourData?.monthPaid?.includes(
+                      new Date(
+                        new Date().getFullYear(),
+                        monthDays.currentMonth - 1,
+                        2
+                      )
+                        .toISOString()
+                        .split("T")[0]
+                    )
+                      ? "Paid"
+                      : "UnPaid"}
                   </span>
                 </div>
               </div>
@@ -180,10 +214,7 @@ function AttendenceView() {
                 </span>
                 Month:
                 <span className={style.labelValue}>
-                  {Array.isArray(AttendenceSlice.attendenceData)
-                    ? getSalaryForMonth()
-                    : 0}{" "}
-                  Rs.
+                  {getSalaryForMonth() || 0} Rs.
                 </span>
               </div>
               <div className={style.actionContainer}>
@@ -222,7 +253,7 @@ function AttendenceView() {
                         onClick={() =>
                           dispatch(
                             getAttendence({
-                              id: state.attendenceData._id,
+                              id: currentLabourData?._id,
                               firstDay,
                               lastDay,
                             })
@@ -232,73 +263,75 @@ function AttendenceView() {
                       />
                     </div>
                     <div>
-                      <div className={style.btnContainerTwo}>
-                        <BlobProvider
-                          document={
-                            <Invoice
-                              data={{
-                                ...state.attendenceData,
-                                salary: Array.isArray(
-                                  AttendenceSlice.attendenceData
-                                )
-                                  ? getSalaryForMonth()
-                                  : 0,
-                                noOfDays: Array.isArray(
-                                  AttendenceSlice.attendenceData
-                                )
-                                  ? AttendenceSlice.attendenceData.reduce(
-                                      (result, curr) => {
-                                        if (curr.present === 1) {
-                                          result += 1;
-                                        }
-                                        return result;
-                                      },
-                                      0
-                                    )
-                                  : 0,
-                              }}
-                            />
-                          }
-                        >
-                          {({ url, blob }) => (
-                            <a
-                              href={url}
-                              target="_blank"
-                              className={style.receiptbtn}
-                            >
-                              <span>Generate Payment receipt</span>
-                            </a>
+                      {getSalaryForMonth() !== 0 && (
+                        <div className={style.btnContainerTwo}>
+                          <BlobProvider
+                            document={
+                              <Invoice
+                                data={{
+                                  ...currentLabourData,
+                                  salaryMonth: monthDays.currentMonth,
+                                  salaryYear: monthDays.currentYear,
+                                  salary: getSalaryForMonth(),
+                                  noOfDays: Array.isArray(
+                                    AttendenceSlice.attendenceData
+                                  )
+                                    ? AttendenceSlice.attendenceData.reduce(
+                                        (result, curr) => {
+                                          if (curr.present === 1) {
+                                            result += 1;
+                                          }
+                                          return result;
+                                        },
+                                        0
+                                      )
+                                    : 0,
+                                }}
+                              />
+                            }
+                          >
+                            {({ url, blob }) => (
+                              <a
+                                href={url}
+                                target="_blank"
+                                className={style.receiptbtn}
+                              >
+                                <span>Generate Payment receipt</span>
+                              </a>
+                            )}
+                          </BlobProvider>
+                          {console.log(
+                            currentLabourData?.monthPaid?.includes(
+                              new Date(
+                                new Date().getFullYear(),
+                                monthDays.currentMonth - 1,
+                                2
+                              )
+                                .toISOString()
+                                .split("T")[0]
+                            ),
+                            " <>? JACK"
                           )}
-                        </BlobProvider>
-                        <button
-                          onClick={() => {
-                            const year = new Date().getFullYear(),
-                              month = new Date().getMonth() + 1;
-                            const firstDay = new Date(year, month - 1, 2);
-                            dispatch(
-                              markAsPaid({
-                                ...state.attendenceData,
-                                firstDay,
-                              })
-                            ).then((markAttendenc) => {
-                              if (markAttendenc.payload.status === 200) {
-                                dispatch(getAttendence()).then(
-                                  (getAttendenceRes) => {
-                                    if (
-                                      getAttendenceRes.payload.status === 200
-                                    ) {
-                                      toast.success("Marked Paid Successfully");
-                                    }
-                                  }
-                                );
-                              }
-                            });
-                          }}
-                          className={style.markAsPaidbtn}
-                        >
-                          Mark as Paid
-                        </button>
-                      </div>
+                          {!currentLabourData?.monthPaid?.includes(
+                            new Date(
+                              new Date().getFullYear(),
+                              monthDays.currentMonth - 1,
+                              2
+                            )
+                              .toISOString()
+                              .split("T")[0]
+                          ) && (
+                            <button
+                              onClick={() => {
+                                paymentMarking();
+                              }}
+                              className={`${style.markAsPaidbtn}`}
+                            >
+                              Mark as Paid
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -311,6 +344,16 @@ function AttendenceView() {
                 <div
                   className={`${style.dayContainer} ${
                     m.present && style.dayPresent
+                  } ${
+                    currentLabourData?.monthPaid?.includes(
+                      new Date(
+                        new Date().getFullYear(),
+                        monthDays.currentMonth - 1,
+                        2
+                      )
+                        .toISOString()
+                        .split("T")[0]
+                    ) && style.paid
                   }`}
                   key={`day-${m.date}`}
                 >
@@ -320,72 +363,13 @@ function AttendenceView() {
                     })}
                   </div>
                   <div>{i + 1}</div>
-                  <div>{m.date}</div>
+                  <div>{moment(m.date).format("DD/MM/YYYY")}</div>
                 </div>
               );
             })}
           </div>
         </React.Fragment>
       )}
-      {/* {receipt.flag && (
-        <div className={style.idProofParentContainer}>
-          <div className={style.idProofContainer}>
-            <div className={style.header}>
-              <img
-                src={CloseIcon}
-                className={style.idProof}
-                onClick={() => setReceipt({ flag: false, data: null })}
-              />
-            </div>
-            <Document>
-              <Page size="A4" style={styles.page}>
-                <View style={styles.titleContainer}>
-                  <Text style={styles.reportTitle}>TITLE</Text>
-                </View>
-                <View style={styles.invoiceNoContainer}>
-                  <Text style={styles.label}>Invoice No:</Text>
-                  <Text style={styles.invoiceDate}>001</Text>
-                </View>
-                <View style={styles.invoiceDateContainer}>
-                  <Text style={styles.label}>Date: </Text>
-                  <Text>20/08/1992</Text>
-                </View>
-                <View style={styles.headerContainer}>
-                  <Text style={styles.billTo}>Bill To:</Text>
-                  <Text>JACK</Text>
-                  <Text>address</Text>
-                  <Text>9876543211</Text>
-                  <Text>abc@gmail.com</Text>
-                </View>
-                <View style={styles.tableContainer}>
-                  <View style={styles.container}>
-                    <Text style={styles.description}>Item Description</Text>
-                    <Text style={styles.qty}>Qty</Text>
-                    <Text style={styles.rate}>@</Text>
-                    <Text style={styles.amount}>Amount</Text>
-                  </View>
-                  <View style={styles.row} key="!">
-                    <Text style={styles.description}>description</Text>
-                    <Text style={styles.qty}>23</Text>
-                    <Text style={styles.rate}>240</Text>
-                    <Text style={styles.amount}>10000</Text>
-                  </View>
-                  <View style={styles.row}>
-                    <Text style={styles.description}>TOTAL</Text>
-                    <Text style={styles.total}>20000</Text>
-                  </View>
-                  <View style={styles.titleContainer}>
-                    <Text style={styles.reportTitle}>
-                      Thank you for your business
-                    </Text>
-                  </View>
-                </View>
-              </Page>
-            </Document>
-            );
-          </div>
-        </div>
-      )} */}
     </div>
   );
 }

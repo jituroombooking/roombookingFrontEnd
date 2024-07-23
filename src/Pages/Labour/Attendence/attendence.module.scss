@@ -43,6 +43,7 @@
 .dayPresent {
   color: $whiteColor;
   background-color: $secondaryCardColor;
+  border: 1px solid !important;
 }
 .labelHeading {
   font-size: 20px;
@@ -63,6 +64,14 @@
 .arrowContainer {
   display: flex;
   justify-content: end;
+}
+.btnDisable {
+  background-color: $primarybgColor !important;
+  cursor: not-allowed;
+  color: black !important;
+}
+.paid {
+  background-color: $paidColro !important;
 }
 
 .btnContainerTwo {

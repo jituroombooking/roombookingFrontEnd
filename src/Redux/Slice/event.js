@@ -187,7 +187,6 @@ const eventSlice = createSlice({
     });
     builder.addCase(editEvent.fulfilled, (state, { payload }) => {
       const existingArray = current(state);
-      console.log(payload.data, " <>? SLICE");
       return {
         ...state,
         eventData: [
@@ -237,7 +236,6 @@ const eventSlice = createSlice({
     });
     builder.addCase(editEventMemory.fulfilled, (state, { payload }) => {
       const existingArray = current(state);
-      console.log(payload.data, " <>? SLICE");
       return {
         ...state,
         eventMemory: existingArray.eventMemory
@@ -267,7 +265,6 @@ const eventSlice = createSlice({
     });
     builder.addCase(deleteEventMemory.fulfilled, (state, { payload }) => {
       const existingArray = current(state);
-      console.log(payload.data, " <>? SLICE");
       return {
         ...state,
         eventMemory: existingArray.eventMemory
@@ -291,7 +288,6 @@ const eventSlice = createSlice({
     });
     builder.addCase(addEventMemory.fulfilled, (state, { payload }) => {
       const existingArray = current(state);
-      console.log(existingArray, " <>? SLICE");
       return {
         ...state,
         eventMemory: existingArray.eventMemory

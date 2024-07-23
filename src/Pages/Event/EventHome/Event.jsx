@@ -32,7 +32,6 @@ function DayEvent() {
   const dispatch = useDispatch();
 
   const submitEventData = () => {
-    console.log(eventData);
     dispatch(addEvent(eventData));
   };
 

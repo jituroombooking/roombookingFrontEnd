@@ -20,7 +20,6 @@ function RoomList() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(!roomsSlice.rooms, " <>? MAIN");
     // if (!roomsSlice.rooms) {
     dispatch(getRooms());
     // }
@@ -48,8 +47,6 @@ function RoomList() {
       />
     </div>
   );
-
-  console.log(roomsSlice, " <>?");
 
   return (
     <div className={style.roomContainer}>
