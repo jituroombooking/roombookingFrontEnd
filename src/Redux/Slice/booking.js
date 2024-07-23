@@ -37,7 +37,20 @@ export const deleteBookedRoom = createAsyncThunk(
       url: `${apiList.deleteBooking}/${data}`,
       method: "delete",
     };
-    return onAuthenticated(payload, true)
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const unAlottedMember = createAsyncThunk(
+  "booking/unAlottedMember",
+  (data, { rejectWithValue, fulfillWithValue }) => {
+    const payload = {
+      url: apiList.unAlottedMember,
+      method: "get",
+    };
+    return onAuthenticated(payload)
       .then((res) => fulfillWithValue(res))
       .catch((err) => rejectWithValue(err));
   }
@@ -48,6 +61,7 @@ const boookingSlice = createSlice({
   initialState: {
     loading: false,
     booking: null,
+    unAlottedMember: null,
     error: null,
   },
   reducers: {},
@@ -105,6 +119,26 @@ const boookingSlice = createSlice({
       };
     });
     builder.addCase(deleteBookedRoom.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        error: payload.data,
+      };
+    });
+    builder.addCase(unAlottedMember.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        unAlottedMember: payload.data,
+      };
+    });
+    builder.addCase(unAlottedMember.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(unAlottedMember.rejected, (state, { payload }) => {
       return {
         ...state,
         loading: false,

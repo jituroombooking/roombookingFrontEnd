@@ -83,6 +83,20 @@ export const viewSingleRoom = createAsyncThunk(
   }
 );
 
+export const editRoom = createAsyncThunk(
+  "room/editRoom",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.editRoom,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const roomSlice = createSlice({
   name: "room",
   initialState: {
@@ -204,6 +218,28 @@ const roomSlice = createSlice({
       };
     });
     builder.addCase(viewSingleRoom.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: true,
+        loading: false,
+        erromrMessage: payload.data,
+      };
+    });
+    builder.addCase(editRoom.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        singleRoomData: payload.data,
+        loading: false,
+        error: false,
+      };
+    });
+    builder.addCase(editRoom.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(editRoom.rejected, (state, { payload }) => {
       return {
         ...state,
         error: true,
