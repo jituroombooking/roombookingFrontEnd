@@ -56,6 +56,20 @@ export const unAlottedMember = createAsyncThunk(
   }
 );
 
+export const editRoom = createAsyncThunk(
+  "booking/editRoom",
+  (data, { rejectWithValue, fulfillWithValue }) => {
+    const payload = {
+      url: apiList.editRoom,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const boookingSlice = createSlice({
   name: "booking",
   initialState: {
@@ -139,6 +153,26 @@ const boookingSlice = createSlice({
       };
     });
     builder.addCase(unAlottedMember.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        error: payload.data,
+      };
+    });
+    builder.addCase(editRoom.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        unAlottedMember: payload.data,
+      };
+    });
+    builder.addCase(editRoom.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(editRoom.rejected, (state, { payload }) => {
       return {
         ...state,
         loading: false,

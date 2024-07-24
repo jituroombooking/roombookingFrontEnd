@@ -23,6 +23,7 @@ export const apiList = {
   getBookedRooms: `${roomBookingV1}/getRooms`,
   deleteBooking: `${roomBookingV1}/deleteBookedRoom`,
   unAlottedMember: `${roomBookingV1}/unAlottedMember`,
+  editRoom: `${roomBookingV1}/editRoom`,
   addLabour: `${labourV1}/add`,
   deleteLabour: `${labourV1}`,
   updateLabour: `${labourV1}/update`,

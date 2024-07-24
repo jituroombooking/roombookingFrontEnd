@@ -84,6 +84,9 @@
     background-color: white;
     padding: 16px;
     border-radius: 16px;
+    .pdfContainer {
+      height: 90%;
+    }
     .header {
       display: flex;
       align-items: center;
@@ -108,33 +111,60 @@
         .bookingFormContainer {
           display: flex;
           flex-direction: column;
-        }
-        .parentUserList {
-          .userList {
-            list-style: none;
-            .userItem {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              border: 1px solid;
-              padding: 10px 12px;
-              margin-bottom: 1px;
-              border-radius: 4px;
-              cursor: pointer;
-              .firstCol {
-                width: 100px;
+          padding: 24px;
+          .row {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            .rowItem {
+              margin-bottom: 16px;
+              .labelValue {
+                margin-bottom: 8px;
+                font-size: 20px;
               }
             }
-            .headerContainer {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
+          }
+        }
+        .parentUserList {
+          .userItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid;
+            padding: 10px 12px;
+            margin-bottom: 1px;
+            border-radius: 4px;
+            cursor: pointer;
+            .firstCol {
+              width: 100px;
             }
+          }
+          .headerContainer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .userList {
+            overflow-y: scroll;
+            list-style: none;
+            height: 440px;
           }
         }
       }
     }
   }
+}
+.pdfContainer {
+  height: 99%;
+}
+
+.labelContainer {
+  .countLabel {
+    font-size: 24px;
+  }
+}
+.react-select__option {
+  color: black;
 }
 .selectFilter {
   width: 240px;
@@ -215,7 +245,34 @@
   }
 }
 
-.selected {
+.selectedCell {
   background-color: $secondaryBtnColor;
   color: $whiteColor;
+}
+.popupHeader {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.block {
+  visibility: visible;
+  transition: all 0.3s linear 0s;
+}
+.hidden {
+  visibility: hidden;
+}
+.viewIdBtn {
+  margin-top: 8px;
+  background-color: $primaryBtnColor;
+}
+
+.closeHeader {
+  display: flex;
+  align-items: end;
+  justify-content: end;
+  .closeBtn {
+    margin-bottom: 8px;
+    background-color: $primaryBtnColor;
+  }
 }

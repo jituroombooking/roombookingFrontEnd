@@ -2,20 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import ReactDatePicker from "react-datepicker";
+import { toast, ToastContainer } from "react-toastify";
 
 import { editRoom, viewSingleRoom } from "../../../Redux/Slice/room";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import Loading from "../../../Component/Loading/Loading";
-import CloseIcon from "../../../util/Assets/Icon/cross.png";
-import { validatemobile } from "../../../util/util";
 import { unAlottedMember } from "../../../Redux/Slice/booking";
-import LeftArrow from "../../../util/Assets/Icon/leftArrow.png";
-import RightArrow from "../../../util/Assets/Icon/rightArrow.png";
+import EditPopup from "./EditPopup";
 
 import style from "./viewBooking.module.scss";
-import ReactSelect from "react-select";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = {
   flag: false,
@@ -58,9 +55,27 @@ function ViewBooking() {
 
   const userOption = Array.isArray(BookingSlice.unAlottedMember)
     ? BookingSlice.unAlottedMember.map((m) => {
-        return { value: m.fullName, lable: m.fullName };
+        return { value: m.fullName, label: m.fullName };
       })
     : [{ label: "", value: "" }];
+
+  const submitData = (data) => {
+    const { flag, ...restProps } = data;
+    dispatch(editRoom(restProps)).then((editRes) => {
+      if (editRes.payload.status === 200) {
+        dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
+          if (getRes.payload.status === 200) {
+            dispatch(unAlottedMember()).then((getResUnAlotted) => {
+              if (getResUnAlotted.payload.status === 200) {
+                toast.success("Room Edited Successfully");
+                setEdit({ ...initialState });
+              }
+            });
+          }
+        });
+      }
+    });
+  };
 
   return (
     <div className={style.viewBookingContainer}>
@@ -68,6 +83,7 @@ function ViewBooking() {
         <Loading />
       ) : (
         <div className={style.productDetialsContainer}>
+          <ToastContainer />
           {Array.isArray(roomSlice.singleRoomData?.roomData) &&
             roomSlice.singleRoomData?.roomData.map((rm) => (
               <>
@@ -153,8 +169,9 @@ function ViewBooking() {
                                       flag: true,
                                       roomId: rm._id,
                                       userId: um._id,
+                                      bhavanData: rm.bhavanData[0],
+                                      removePosition: i,
                                     });
-                                    // dispatch(editRoom());
                                   }}
                                 />
                                 <img
@@ -191,312 +208,21 @@ function ViewBooking() {
         </div>
       )}
       {edit.flag && (
-        <div className={style.idProofParentContainer}>
-          <div className={style.idProofContainer}>
-            <div className={style.header}>
-              <div className={style.newPersonContainer}>
-                <label htmlFor="newperson" className={style.label}>
-                  New Person
-                </label>
-                <input
-                  id="newperson"
-                  type="checkbox"
-                  className={style.newPersonInput}
-                  value={edit.newPerson}
-                  onChange={() =>
-                    setEdit({ ...edit, newPerson: !edit.newPerson })
-                  }
-                />
-              </div>
-              <img
-                src={CloseIcon}
-                className={style.idProof}
-                onClick={() => setEdit({ ...initialState })}
-              />
-            </div>
-            <div className={style.parentBookingFormContainer}>
-              {edit.newPerson ? (
-                <div className={style.bookingFormContainer}>
-                  <div className={style.formRow}>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>Full name*</labal>
-                      <div className={style.formItem}>
-                        <input
-                          className={style.eventInput}
-                          value={edit.fullName}
-                          onChange={(e) =>
-                            setEdit({
-                              ...edit,
-                              fullName: e.target.value,
-                            })
-                          }
-                        />
-                        {formvalidation && edit.fullName === "" && (
-                          <div className={style.formValidationError}>
-                            Full name is required.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>
-                        Family members*
-                      </labal>
-                      <div className={style.formItem}>
-                        <input
-                          type="number"
-                          className={style.eventInput}
-                          value={edit.familyMember}
-                          onChange={(e) =>
-                            setEdit({
-                              ...edit,
-                              familyMember: parseInt(e.target.value),
-                            })
-                          }
-                        />
-                        {formvalidation && edit.fullName === "" && (
-                          <div className={style.formValidationError}>
-                            Family members is required.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className={style.formRow}>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>
-                        Identity proof*
-                      </labal>
-                      <div className={style.formItem}>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/gif,image/png,application/pdf"
-                          className={style.eventInput}
-                          onChange={(e) =>
-                            setEdit({
-                              ...edit,
-                              identityProof: e.target.files[0],
-                            })
-                          }
-                        />
-                        {formvalidation && edit.identityProof === "" && (
-                          <div className={style.formValidationError}>
-                            Identity proof is required.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>Mobile number*</labal>
-                      <div className={style.formItem}>
-                        <input
-                          type="number"
-                          className={style.eventInput}
-                          value={edit.mobileNumber}
-                          onChange={(e) =>
-                            setEdit({
-                              ...edit,
-                              mobileNumber: e.target.value,
-                            })
-                          }
-                        />
-                        {formvalidation && edit.mobileNumber === "" && (
-                          <div className={style.formValidationError}>
-                            Mobile number is required.
-                          </div>
-                        )}
-                        {/* {edit.mobileNumber !== "" &&
-                  !validatemobile(edit.mobileNumber) && (
-                    <div className={style.formValidationError}>
-                      Mobile number is not valid.
-                    </div>
-                  )} */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className={style.formRow}>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>Booking from*</labal>
-                      <div className={style.formItem}>
-                        <ReactDatePicker
-                          selected={edit.bookingFrom}
-                          onChange={(date) =>
-                            setEdit({ ...edit, bookingFrom: date })
-                          }
-                        />
-                        {formvalidation && edit.bookingFrom === "" && (
-                          <div className={style.formValidationError}>
-                            Booking From date is required.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className={style.formItem}>
-                      <labal className={style.eventLabel}>Booking till*</labal>
-                      <div className={style.formItem}>
-                        <ReactDatePicker
-                          selected={edit.bookingTill}
-                          onChange={(date) =>
-                            setEdit({ ...edit, bookingTill: date })
-                          }
-                        />
-                        {formvalidation && edit.bookingTill === "" && (
-                          <div className={style.formValidationError}>
-                            Booking till date is required.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className={style.btnContainer}>
-                    <button
-                      className={style.resetBtn}
-                      // onClick={() => setEdit({ ...initialState })}
-                    >
-                      Reset
-                    </button>
-
-                    <button
-                      className={style.submitbtn}
-                      // onClick={() => submitBookingData()}
-                    >
-                      Book Room
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className={style.existingUserContainer}>
-                  <div className={style.bookingFormContainer}>
-                    <div className={style.formRow}>
-                      <div className={style.formItem}>
-                        <labal className={style.eventLabel}>
-                          Full name: {edit.fullName}
-                        </labal>
-                        <labal className={style.eventLabel}>
-                          Mobile Number: {edit.mobileNumber}
-                        </labal>
-                      </div>
-                      <div className={style.formItem}>
-                        <labal className={style.eventLabel}>
-                          Family members*
-                        </labal>
-                        <div className={style.formItem}>
-                          <input
-                            type="number"
-                            className={style.eventInput}
-                            value={edit.familyMember}
-                            onChange={(e) =>
-                              setEdit({
-                                ...edit,
-                                familyMember: parseInt(e.target.value),
-                              })
-                            }
-                          />
-                          {formvalidation && edit.fullName === "" && (
-                            <div className={style.formValidationError}>
-                              Family members is required.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className={style.btnContainer}>
-                      <button
-                        className={style.resetBtn}
-                        // onClick={() => setEdit({ ...initialState })}
-                      >
-                        Reset
-                      </button>
-
-                      <button
-                        className={style.submitbtn}
-                        // onClick={() => submitBookingData()}
-                      >
-                        Book Room
-                      </button>
-                    </div>
-                  </div>
-                  <div className={style.parentUserList}>
-                    <ul className={style.userList}>
-                      <div className={style.headerContainer}>
-                        <ReactSelect
-                          className={style.selectFilter}
-                          placeholder={
-                            selectFamily.value === ""
-                              ? "Family Names"
-                              : selectFamily.value
-                          }
-                          value={selectFamily.value}
-                          defaultValue={selectFamily.value}
-                          onChange={(e) => setSelectFamily(e)}
-                          options={userOption}
-                        />
-                        <div className={style.arrowContainer}>
-                          <img
-                            src={LeftArrow}
-                            onClick={() => {
-                              if (userCount.first > 1) {
-                                setUserCount({
-                                  first: userCount.first - 10,
-                                  last: userCount.last - 10,
-                                });
-                              }
-                            }}
-                            alt="month chnage icon"
-                            className={style.refreshIocn}
-                          />
-                          <img
-                            src={RightArrow}
-                            onClick={() => {
-                              if (
-                                BookingSlice.unAlottedMember.length >
-                                userCount.last
-                              ) {
-                                setUserCount({
-                                  first: userCount.first + 10,
-                                  last: userCount.last + 10,
-                                });
-                              }
-                            }}
-                            alt="month chnage icon"
-                            className={style.refreshIocn}
-                          />
-                        </div>
-                      </div>
-                      <div className={style.userItem}>
-                        <div className={style.firstCol}>Name</div>
-                        <div className={style.secondCol}>Family Member</div>
-                        <div className={style.thirdCol}>Member Allotted</div>
-                      </div>
-                      {Array.isArray(BookingSlice.unAlottedMember) &&
-                        BookingSlice.unAlottedMember
-                          .slice(userCount.first, userCount.last)
-                          .map((m) => (
-                            <li
-                              className={`${style.userItem} ${
-                                selected === m._id && style.selected
-                              }`}
-                              onClick={() => {
-                                setSelected(m._id);
-                                setEdit({ ...edit, ...m });
-                              }}
-                            >
-                              <div className={style.firstCol}>{m.fullName}</div>
-                              <div className={style.secondCol}>
-                                {m.familyMember}
-                              </div>
-                              <div className={style.thirdCol}>
-                                {m.memberAllotted}
-                              </div>
-                            </li>
-                          ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <EditPopup
+          setEdit={setEdit}
+          edit={edit}
+          submitData={submitData}
+          reInitilize={() => setEdit({ ...initialState })}
+          formvalidation={formvalidation}
+          setSelectFamily={setSelectFamily}
+          selectFamily={selectFamily}
+          userOption={userOption}
+          unAlottedMember={
+            Array.isArray(BookingSlice.unAlottedMember)
+              ? BookingSlice.unAlottedMember
+              : []
+          }
+        />
       )}
     </div>
   );

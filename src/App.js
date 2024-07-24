@@ -52,8 +52,6 @@ function App() {
 
   const { pathname } = useLocation();
 
-  console.log(authData, " <>?");
-
   return (
     <div className={style.mainApp}>
       {authData?.loginData &&
