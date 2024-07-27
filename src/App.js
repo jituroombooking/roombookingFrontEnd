@@ -1,13 +1,12 @@
 import React, { Suspense, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import Header from "./Component/Header/Header";
 import Loading from "./Component/Loading/Loading";
 
 import style from "./index.module.scss";
-import PageTitle from "./Component/PageTitle/PageTitle";
 import LeftNavigation from "./Component/LeftNavigation/LeftNavigation";
-import { useSelector } from "react-redux";
 
 const Login = React.lazy(() => import("./Pages/Login/Login"));
 const Home = React.lazy(() => import("./Pages/Home/Home"));
