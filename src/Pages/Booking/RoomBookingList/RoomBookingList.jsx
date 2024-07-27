@@ -3,104 +3,45 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import ReactSelect from "react-select";
+import ToggleButton from "react-toggle-button";
 
 import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
-import { getBookedRooms } from "../../../Redux/Slice/booking";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
-import CloseIcon from "../../../util/Assets/Icon/cross.png";
+import {
+  deleteBookedRoom,
+  getBookedRooms,
+  unAlottedMember,
+} from "../../../Redux/Slice/booking";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 import ReactTable from "../../../Component/ReactTable/ReactTable";
+import RightArrow from "../../../util/Assets/Icon/next.png";
+import DownArrow from "../../../util/Assets/Icon/down.png";
+import editIcon from "../../../util/Assets/Icon/edit.png";
 
 import style from "./roomBookingList.module.scss";
+import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
+
+const initialState = { flag: false, id: "" };
 
 function RoomBookingList() {
-  const [idProof, setIdproof] = useState({ flag: false, id: "" });
-  const [selectedId, setSelectedId] = useState([]);
   const [selectedName, setSelectedName] = useState({ value: "", label: "" });
   const [selectedBhavan, setSelectedBhavan] = useState({
     value: "",
     label: "",
   });
+  const [idProof, setIdproof] = useState({ ...initialState });
+  const [alottedMemberFlag, setAlottedMemberFlag] = useState(true);
 
   const RoomBookingSlice = useSelector((state) => state.booking);
   const AuthDataSlice = useSelector((state) => state.login);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-  const columns = React.useMemo(
+  const expandedRowColumn = React.useMemo(
     () => [
-      {
-        Header: "Select",
-        columns: [
-          {
-            id: "checkbox",
-            Header: (
-              <div className={style.headerInput}>
-                <input className={style.selectInput} type="checkbox" />
-              </div>
-            ),
-            accessor: (data) => (
-              <div className={style.headerInput}>
-                <input
-                  className={style.selectInput}
-                  type="checkbox"
-                  value={data._id}
-                  onClick={() => setSelectedId((state) => [...state, data.id])}
-                />
-              </div>
-            ),
-          },
-        ],
-      },
-      {
-        Header: "Guest Detials",
-        columns: [
-          {
-            id: "guestName",
-            Header: "Name",
-            accessor: (data) => (
-              <div className={style.mainText}>
-                {data.userBookingData.fullName}
-              </div>
-            ),
-            width: "10%",
-          },
-          {
-            Header: "Total",
-            accessor: (data) => <div>{data.userBookingData.familyMember}</div>,
-            width: 90,
-          },
-          {
-            Header: "Alotted",
-            accessor: (data) => (
-              <div>{data.userBookingData.memberAllotted}</div>
-            ),
-            width: 90,
-          },
-
-          {
-            Header: "Mobile Number	",
-            accessor: (data) => <div>{data.userBookingData.mobileNumber}</div>,
-          },
-          {
-            Header: "ID Proof",
-            accessor: (data) => (
-              <img
-                src={IDProofIcon}
-                className={style.idProof}
-                onClick={() =>
-                  setIdproof({
-                    flag: true,
-                    id: data.userBookingData.identityProof,
-                  })
-                }
-              />
-            ),
-          },
-        ],
-      },
       {
         Header: "Bhavan",
         columns: [
@@ -167,6 +108,207 @@ function RoomBookingList() {
           },
         ],
       },
+    ],
+    []
+  );
+
+  const unAlottedColumns = React.useMemo(
+    () => [
+      {
+        Header: "Guest Detials",
+        id: "guestDetials",
+        columns: [
+          {
+            id: "srno",
+            Header: "Sr #",
+            accessor: (data, index) => index + 1,
+            width: "10%",
+          },
+          {
+            id: "name",
+            Header: "Name",
+            accessor: (data) => <div>{data.fullName}</div>,
+            width: 90,
+          },
+          {
+            id: "total",
+            Header: "Total",
+            accessor: (data) => <div>{data.familyMember}</div>,
+            width: 90,
+          },
+          {
+            id: "alotted",
+            Header: "Alotted",
+            accessor: (data) => <div>{data.memberAllotted}</div>,
+            width: 90,
+          },
+          {
+            id: "mobileNumber",
+            Header: "Mobile Number	",
+            accessor: (data) => <div>{data.mobileNumber}</div>,
+          },
+          {
+            id: "idProof",
+            Header: "ID Proof",
+            accessor: (data) => (
+              <img
+                src={IDProofIcon}
+                className={style.idProof}
+                onClick={() =>
+                  setIdproof({
+                    flag: true,
+                    id: data.identityProof,
+                  })
+                }
+              />
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Booking",
+        id: "booking",
+        columns: [
+          {
+            id: "from",
+            Header: "From",
+            accessor: (data) => (
+              <span>{moment(data.bookingFrom).format("DD MMM YYYY")}</span>
+            ),
+          },
+          {
+            id: "till",
+            Header: "Till",
+            accessor: (data) => (
+              <span>{moment(data.bookingTill).format("DD MMM YYYY")}</span>
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Action",
+        id: "action",
+        columns: [
+          {
+            id: "edit",
+            Header: "",
+            accessor: (data) => <span>Edit</span>,
+          },
+          {
+            id: "delete",
+            Header: "",
+            accessor: (data) => <span>Delete</span>,
+          },
+        ],
+      },
+    ],
+    []
+  );
+
+  const alottedColumns = React.useMemo(
+    () => [
+      {
+        id: "expanderParentRow",
+        Header: "Bhavan Data",
+        columns: [
+          {
+            // Build our expander column
+            id: "expander", // Make sure it has an ID
+            Header: ({ getToggleAllRowsExpandedProps, isAllRowsExpanded }) => (
+              <span {...getToggleAllRowsExpandedProps()}>
+                {isAllRowsExpanded ? (
+                  <img src={DownArrow} className={style.idProof} />
+                ) : (
+                  <img src={RightArrow} className={style.idProof} />
+                )}
+              </span>
+            ),
+            Cell: ({ row }) => (
+              // Use Cell to render an expander for each row.
+              // We can use the getToggleRowExpandedProps prop-getter
+              // to build the expander.
+              <span {...row.getToggleRowExpandedProps()}>
+                {row.isExpanded ? (
+                  <img src={DownArrow} className={style.idProof} />
+                ) : (
+                  <img src={RightArrow} className={style.idProof} />
+                )}
+              </span>
+            ),
+          },
+        ],
+      },
+      {
+        Header: "Select",
+        columns: [
+          {
+            id: "checkbox",
+            Header: (
+              <div className={style.headerInput}>
+                <input className={style.selectInput} type="checkbox" />
+              </div>
+            ),
+            accessor: (data) => (
+              <div className={style.headerInput}>
+                <input
+                  className={style.selectInput}
+                  type="checkbox"
+                  value={data._id}
+                  //   onClick={() => setSelectedId((state) => [...state, data.id])}
+                />
+              </div>
+            ),
+          },
+        ],
+      },
+
+      {
+        Header: "Guest Detials",
+        columns: [
+          {
+            id: "guestName",
+            Header: "Name",
+            accessor: (data) => (
+              <div className={style.mainText}>
+                {data.userBookingData.fullName}
+              </div>
+            ),
+            width: "10%",
+          },
+          {
+            Header: "Total",
+            accessor: (data) => <div>{data.userBookingData.familyMember}</div>,
+            width: 90,
+          },
+          {
+            Header: "Alotted",
+            accessor: (data) => (
+              <div>{data.userBookingData.memberAllotted}</div>
+            ),
+            width: 90,
+          },
+
+          {
+            Header: "Mobile Number	",
+            accessor: (data) => <div>{data.userBookingData.mobileNumber}</div>,
+          },
+          {
+            Header: "ID Proof",
+            accessor: (data) => (
+              <img
+                src={IDProofIcon}
+                className={style.idProof}
+                onClick={() =>
+                  setIdproof({
+                    flag: true,
+                    id: data.userBookingData.identityProof,
+                  })
+                }
+              />
+            ),
+          },
+        ],
+      },
       {
         Header: "Booking",
         columns: [
@@ -188,6 +330,45 @@ function RoomBookingList() {
           },
         ],
       },
+      {
+        id: "actionCol",
+        Header: "Action",
+        isVisiable: false,
+        columns: [
+          {
+            id: "delete",
+            Header: "Delete",
+
+            accessor: (data) => (
+              <img
+                alt="delete icon"
+                src={deleteIcon}
+                className={style.idProof}
+                // onClick={() => dispatch(deleteEvent(m._id))}
+              />
+            ),
+          },
+          {
+            id: "edit",
+            Header: "Edit",
+            accessor: () => (
+              <img
+                alt="edit icon"
+                src={editIcon}
+                className={style.idProof}
+                // onClick={() =>
+                //   navigate("/addEvent", {
+                //     state: {
+                //       pageTitle: "Edit Event",
+                //       editEventData: m,
+                //     },
+                //   })
+                // }
+              />
+            ),
+          },
+        ],
+      },
     ],
     []
   );
@@ -198,12 +379,43 @@ function RoomBookingList() {
     }
   }, [RoomBookingSlice.booking]);
 
+  useEffect(() => {
+    if (!RoomBookingSlice.unAlottedMember) {
+      dispatch(unAlottedMember());
+    }
+  }, []);
+
+  const renderRowSubComponent = React.useCallback(({ row }) => {
+    console.log(row, " <>?");
+    return (
+      <ReactTable
+        columns={expandedRowColumn}
+        data={[RoomBookingSlice.booking[row.index]]}
+      />
+    );
+  }, []);
+
+  if (RoomBookingSlice.loading) {
+    return <Loading />;
+  }
+
   const nameOption =
     (Array.isArray(RoomBookingSlice.booking) &&
       RoomBookingSlice.booking.map((m) => {
         return {
           label: m.userBookingData.fullName,
           value: m.userBookingData.fullName,
+        };
+      })) ||
+    [];
+
+  const unAlottedNameOption =
+    (Array.isArray(RoomBookingSlice.unAlottedMember) &&
+      RoomBookingSlice.unAlottedMember.map((m) => {
+        console.log(m, " <>?");
+        return {
+          label: m.fullName,
+          value: m.fullName,
         };
       })) ||
     [];
@@ -224,35 +436,38 @@ function RoomBookingList() {
       });
     });
 
-  console.log(bhavanOption, " <>?");
-
-  const filterData =
+  const filterAlottedData =
     selectedName.value !== ""
       ? RoomBookingSlice.booking.filter(
           (f) => f.userBookingData.fullName === selectedName.value
         )
       : RoomBookingSlice.booking;
 
+  console.log(RoomBookingSlice.unAlottedMember, " <>?");
+  const filterUnAlottedData =
+    selectedName.value !== ""
+      ? RoomBookingSlice.unAlottedMember.filter(
+          (f) => f.fullName === selectedName.value
+        )
+      : RoomBookingSlice.unAlottedMember;
+
   return (
     <div className={style.roomBookingContainer}>
-      {RoomBookingSlice.loading ? (
-        <Loading />
-      ) : (
-        <div>
-          <div className={`${style.roomHeading} `}>
-            <div className={style.filterContainer}>
-              <ReactSelect
-                className={style.selectFilter}
-                placeholder={
-                  selectedName.value === ""
-                    ? "Filter Names"
-                    : selectedName.value
-                }
-                value={selectedName.value}
-                defaultValue={selectedBhavan.value}
-                onChange={(e) => setSelectedName(e)}
-                options={nameOption}
-              />
+      <div>
+        <div className={`${style.roomHeading} `}>
+          <PageTitle />
+          <div className={style.actionContainer}>
+            <ReactSelect
+              className={style.selectFilter}
+              placeholder={
+                selectedName.value === "" ? "Filter Names" : selectedName.value
+              }
+              value={selectedName.value}
+              defaultValue={selectedBhavan.value}
+              onChange={(e) => setSelectedName(e)}
+              options={alottedMemberFlag ? nameOption : unAlottedNameOption}
+            />
+            {alottedMemberFlag && (
               <ReactSelect
                 className={style.selectFilter}
                 placeholder="Filter Bhavan "
@@ -261,171 +476,74 @@ function RoomBookingList() {
                 onChange={(e) => setSelectedBhavan(e)}
                 options={bhavanOption}
               />
-
-              <button
-                className={style.clearFilter}
-                onClick={() => {
-                  setSelectedName({ value: "", label: "" });
-                  setSelectedBhavan({ value: "", label: "" });
-                }}
-              >
-                Clear Filter
-              </button>
-            </div>
-            <div className={style.actionContainer}>
-              <img
-                src={deleteIcon}
-                className={style.refreshIocn}
-                onClick={() => console.log()}
-              />
-              <img
-                src={refreshIcon}
-                onClick={() => dispatch(getBookedRooms())}
-                className={style.refreshIocn}
-              />
-            </div>
-          </div>
-          <div className={style.roomBookingTableContainer}>
-            {Array.isArray(RoomBookingSlice.booking) && (
-              <ReactTable
-                nameFilter={selectedName.value}
-                key="reactTable"
-                columns={columns}
-                data={filterData}
-              />
             )}
-            {/* {Array.isArray(RoomBookingSlice.booking) && (
-              <table className={style.roomTable}>
-                <tr className={style.tableHeaderRow}>
-                  <th
-                    scope="col"
-                    rowspan="2"
-                    className={style.tableHeaderRowItem}
-                  >
-                    Sr #
-                  </th>
-                  <th
-                    scope="col"
-                    rowspan="2"
-                    className={style.tableHeaderRowItem}
-                  >
-                    Booking Name
-                  </th>
-                  <th colspan="2" className={style.tableHeaderRowItem}>
-                    Members
-                  </th>
-                  <th
-                    scope="col"
-                    rowspan="2"
-                    className={style.tableHeaderRowItem}
-                  >
-                    Mobile Number
-                  </th>
-                  <th className={style.tableHeaderRowItem}>Id Proof</th>
-                  <th
-                    scope="col"
-                    rowspan="2"
-                    className={style.tableHeaderRowItem}
-                  >
-                    Booking From
-                  </th>
-                  <th
-                    scope="col"
-                    rowspan="2"
-                    className={style.tableHeaderRowItem}
-                  >
-                    Booking Till
-                  </th>
-                  {AuthDataSlice.loginData.role === "superAdmin" && (
-                    <th className={style.tableHeaderRowItem}>Action</th>
-                  )}
-                </tr>
-                <tr>
-                  <th
-                    scope="col"
-                    className={`${style.tableHeaderRowItem} ${style.extraCol}`}
-                  >
-                    Total
-                  </th>
-                  <th
-                    scope="col"
-                    className={`${style.tableHeaderRowItem} ${style.extraCol}`}
-                  >
-                    Alloted
-                  </th>
-                </tr>
-                {RoomBookingSlice.booking.map((m, i) => (
-                  <tr className={style.tableDataRow} key={m._id}>
-                    <td className={style.tableDataRowItem}>{i + 1}</td>
-                    <td className={style.tableDataRowItem}>{m.fullName}</td>
-                    <td className={style.tableDataRowItem}>{m.familyMember}</td>
-                    <td className={style.tableDataRowItem}>
-                      {m.memberAllotted}
-                    </td>
-                    <td className={style.tableDataRowItem}>{m.mobileNumber}</td>
-                    <td className={style.tableDataRowItem}>
-                      <img
-                        src={IDProofIcon}
-                        className={style.idProof}
-                        onClick={() =>
-                          setIdproof({ flag: true, id: m.identityProof })
-                        }
-                      />
-                    </td>
-                    <td className={style.tableDataRowItem}>
-                      {moment().format("YYYY/MM/DD", m.bookingFrom)}
-                    </td>
-                    <td className={style.tableDataRowItem}>
-                      {moment().format("YYYY/MM/DD", m.bookingTill)}
-                    </td>
-                    {AuthDataSlice.loginData.role === "superAdmin" && (
-                      <td className={style.tableDataRowItem}>
-                        <img
-                          src={deleteIcon}
-                          onClick={() => dispatch(deleteBookedRoom(m._id))}
-                          className={style.actionIcon}
-                        />
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </table>
-            )} */}
-            {Array.isArray(RoomBookingSlice.booking) &&
-              RoomBookingSlice.booking.length === 0 && (
-                <div className={style.noData}>No Data !</div>
-              )}
+
+            <button
+              className={style.clearFilter}
+              onClick={() => {
+                setSelectedName({ value: "", label: "" });
+                setSelectedBhavan({ value: "", label: "" });
+              }}
+            >
+              Clear Filter
+            </button>
+            <img
+              src={refreshIcon}
+              onClick={() => {
+                dispatch(unAlottedMember());
+                dispatch(getBookedRooms());
+              }}
+              className={style.refreshIocn}
+            />
           </div>
         </div>
-      )}
-      {idProof.flag && (
-        <div className={style.idProofParentContainer}>
-          <div className={style.idProofContainer}>
-            <div className={style.header}>
-              <img
-                src={CloseIcon}
-                className={style.idProof}
-                onClick={() => setIdproof({ flag: false, id: "" })}
-              />
-            </div>
-            <div>
-              {idProof.id.split(".").pop() === "pdf" ? (
-                <embed
-                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof.id}`}
-                  type="application/pdf"
-                  width="100%"
-                  height="600px"
-                ></embed>
-              ) : (
-                <img
-                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof.id}`}
-                  alt="userId"
-                  className={style.userIdImg}
+        <div className={style.subheading}>
+          <ToggleButton
+            inactiveLabel=""
+            activeLabel=""
+            value={alottedMemberFlag}
+            onToggle={() => {
+              setAlottedMemberFlag(!alottedMemberFlag);
+            }}
+          />
+          <label className={style.alottedLabel}>
+            {alottedMemberFlag ? "Alotted" : "Un-Alotted"} Member Table
+          </label>
+        </div>
+        <div className={style.roomBookingTableContainer}>
+          {alottedMemberFlag ? (
+            <>
+              {Array.isArray(RoomBookingSlice.booking) && (
+                <ReactTable
+                  data={filterAlottedData}
+                  columns={alottedColumns}
+                  key="alottedTable"
+                  renderRowSubComponent={renderRowSubComponent}
                 />
               )}
-            </div>
-          </div>
+            </>
+          ) : (
+            <>
+              {Array.isArray(RoomBookingSlice.unAlottedMember) && (
+                <ReactTable
+                  columns={unAlottedColumns}
+                  data={filterUnAlottedData}
+                />
+              )}
+            </>
+          )}
+
+          {Array.isArray(RoomBookingSlice.booking) &&
+            RoomBookingSlice.booking.length === 0 && (
+              <div className={style.noData}>No Data !</div>
+            )}
         </div>
+      </div>
+      {idProof.flag && (
+        <ViewIdProof
+          idProof={idProof.id}
+          onClose={() => setIdproof({ ...initialState })}
+        />
       )}
     </div>
   );

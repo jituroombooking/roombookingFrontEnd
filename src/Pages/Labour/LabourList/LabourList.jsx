@@ -23,6 +23,7 @@ import CloseIcon from "../../../util/Assets/Icon/cross.png";
 import style from "./labourList.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
 import moment from "moment";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -63,28 +64,31 @@ function LabourList() {
   return (
     <div className={style.labourContainer}>
       <div className={style.roomHeading}>
-        <img
-          src={QrScaan}
-          className={style.refreshIocn}
-          onClick={() => setOpenScanner({ flag: true })}
-        />
-        <img
-          src={refreshIcon}
-          onClick={() => dispatch(getLabourList())}
-          className={style.refreshIocn}
-        />
-        <button
-          className={style.addRoomBtn}
-          onClick={() => navigate("/addLabourPost")}
-        >
-          Add Labour Post
-        </button>
-        <button
-          className={style.addRoomBtn}
-          onClick={() => navigate("/addLabour")}
-        >
-          Add Labour
-        </button>
+        <PageTitle />
+        <div className={style.actionContainer}>
+          <img
+            src={QrScaan}
+            className={style.refreshIocn}
+            onClick={() => setOpenScanner({ flag: true })}
+          />
+          <img
+            src={refreshIcon}
+            onClick={() => dispatch(getLabourList())}
+            className={style.refreshIocn}
+          />
+          <button
+            className={style.addRoomBtn}
+            onClick={() => navigate("/addLabourPost")}
+          >
+            Add Labour Post
+          </button>
+          <button
+            className={style.addRoomBtn}
+            onClick={() => navigate("/addLabour")}
+          >
+            Add Labour
+          </button>
+        </div>
       </div>
       <div className={style.tableContainer}>
         {LabourSlice.loading ? (
@@ -157,6 +161,7 @@ function LabourList() {
                           onClick={() =>
                             navigate("/attendenceView", {
                               state: {
+                                pageTitle: "Attendence View",
                                 attendenceDataId: m._id,
                               },
                             })
@@ -206,17 +211,12 @@ function LabourList() {
             <Scanner
               onClose={(data) => {
                 if (data) {
-                  const date = new Date();
-                  date.setDate(date.getMonth() - 1);
-                  const OneMonthsAgo = moment().subtract(1, "months");
-
-                  console.log(OneMonthsAgo.format(), " <>?");
+                  const momentDate = moment();
                   setOpenScanner({ flag: false, data });
                   dispatch(
                     markAttendence({
                       data,
-                      date: OneMonthsAgo.format().split("T")[0],
-                      // date: date.toISOString().split("T")[0],
+                      date: momentDate.format().split("T")[0],
                     })
                   );
                 }

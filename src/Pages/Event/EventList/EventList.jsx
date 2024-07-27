@@ -10,6 +10,7 @@ import Loading from "../../../Component/Loading/Loading";
 
 import style from "./eventList.module.scss";
 import moment from "moment";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 function EventList({ showHeading = true }) {
   const EventSlice = useSelector((state) => state.event);
@@ -32,23 +33,26 @@ function EventList({ showHeading = true }) {
         <>
           {showHeading && (
             <div className={style.roomHeading}>
-              <img
-                src={refreshIcon}
-                onClick={() => dispatch(getEventData())}
-                className={style.refreshIocn}
-              />
-              <button
-                className={style.addRoomBtn}
-                onClick={() => navigate("/addEventMemories")}
-              >
-                Add Memories
-              </button>
-              <button
-                className={style.addRoomBtn}
-                onClick={() => navigate("/addEvent")}
-              >
-                Add Event
-              </button>
+              <PageTitle />
+              <div className={style.actionContainer}>
+                <img
+                  src={refreshIcon}
+                  onClick={() => dispatch(getEventData())}
+                  className={style.refreshIocn}
+                />
+                <button
+                  className={style.addRoomBtn}
+                  onClick={() => navigate("/addEventMemories")}
+                >
+                  Add Memories
+                </button>
+                <button
+                  className={style.addRoomBtn}
+                  onClick={() => navigate("/addEvent")}
+                >
+                  Add Event
+                </button>
+              </div>
             </div>
           )}
           <div className={style.labourTableContainer}>
@@ -85,6 +89,7 @@ function EventList({ showHeading = true }) {
                             onClick={() =>
                               navigate("/addEvent", {
                                 state: {
+                                  pageTitle: "Edit Event",
                                   editEventData: m,
                                 },
                               })

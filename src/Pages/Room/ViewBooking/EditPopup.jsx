@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import ReactSelect from "react-select";
+import moment from "moment";
+import ReactDatePicker from "react-datepicker";
 
-import LeftArrow from "../../../util/Assets/Icon/leftArrow.png";
-import RightArrow from "../../../util/Assets/Icon/rightArrow.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
 import style from "./viewBooking.module.scss";
-import moment from "moment";
+import "react-datepicker/dist/react-datepicker.css";
 
 function EditPopup({
   setEdit,
@@ -18,6 +18,7 @@ function EditPopup({
   userOption,
   unAlottedMember,
   submitData,
+  submitNewMemberData,
 }) {
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
@@ -28,21 +29,31 @@ function EditPopup({
     submitData(edit);
   };
 
+  const submitBookingData = () => {
+    submitNewMemberData(edit);
+  };
+
   return (
     <div className={style.idProofParentContainer}>
       <div className={style.idProofContainer}>
         <div className={style.header}>
           <div className={style.newPersonContainer}>
-            <label htmlFor="newperson" className={style.label}>
-              New Person
-            </label>
-            <input
-              id="newperson"
-              type="checkbox"
-              className={style.newPersonInput}
-              value={edit.newPerson}
-              onChange={() => setEdit({ ...edit, newPerson: !edit.newPerson })}
-            />
+            {!edit.newPerson && (
+              <>
+                <label htmlFor="newperson" className={style.label}>
+                  New Person
+                </label>
+                <input
+                  id="newperson"
+                  type="checkbox"
+                  className={style.newPersonInput}
+                  value={edit.newPerson}
+                  onChange={() =>
+                    setEdit({ ...edit, newPerson: !edit.newPerson })
+                  }
+                />
+              </>
+            )}
           </div>
           <img
             src={CloseIcon}
@@ -75,12 +86,20 @@ function EditPopup({
                   </div>
                 </div>
                 <div className={style.formItem}>
-                  <labal className={style.eventLabel}>Family members*</labal>
+                  <labal className={style.eventLabel}>
+                    Family members* (Max {edit.emptyBed} member can be alotted)
+                  </labal>
                   <div className={style.formItem}>
                     <input
                       type="number"
                       className={style.eventInput}
-                      value={edit.familyMember}
+                      value={!edit.emptyBed ? 1 : edit.familyMember}
+                      disabled={!edit.emptyBed}
+                      onBlur={(e) => {
+                        if (parseInt(e.target.value) > edit.emptyBed) {
+                          setEdit({ ...edit, familyMember: edit.emptyBed });
+                        }
+                      }}
                       onChange={(e) =>
                         setEdit({
                           ...edit,
@@ -150,7 +169,7 @@ function EditPopup({
                 <div className={style.formItem}>
                   <labal className={style.eventLabel}>Booking from*</labal>
                   <div className={style.formItem}>
-                    {/* <ReactDatePicker
+                    <ReactDatePicker
                       selected={edit.bookingFrom}
                       onChange={(date) =>
                         setEdit({ ...edit, bookingFrom: date })
@@ -160,13 +179,13 @@ function EditPopup({
                       <div className={style.formValidationError}>
                         Booking From date is required.
                       </div>
-                    )} */}
+                    )}
                   </div>
                 </div>
                 <div className={style.formItem}>
                   <labal className={style.eventLabel}>Booking till*</labal>
                   <div className={style.formItem}>
-                    {/* <ReactDatePicker
+                    <ReactDatePicker
                       selected={edit.bookingTill}
                       onChange={(date) =>
                         setEdit({ ...edit, bookingTill: date })
@@ -176,10 +195,11 @@ function EditPopup({
                       <div className={style.formValidationError}>
                         Booking till date is required.
                       </div>
-                    )} */}
+                    )}
                   </div>
                 </div>
               </div>
+              <div className={style.formDevider} />
               <div className={style.btnContainer}>
                 <button
                   className={style.resetBtn}
@@ -190,7 +210,7 @@ function EditPopup({
 
                 <button
                   className={style.submitbtn}
-                  // onClick={() => submitBookingData()}
+                  onClick={() => submitBookingData()}
                 >
                   Book Room
                 </button>
@@ -213,7 +233,9 @@ function EditPopup({
                   <div className={style.rowItem}>
                     <label className={style.labelValue}>
                       <button
-                        className={style.viewIdBtn}
+                        className={`${style.viewIdBtn} ${
+                          !edit.identityProof && style.btnDisable
+                        }`}
                         onClick={() => {
                           console.log("again clicked <>?");
                           edit.identityProof && setOpen(true);
@@ -283,7 +305,7 @@ function EditPopup({
                   <div className={style.rowItem}>
                     <label className={style.labelValue}>
                       One Family Member from "{edit.fullName}" will be added to{" "}
-                      {edit.bhavanData.bhavanName}
+                      {edit.bhavanData.bhavanName} Bhavan
                     </label>
                   </div>
                 </div>

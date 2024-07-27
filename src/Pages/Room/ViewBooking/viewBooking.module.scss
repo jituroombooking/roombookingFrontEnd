@@ -17,6 +17,18 @@
         font-size: 20px;
       }
     }
+    .addMemberBtnContainer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .addMemberBtn {
+        background-color: $primaryBtnColor;
+        &:hover {
+          color: $whiteColor;
+          background-color: $secondaryBtnColor;
+        }
+      }
+    }
     .userBookingListContainer {
       margin-top: 24px;
       .userBookingTable {
@@ -265,6 +277,9 @@
 .viewIdBtn {
   margin-top: 8px;
   background-color: $primaryBtnColor;
+  &:hover {
+    background-color: $secondaryBtnColor;
+  }
 }
 
 .closeHeader {
@@ -275,4 +290,9 @@
     margin-bottom: 8px;
     background-color: $primaryBtnColor;
   }
+}
+
+.btnDisable {
+  background-color: $primarybgColor !important;
+  cursor: not-allowed;
 }

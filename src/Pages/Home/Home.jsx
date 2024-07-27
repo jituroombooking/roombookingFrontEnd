@@ -52,12 +52,6 @@ function Home() {
 
   const dispatch = useDispatch();
 
-  const arr = [{ a: 1 }];
-  console.log(
-    arr.some((item) => item.a !== 1),
-    " <>?"
-  );
-
   useEffect(() => {
     if (!roomSlice.roomData) {
       dispatch(getRoomCount());

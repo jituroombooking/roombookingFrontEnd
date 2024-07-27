@@ -8,17 +8,21 @@
   box-shadow: 0 8px 12px 2px gray;
   .roomHeading {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    .refreshIocn {
-      cursor: pointer;
-      height: 32px;
-      margin-right: 24px;
-    }
-    .addRoomBtn {
-      background-color: $primaryBtnColor;
-      color: $whiteColor;
-      font-size: 600;
+    .actionContainer {
+      display: flex;
+      align-items: center;
+      .refreshIocn {
+        cursor: pointer;
+        height: 32px;
+        margin-right: 24px;
+      }
+      .addRoomBtn {
+        background-color: $primaryBtnColor;
+        color: $whiteColor;
+        font-size: 600;
+      }
     }
   }
   .roomTableContainer {

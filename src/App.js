@@ -90,7 +90,7 @@ function App() {
           />
         )}
         <div className={style.mainPageScss}>
-          <PageTitle />
+          {/* <PageTitle /> */}
           <Routes>
             <Route
               path="/login"
@@ -125,7 +125,7 @@ function App() {
               }
             />
             <Route
-              path="/room"
+              path="/roomList"
               element={
                 <Suspense fallback={<Loading />}>
                   <RoomList />
@@ -149,7 +149,7 @@ function App() {
               }
             />
             <Route
-              path="/labour"
+              path="/labourList"
               element={
                 <Suspense fallback={<Loading />}>
                   <LabourList />

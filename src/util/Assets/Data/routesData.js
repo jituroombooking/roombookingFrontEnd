@@ -25,8 +25,8 @@ export const routeData = [
   {
     id: 2,
     name: "Rooms",
-    route: "/room",
-    subRoutes: ["/room", "/addRoom", "/viewBooking"],
+    route: "/roomList",
+    subRoutes: ["/roomList", "/addRoom", "/viewBooking"],
     img: Room,
     role: ["staff"],
   },
@@ -41,8 +41,13 @@ export const routeData = [
   {
     id: 4,
     name: "Labour",
-    route: "/labour",
-    subRoutes: ["/labour", "/addLabour", "/attendenceView", "/addLabourPost"],
+    route: "/labourList",
+    subRoutes: [
+      "/labourList",
+      "/addLabour",
+      "/attendenceView",
+      "/addLabourPost",
+    ],
     img: Worker,
     role: ["staff"],
   },

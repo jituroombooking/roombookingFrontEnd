@@ -87,11 +87,25 @@ export const editRoom = createAsyncThunk(
   "room/editRoom",
   (data, { fulfillWithValue, rejectWithValue }) => {
     const payload = {
-      url: apiList.editRoom,
+      url: apiList.editRoomWithUser,
       method: "put",
       data,
     };
     return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const editRoomNewMember = createAsyncThunk(
+  "room/editRoomNewMember",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.editRoomWithNewUser,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload, true)
       .then((res) => fulfillWithValue(res))
       .catch((err) => rejectWithValue(err));
   }
@@ -240,6 +254,28 @@ const roomSlice = createSlice({
       };
     });
     builder.addCase(editRoom.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: true,
+        loading: false,
+        erromrMessage: payload.data,
+      };
+    });
+    builder.addCase(editRoomNewMember.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        singleRoomData: payload.data,
+        loading: false,
+        error: false,
+      };
+    });
+    builder.addCase(editRoomNewMember.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(editRoomNewMember.rejected, (state, { payload }) => {
       return {
         ...state,
         error: true,

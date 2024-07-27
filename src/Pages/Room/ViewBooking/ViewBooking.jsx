@@ -4,15 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 
-import { editRoom, viewSingleRoom } from "../../../Redux/Slice/room";
+import {
+  editRoom,
+  editRoomNewMember,
+  viewSingleRoom,
+} from "../../../Redux/Slice/room";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import Loading from "../../../Component/Loading/Loading";
-import { unAlottedMember } from "../../../Redux/Slice/booking";
+import { bookRoom, unAlottedMember } from "../../../Redux/Slice/booking";
 import EditPopup from "./EditPopup";
 
 import style from "./viewBooking.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 const initialState = {
   flag: false,
@@ -60,158 +65,207 @@ function ViewBooking() {
     : [{ label: "", value: "" }];
 
   const submitData = (data) => {
+    setEdit({ ...initialState });
     const { flag, ...restProps } = data;
     dispatch(editRoom(restProps)).then((editRes) => {
       if (editRes.payload.status === 200) {
         dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
           if (getRes.payload.status === 200) {
-            dispatch(unAlottedMember()).then((getResUnAlotted) => {
-              if (getResUnAlotted.payload.status === 200) {
-                toast.success("Room Edited Successfully");
-                setEdit({ ...initialState });
-              }
-            });
+            toast.success("Room Edited Successfully");
           }
         });
       }
     });
   };
 
+  const submitNewMemberData = (data) => {
+    const {
+      roomId,
+      removePosition,
+      bookingFrom,
+      bookingTill,
+      fullName,
+      identityProof,
+      mobileNumber,
+      userId,
+    } = data;
+    const newData = {
+      roomId: roomId,
+      removePosition,
+      bookingFrom,
+      bookingTill,
+      fullName,
+      identityProof,
+      mobileNumber,
+      userId,
+      familyMember: 1,
+    };
+    setEdit({ ...initialState });
+    dispatch(editRoomNewMember(newData)).then((editRes) => {
+      if (editRes.payload.status === 200) {
+        dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
+          if (getRes.payload.status === 200) {
+            toast.success("Room Edited Successfully");
+          }
+        });
+      }
+    });
+  };
+
+  if (roomSlice.loading || BookingSlice.loading) {
+    return <Loading />;
+  }
+
   return (
     <div className={style.viewBookingContainer}>
-      {roomSlice.loading || BookingSlice.loading ? (
-        <Loading />
-      ) : (
-        <div className={style.productDetialsContainer}>
-          <ToastContainer />
-          {Array.isArray(roomSlice.singleRoomData?.roomData) &&
-            roomSlice.singleRoomData?.roomData.map((rm) => (
-              <>
-                <div className={style.productContainer}>
-                  <label className={style.productDetialsLabel}>
-                    Bhavan Name
-                  </label>
-                  <label className={style.productDetialsValue}>
-                    {rm.bhavanData[0].bhavanName}
-                  </label>
+      <PageTitle />
+      <div className={style.productDetialsContainer}>
+        <ToastContainer />
+        {Array.isArray(roomSlice.singleRoomData?.roomData) &&
+          roomSlice.singleRoomData?.roomData.map((rm) => (
+            <>
+              <div className={style.productContainer}>
+                <label className={style.productDetialsLabel}>Bhavan Name</label>
+                <label className={style.productDetialsValue}>
+                  {rm.bhavanData[0].bhavanName}
+                </label>
+              </div>
+              <div className={style.productContainer}>
+                <label className={style.productDetialsLabel}>Landmark</label>
+                <label className={style.productDetialsValue}>
+                  {rm.bhavanData[0].landmark}
+                </label>
+              </div>
+              <div className={style.productContainer}>
+                <label className={style.productDetialsLabel}>Room Number</label>
+                <label className={style.productDetialsValue}>
+                  {rm.roomNumber}
+                </label>
+              </div>
+              <div className={style.productContainer}>
+                <label className={style.productDetialsLabel}>
+                  Number of Beds
+                </label>
+                <label className={style.productDetialsValue}>
+                  {rm.noOfBed}
+                </label>
+              </div>
+              <div className={style.productContainer}>
+                <label className={style.productDetialsLabel}>Empty Beds</label>
+                <label className={style.productDetialsValue}>
+                  {rm.noOfBed - rm.bookerIds.length}
+                </label>
+              </div>
+              {rm.noOfBed - rm.bookerIds.length > 0 && (
+                <div className={style.addMemberBtnContainer}>
+                  <button
+                    className={style.addMemberBtn}
+                    onClick={() =>
+                      setEdit({
+                        emptyBed: rm.noOfBed - rm.bookerIds.length,
+                        flag: true,
+                        newPerson: true,
+                        familyMember: 1,
+                        bookingFrom: new Date(Date.now()),
+                        bookingTill: new Date(Date.now() + 3600 * 1000 * 48),
+                      })
+                    }
+                  >
+                    Add Member
+                  </button>
                 </div>
-                <div className={style.productContainer}>
-                  <label className={style.productDetialsLabel}>Landmark</label>
-                  <label className={style.productDetialsValue}>
-                    {rm.bhavanData[0].landmark}
-                  </label>
-                </div>
-                <div className={style.productContainer}>
-                  <label className={style.productDetialsLabel}>
-                    Room Number
-                  </label>
-                  <label className={style.productDetialsValue}>
-                    {rm.roomNumber}
-                  </label>
-                </div>
-                <div className={style.productContainer}>
-                  <label className={style.productDetialsLabel}>
-                    Number of Beds
-                  </label>
-                  <label className={style.productDetialsValue}>
-                    {rm.noOfBed}
-                  </label>
-                </div>
-                <div className={style.productContainer}>
-                  <label className={style.productDetialsLabel}>
-                    Empty Beds
-                  </label>
-                  <label className={style.productDetialsValue}>
-                    {rm.noOfBed - rm.bookerIds.length}
-                  </label>
-                </div>
-                <div className={style.userBookingListContainer}>
-                  <table className={style.userBookingTable}>
-                    <tr className={style.tableHeaderRow}>
-                      <td className={style.tableHeaderRowItem}>#</td>
-                      <td className={style.tableHeaderRowItem}>Name</td>
-                      <td className={style.tableHeaderRowItem}>
-                        Mobile Number
-                      </td>
-                      <td className={style.tableHeaderRowItem}>Booking From</td>
-                      <td className={style.tableHeaderRowItem}>Booking Till</td>
-                      {(AuthSlice?.loginData?.role === "superAdmin" ||
-                        AuthSlice?.loginData?.role === "admin") && (
-                        <td className={style.tableHeaderRowItem}>Action</td>
-                      )}
-                    </tr>
-                    {Array.isArray(rm.userBooking) ? (
-                      <>
-                        {rm.userBooking.map((um, i) => (
-                          <tr className={style.tableDataRow} key={um._id}>
-                            <td className={style.tableDataRowItem}>{i + 1}</td>
-                            <td className={style.tableDataRowItem}>
-                              {um.fullName}
-                            </td>
-                            <td className={style.tableDataRowItem}>
-                              {um.mobileNumber}
-                            </td>
-                            <td className={style.tableDataRowItem}>
-                              {moment().format("YYYY/MM/DD", um.bookingFrom)}
-                            </td>
-                            <td className={style.tableDataRowItem}>
-                              {moment().format("YYYY/MM/DD", um.bookingTill)}
-                            </td>
-                            {(AuthSlice?.loginData?.role === "superAdmin" ||
-                              AuthSlice?.loginData?.role === "admin") && (
-                              <td className={style.tableHeaderRowItem}>
-                                <img
-                                  alt="edit icon"
-                                  src={editIcon}
-                                  className={style.actionIcon}
-                                  onClick={() => {
-                                    setEdit({
-                                      flag: true,
-                                      roomId: rm._id,
-                                      userId: um._id,
-                                      bhavanData: rm.bhavanData[0],
-                                      removePosition: i,
-                                    });
-                                  }}
-                                />
-                                <img
-                                  alt="delete icon"
-                                  src={deleteIcon}
-                                  className={style.actionIcon}
-                                  onClick={() => {
-                                    // dispatch(
-                                    //   deleteLabour({
-                                    //     labourId: m._id,
-                                    //     imgId: m.labourIdProof,
-                                    //   })
-                                    // ).then((delRes) => {
-                                    //   if (delRes.payload.status === 200) {
-                                    //     toast.success("delete sucessfully");
-                                    //   }
-                                    // });
-                                  }}
-                                />
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </>
-                    ) : (
-                      <div className={style.messageText}>
-                        No booking for this Room
-                      </div>
+              )}
+              <div className={style.userBookingListContainer}>
+                <table className={style.userBookingTable}>
+                  <tr className={style.tableHeaderRow}>
+                    <td className={style.tableHeaderRowItem}>#</td>
+                    <td className={style.tableHeaderRowItem}>Name</td>
+                    <td className={style.tableHeaderRowItem}>Mobile Number</td>
+                    <td className={style.tableHeaderRowItem}>Booking From</td>
+                    <td className={style.tableHeaderRowItem}>Booking Till</td>
+                    {(AuthSlice?.loginData?.role === "superAdmin" ||
+                      AuthSlice?.loginData?.role === "admin") && (
+                      <td className={style.tableHeaderRowItem}>Action</td>
                     )}
-                  </table>
-                </div>
-              </>
-            ))}
-        </div>
-      )}
+                  </tr>
+                  {Array.isArray(rm.userBooking) ? (
+                    <>
+                      {rm.userBooking.map((um, i) => (
+                        <tr className={style.tableDataRow} key={um._id}>
+                          <td className={style.tableDataRowItem}>{i + 1}</td>
+                          <td className={style.tableDataRowItem}>
+                            {um.fullName}
+                          </td>
+                          <td className={style.tableDataRowItem}>
+                            {um.mobileNumber}
+                          </td>
+                          <td className={style.tableDataRowItem}>
+                            {moment().format("YYYY/MM/DD", um.bookingFrom)}
+                          </td>
+                          <td className={style.tableDataRowItem}>
+                            {moment().format("YYYY/MM/DD", um.bookingTill)}
+                          </td>
+                          {(AuthSlice?.loginData?.role === "superAdmin" ||
+                            AuthSlice?.loginData?.role === "admin") && (
+                            <td className={style.tableHeaderRowItem}>
+                              <img
+                                alt="edit icon"
+                                src={editIcon}
+                                className={style.actionIcon}
+                                onClick={() => {
+                                  dispatch(unAlottedMember());
+                                  setEdit({
+                                    flag: true,
+                                    roomId: rm._id,
+                                    userId: um._id,
+                                    bhavanData: rm.bhavanData[0],
+                                    removePosition: i,
+                                    newPerson: false,
+                                    bookingFrom: new Date(Date.now()),
+                                    bookingTill: new Date(
+                                      Date.now() + 3600 * 1000 * 48
+                                    ),
+                                  });
+                                }}
+                              />
+                              <img
+                                alt="delete icon"
+                                src={deleteIcon}
+                                className={style.actionIcon}
+                                onClick={() => {
+                                  // dispatch(
+                                  //   deleteLabour({
+                                  //     labourId: m._id,
+                                  //     imgId: m.labourIdProof,
+                                  //   })
+                                  // ).then((delRes) => {
+                                  //   if (delRes.payload.status === 200) {
+                                  //     toast.success("delete sucessfully");
+                                  //   }
+                                  // });
+                                }}
+                              />
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </>
+                  ) : (
+                    <div className={style.messageText}>
+                      No booking for this Room
+                    </div>
+                  )}
+                </table>
+              </div>
+            </>
+          ))}
+      </div>
       {edit.flag && (
         <EditPopup
           setEdit={setEdit}
           edit={edit}
           submitData={submitData}
+          submitNewMemberData={submitNewMemberData}
           reInitilize={() => setEdit({ ...initialState })}
           formvalidation={formvalidation}
           setSelectFamily={setSelectFamily}

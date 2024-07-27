@@ -8,6 +8,7 @@ import Loading from "../../../Component/Loading/Loading";
 
 import style from "./addRoom.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 const initialState = {
   bhavanName: "",
@@ -94,193 +95,195 @@ function AddRoom() {
       })
     );
   };
+
+  if (AddRoomSlice.loading) {
+    return <Loading />;
+  }
   return (
     <div className={style.roomContainer}>
-      {AddRoomSlice.loading ? (
-        <Loading />
-      ) : (
-        <div className={style.bulkRoomUpload}>
-          <ToastContainer />
-          <div className={style.formRow}>
+      <div className={style.bulkRoomUpload}>
+        <PageTitle />
+        <div className={style.space} />
+        <ToastContainer />
+        <div className={style.formRow}>
+          <div className={style.formItem}>
+            <labal className={style.eventLabel}>Bhavan name*</labal>
             <div className={style.formItem}>
-              <labal className={style.eventLabel}>Bhavan name*</labal>
-              <div className={style.formItem}>
-                <input
-                  className={style.eventInput}
-                  value={roomData.bhavanName}
-                  onChange={(e) =>
-                    setRoomData({ ...roomData, bhavanName: e.target.value })
-                  }
-                />
-                {formvalidation && roomData.bhavanName === "" && (
-                  <div className={style.formValidationError}>
-                    Bhavan name is required
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className={style.formItem}>
-              <labal className={style.eventLabel}>Landmark*</labal>
-              <div className={style.formItem}>
-                <input
-                  className={style.eventInput}
-                  value={roomData.landmark}
-                  onChange={(e) =>
-                    setRoomData({
-                      ...roomData,
-                      landmark: e.target.value,
-                    })
-                  }
-                />
-                {formvalidation && roomData.landmark === "" && (
-                  <div className={style.formValidationError}>
-                    Landmark is required
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className={style.formRow}>
-            <div className={style.formItem}>
-              <labal className={style.eventLabel}>Amount per room</labal>
-              <div className={style.formItem}>
-                <input
-                  type="number"
-                  className={style.eventInput}
-                  onChange={(e) =>
-                    setRoomData({ ...roomData, roomAmount: e.target.value })
-                  }
-                  value={roomData.roomAmount}
-                />
-              </div>
-            </div>
-            <div className={`${style.formItem} ${style.checkboxContainer}`}>
               <input
-                type="checkbox"
-                checked={sameBedFlag}
-                onChange={() => {
-                  setGeneratedRooms([]);
-                  setSameBedFlag((state) => !state);
-                }}
+                className={style.eventInput}
+                value={roomData.bhavanName}
+                onChange={(e) =>
+                  setRoomData({ ...roomData, bhavanName: e.target.value })
+                }
               />
-              <label>All the rooms have same beds</label>
-            </div>
-          </div>
-          <div className={style.formRow}>
-            <div className={style.formItem}>
-              <labal className={style.eventLabel}>Number of rooms*</labal>
-              <div className={style.formItem}>
-                <input
-                  type="number"
-                  className={style.eventInput}
-                  value={roomData.noOfRooms}
-                  onChange={(e) =>
-                    setRoomData({
-                      ...roomData,
-                      noOfRooms: parseInt(e.target.value),
-                    })
-                  }
-                />
-                {formvalidation && roomData.noOfRooms === 0 && (
-                  <div className={style.formValidationError}>
-                    No of rooms is required
-                  </div>
-                )}
-              </div>
-            </div>
-            {sameBedFlag && (
-              <div className={style.formItem}>
-                <labal className={style.eventLabel}>Bed per room*</labal>
-                <div className={style.formItem}>
-                  <input
-                    className={style.eventInput}
-                    value={roomData.noOfBedperRoom}
-                    type="number"
-                    onChange={(e) =>
-                      setRoomData({
-                        ...roomData,
-                        noOfBedperRoom: e.target.value,
-                      })
-                    }
-                  />
-                  {formvalidation && roomData.noOfBedperRoom === 0 && (
-                    <div className={style.formValidationError}>
-                      No of bed rooms is required
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          <div className={style.formRow}>
-            <div className={style.formItem}>
-              <button onClick={generateRooms} className={style.genRoomBtn}>
-                Generate room for bed
-              </button>
-              {formvalidation && generatedRooms.length === 0 && (
+              {formvalidation && roomData.bhavanName === "" && (
                 <div className={style.formValidationError}>
-                  Room Generation is required
+                  Bhavan name is required
                 </div>
               )}
             </div>
           </div>
-          <div className={`${style.formRow} ${style.generatedRoomContainer}`}>
-            {generatedRooms.map((m, i) => (
-              <div className={style.generateRoomsItem}>
-                <div className={style.generatedInputContainer}>
-                  <label>Room Number</label>
-                  <input
-                    className={style.generatedInputItem}
-                    value={m.roomNumber}
-                    onChange={(e) => {
-                      generatedRooms[i].roomNumber =
-                        e.target.value === "" ? 0 : parseInt(e.target.value);
-                      setGeneratedRooms([...generatedRooms]);
-                    }}
-                  />
+          <div className={style.formItem}>
+            <labal className={style.eventLabel}>Landmark*</labal>
+            <div className={style.formItem}>
+              <input
+                className={style.eventInput}
+                value={roomData.landmark}
+                onChange={(e) =>
+                  setRoomData({
+                    ...roomData,
+                    landmark: e.target.value,
+                  })
+                }
+              />
+              {formvalidation && roomData.landmark === "" && (
+                <div className={style.formValidationError}>
+                  Landmark is required
                 </div>
-                <div className={style.generatedInputContainer}>
-                  <label>No of Bed</label>
-                  <input
-                    type="number"
-                    className={style.generatedInputItem}
-                    value={m.noOfBed}
-                    onChange={(e) => {
-                      generatedRooms[i].noOfBed = parseInt(e.target.value);
-                      setGeneratedRooms([...generatedRooms]);
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              )}
+            </div>
           </div>
-          <div className={style.formDevider} />
-          <div className={style.btnContainer}>
-            <button
-              className={style.resetBtn}
-              onClick={() => setRoomData(initialState)}
-            >
-              Reset
+        </div>
+        <div className={style.formRow}>
+          <div className={style.formItem}>
+            <labal className={style.eventLabel}>Amount per room</labal>
+            <div className={style.formItem}>
+              <input
+                type="number"
+                className={style.eventInput}
+                onChange={(e) =>
+                  setRoomData({ ...roomData, roomAmount: e.target.value })
+                }
+                value={roomData.roomAmount}
+              />
+            </div>
+          </div>
+          <div className={`${style.formItem} ${style.checkboxContainer}`}>
+            <input
+              type="checkbox"
+              checked={sameBedFlag}
+              onChange={() => {
+                setGeneratedRooms([]);
+                setSameBedFlag((state) => !state);
+              }}
+            />
+            <label>All the rooms have same beds</label>
+          </div>
+        </div>
+        <div className={style.formRow}>
+          <div className={style.formItem}>
+            <labal className={style.eventLabel}>Number of rooms*</labal>
+            <div className={style.formItem}>
+              <input
+                type="number"
+                className={style.eventInput}
+                value={roomData.noOfRooms}
+                onChange={(e) =>
+                  setRoomData({
+                    ...roomData,
+                    noOfRooms: parseInt(e.target.value),
+                  })
+                }
+              />
+              {formvalidation && roomData.noOfRooms === 0 && (
+                <div className={style.formValidationError}>
+                  No of rooms is required
+                </div>
+              )}
+            </div>
+          </div>
+          {sameBedFlag && (
+            <div className={style.formItem}>
+              <labal className={style.eventLabel}>Bed per room*</labal>
+              <div className={style.formItem}>
+                <input
+                  className={style.eventInput}
+                  value={roomData.noOfBedperRoom}
+                  type="number"
+                  onChange={(e) =>
+                    setRoomData({
+                      ...roomData,
+                      noOfBedperRoom: e.target.value,
+                    })
+                  }
+                />
+                {formvalidation && roomData.noOfBedperRoom === 0 && (
+                  <div className={style.formValidationError}>
+                    No of bed rooms is required
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        <div className={style.formRow}>
+          <div className={style.formItem}>
+            <button onClick={generateRooms} className={style.genRoomBtn}>
+              Generate room for bed
             </button>
-
-            {state?.roomEditData ? (
-              <button
-                className={style.submitbtn}
-                onClick={() => updateRoomData()}
-              >
-                Update Room
-              </button>
-            ) : (
-              <button
-                className={style.submitbtn}
-                onClick={() => submitRoomData()}
-              >
-                Add Room
-              </button>
+            {formvalidation && generatedRooms.length === 0 && (
+              <div className={style.formValidationError}>
+                Room Generation is required
+              </div>
             )}
           </div>
         </div>
-      )}
+        <div className={`${style.formRow} ${style.generatedRoomContainer}`}>
+          {generatedRooms.map((m, i) => (
+            <div className={style.generateRoomsItem}>
+              <div className={style.generatedInputContainer}>
+                <label>Room Number</label>
+                <input
+                  className={style.generatedInputItem}
+                  value={m.roomNumber}
+                  onChange={(e) => {
+                    generatedRooms[i].roomNumber =
+                      e.target.value === "" ? 0 : parseInt(e.target.value);
+                    setGeneratedRooms([...generatedRooms]);
+                  }}
+                />
+              </div>
+              <div className={style.generatedInputContainer}>
+                <label>No of Bed</label>
+                <input
+                  type="number"
+                  className={style.generatedInputItem}
+                  value={m.noOfBed}
+                  onChange={(e) => {
+                    generatedRooms[i].noOfBed = parseInt(e.target.value);
+                    setGeneratedRooms([...generatedRooms]);
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className={style.formDevider} />
+        <div className={style.btnContainer}>
+          <button
+            className={style.resetBtn}
+            onClick={() => setRoomData(initialState)}
+          >
+            Reset
+          </button>
+
+          {state?.roomEditData ? (
+            <button
+              className={style.submitbtn}
+              onClick={() => updateRoomData()}
+            >
+              Update Room
+            </button>
+          ) : (
+            <button
+              className={style.submitbtn}
+              onClick={() => submitRoomData()}
+            >
+              Add Room
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
