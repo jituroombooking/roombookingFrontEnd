@@ -5,9 +5,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Loading from "../../../Component/Loading/Loading";
 import { addStaff } from "../../../Redux/Slice/staff";
 import { staffPost, validateEmail } from "../../../util/util";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 import style from "./addStaff.module.scss";
-import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 const initialState = {
   fullName: "",
@@ -26,11 +26,12 @@ function AddStaff() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
+  const { state } = useLocation();
 
   useEffect(() => {
-    if (location.state?.staffEditData && staffData.userName === "") {
-      setStaffData(location.state.staffEditData);
+    console.log(state, " <>?");
+    if (state?.staffEditData && staffData.fullName === "") {
+      setStaffData(state.staffEditData);
     }
   }, []);
 
@@ -125,6 +126,7 @@ function AddStaff() {
               <div className={style.formItem}>
                 <select
                   className={style.select}
+                  value={staffData.role}
                   onChange={(e) => {
                     setStaffData({
                       ...staffData,

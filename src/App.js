@@ -17,6 +17,9 @@ const RoomList = React.lazy(() => import("./Pages/Room/RoomList/RoomList"));
 const ViewBooking = React.lazy(() =>
   import("./Pages/Room/ViewBooking/ViewBooking")
 );
+const AddBooking = React.lazy(() =>
+  import("./Pages/Booking/AddBooking/AddBooking")
+);
 const LabourList = React.lazy(() =>
   import("./Pages/Labour/LabourList/LabourList")
 );
@@ -224,6 +227,14 @@ function App() {
               element={
                 <Suspense fallback={<Loading />}>
                   <AddEventMemories />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/addBooking"
+              element={
+                <Suspense fallback={<Loading />}>
+                  <AddBooking />
                 </Suspense>
               }
             />

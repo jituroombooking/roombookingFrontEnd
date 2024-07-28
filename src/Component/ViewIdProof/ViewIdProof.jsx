@@ -4,7 +4,7 @@ import CloseIcon from "../../util/Assets/Icon/cross.png";
 
 import style from "./viewIdProof.module.scss";
 
-function ViewIdProof({ onClose, idProof }) {
+function ViewIdProof({ onClose, idProof, path }) {
   return (
     <div className={style.idProofParentContainer}>
       <div className={style.idProofContainer}>
@@ -14,14 +14,14 @@ function ViewIdProof({ onClose, idProof }) {
         <div>
           {idProof.split(".").pop() === "pdf" ? (
             <embed
-              src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof}`}
+              src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/${path}/${idProof}`}
               type="application/pdf"
               width="100%"
               height="600px"
             ></embed>
           ) : (
             <img
-              src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${idProof}`}
+              src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/${path}/${idProof}`}
               alt="userId"
               className={style.userIdImg}
             />

@@ -34,7 +34,7 @@ export const routeData = [
     id: 3,
     name: "Room Booking",
     route: "/roomBooking",
-    subRoutes: ["/roomBooking"],
+    subRoutes: ["/roomBooking", "/addBooking"],
     img: Booking,
     role: ["staff"],
   },

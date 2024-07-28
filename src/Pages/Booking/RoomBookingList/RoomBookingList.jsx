@@ -19,9 +19,10 @@ import ReactTable from "../../../Component/ReactTable/ReactTable";
 import RightArrow from "../../../util/Assets/Icon/next.png";
 import DownArrow from "../../../util/Assets/Icon/down.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
+import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
+import { getReactSelectData } from "../../../util/util";
 
 import style from "./roomBookingList.module.scss";
-import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
 
 const initialState = { flag: false, id: "" };
 
@@ -186,18 +187,41 @@ function RoomBookingList() {
         ],
       },
       {
+        id: "actionCol",
         Header: "Action",
-        id: "action",
+        isVisiable: false,
         columns: [
           {
-            id: "edit",
-            Header: "",
-            accessor: (data) => <span>Edit</span>,
+            id: "delete",
+            Header: "Delete",
+
+            accessor: (data) => (
+              <img
+                alt="delete icon"
+                src={deleteIcon}
+                className={style.idProof}
+                // onClick={() => dispatch(deleteEvent(m._id))}
+              />
+            ),
           },
           {
-            id: "delete",
-            Header: "",
-            accessor: (data) => <span>Delete</span>,
+            id: "edit",
+            Header: "Edit",
+            accessor: (data) => (
+              <img
+                alt="edit icon"
+                src={editIcon}
+                className={style.idProof}
+                onClick={() =>
+                  navigate("/addBooking", {
+                    state: {
+                      pageTitle: "Edit Booking",
+                      editBookingData: data,
+                    },
+                  })
+                }
+              />
+            ),
           },
         ],
       },
@@ -234,29 +258,6 @@ function RoomBookingList() {
                   <img src={RightArrow} className={style.idProof} />
                 )}
               </span>
-            ),
-          },
-        ],
-      },
-      {
-        Header: "Select",
-        columns: [
-          {
-            id: "checkbox",
-            Header: (
-              <div className={style.headerInput}>
-                <input className={style.selectInput} type="checkbox" />
-              </div>
-            ),
-            accessor: (data) => (
-              <div className={style.headerInput}>
-                <input
-                  className={style.selectInput}
-                  type="checkbox"
-                  value={data._id}
-                  //   onClick={() => setSelectedId((state) => [...state, data.id])}
-                />
-              </div>
             ),
           },
         ],
@@ -351,19 +352,19 @@ function RoomBookingList() {
           {
             id: "edit",
             Header: "Edit",
-            accessor: () => (
+            accessor: (data) => (
               <img
                 alt="edit icon"
                 src={editIcon}
                 className={style.idProof}
-                // onClick={() =>
-                //   navigate("/addEvent", {
-                //     state: {
-                //       pageTitle: "Edit Event",
-                //       editEventData: m,
-                //     },
-                //   })
-                // }
+                onClick={() =>
+                  navigate("/addBooking", {
+                    state: {
+                      pageTitle: "Edit Booking",
+                      editBookingData: data,
+                    },
+                  })
+                }
               />
             ),
           },
@@ -384,16 +385,28 @@ function RoomBookingList() {
       dispatch(unAlottedMember());
     }
   }, []);
+  const filterAlottedData =
+    selectedName.value !== ""
+      ? RoomBookingSlice.booking.filter(
+          (f) => f.userBookingData.fullName === selectedName.value
+        )
+      : RoomBookingSlice.booking;
 
-  const renderRowSubComponent = React.useCallback(({ row }) => {
-    console.log(row, " <>?");
+  const filterUnAlottedData =
+    selectedName.value !== ""
+      ? RoomBookingSlice.unAlottedMember.filter(
+          (f) => f.fullName === selectedName.value
+        )
+      : RoomBookingSlice.unAlottedMember;
+
+  const renderRowSubComponent = ({ row }) => {
     return (
       <ReactTable
         columns={expandedRowColumn}
-        data={[RoomBookingSlice.booking[row.index]]}
+        data={[filterAlottedData[row.index]]}
       />
     );
-  }, []);
+  };
 
   if (RoomBookingSlice.loading) {
     return <Loading />;
@@ -401,23 +414,12 @@ function RoomBookingList() {
 
   const nameOption =
     (Array.isArray(RoomBookingSlice.booking) &&
-      RoomBookingSlice.booking.map((m) => {
-        return {
-          label: m.userBookingData.fullName,
-          value: m.userBookingData.fullName,
-        };
-      })) ||
+      getReactSelectData(RoomBookingSlice.booking)) ||
     [];
 
   const unAlottedNameOption =
     (Array.isArray(RoomBookingSlice.unAlottedMember) &&
-      RoomBookingSlice.unAlottedMember.map((m) => {
-        console.log(m, " <>?");
-        return {
-          label: m.fullName,
-          value: m.fullName,
-        };
-      })) ||
+      getReactSelectData(RoomBookingSlice.unAlottedMember)) ||
     [];
 
   const bhavanOption = [];
@@ -435,21 +437,6 @@ function RoomBookingList() {
         }
       });
     });
-
-  const filterAlottedData =
-    selectedName.value !== ""
-      ? RoomBookingSlice.booking.filter(
-          (f) => f.userBookingData.fullName === selectedName.value
-        )
-      : RoomBookingSlice.booking;
-
-  console.log(RoomBookingSlice.unAlottedMember, " <>?");
-  const filterUnAlottedData =
-    selectedName.value !== ""
-      ? RoomBookingSlice.unAlottedMember.filter(
-          (f) => f.fullName === selectedName.value
-        )
-      : RoomBookingSlice.unAlottedMember;
 
   return (
     <div className={style.roomBookingContainer}>
@@ -486,6 +473,12 @@ function RoomBookingList() {
               }}
             >
               Clear Filter
+            </button>
+            <button
+              className={style.addRoomBtn}
+              onClick={() => navigate("/addBooking")}
+            >
+              Add Booking
             </button>
             <img
               src={refreshIcon}
@@ -543,6 +536,7 @@ function RoomBookingList() {
         <ViewIdProof
           idProof={idProof.id}
           onClose={() => setIdproof({ ...initialState })}
+          path="userbooking"
         />
       )}
     </div>

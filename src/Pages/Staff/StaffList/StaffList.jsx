@@ -75,6 +75,7 @@ function StaffList() {
                         onClick={() =>
                           navigate("/addStaff", {
                             state: {
+                              pageTitle: "Edit Staff",
                               staffEditData: StaffSlice.staffData[i],
                             },
                           })

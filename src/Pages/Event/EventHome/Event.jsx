@@ -12,7 +12,7 @@ import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 const initialState = {
   eventStartDate: new Date(),
-  eventEndDate: new Date(),
+  eventEndDate: new Date(Date.now() + 3600 * 1000 * 24),
   eventName: "",
   eventVenue: "",
   speakerName: "",
@@ -94,6 +94,7 @@ function DayEvent() {
           <labal className={style.eventLabel}>Event start date*</labal>
           <div className={style.formItem}>
             <ReactDatePicker
+              maxDate={eventData.eventEndDate}
               className={style.dateInput}
               selected={eventData.eventStartDate}
               onChange={(date) =>
@@ -106,6 +107,7 @@ function DayEvent() {
           <labal className={style.eventLabel}>Event end date*</labal>
           <div className={style.formItem}>
             <ReactDatePicker
+              minDate={eventData.eventStartDate}
               className={style.dateInput}
               selected={eventData.eventEndDate}
               onChange={(date) =>

@@ -43,6 +43,16 @@
           background-color: $tertiaryCardColor;
         }
       }
+      .addRoomBtn {
+        background-color: $primaryBtnColor;
+        color: $whiteColor;
+        font-size: 600;
+        margin-right: 8px;
+        &:hover {
+          color: $whiteColor;
+          background-color: $tertiaryCardColor;
+        }
+      }
       .refreshIocn {
         cursor: pointer;
         height: 32px;

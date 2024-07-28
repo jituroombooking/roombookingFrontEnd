@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-toastify/dist/ReactToastify.min.css";
+import AddBooking from "../Booking/AddBooking/AddBooking";
 
 const initialState = {
   fullName: "",
@@ -90,219 +91,72 @@ function Home() {
     }
   };
 
+  if (BookingSlice.loading) {
+    return <Loading />;
+  }
+
   return (
     <div className={style.homeContainer}>
-      {BookingSlice.loading ? (
-        <Loading />
-      ) : (
-        <>
-          <div className={style.mainEventMemorisContainer}>
-            <ToastContainer />
-            <label className={style.pageHeading}>Event Photos</label>
-            {Array.isArray(EventSlice.eventMemory) &&
-              EventSlice.eventMemory.length === 0 && (
-                <div className={style.noData}>No Data !</div>
-              )}
-            <Slider {...settings} className={style.sliderContainer}>
-              {Array.isArray(EventSlice.eventMemory) &&
-                EventSlice.eventMemory.length !== 0 &&
-                EventSlice.eventMemory.map((m) => (
-                  <div className={style.eventCard} key={m.id}>
-                    <img
-                      src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/event/${m.eventImg}`}
-                      className={style.eventImg}
-                      alt="eventimg"
-                    />
-                    <div className={style.eventTitle}>{m.eventTitle}</div>
-                  </div>
-                ))}
-            </Slider>
-          </div>
-          <div className={style.twoColContainer}>
-            <div className={style.cardEventContainer}>
-              <div className={style.cardContainer}>
-                <div className={`${style.cardItem} ${style.primaryCard}`}>
-                  <label className={style.cardLabel}>Total no.of rooms</label>
-                  <div>
-                    <label className={style.labelValue}>
-                      {roomSlice.roomData?.totalNoRoom || roomData.totalNoRoom}
-                    </label>
-                  </div>
-                </div>
-                <div className={`${style.cardItem} ${style.secondaryCard}`}>
-                  <label className={style.cardLabel}>Alotted rooms</label>
-                  <div>
-                    <label className={style.labelValue}>
-                      {roomSlice.roomData?.allotedRoom || roomData.allotedRoom}
-                    </label>
-                  </div>
-                </div>
-                <div className={`${style.cardItem} ${style.tertiaryCard}`}>
-                  <label className={style.cardLabel}>Empty rooms</label>
-                  <div>
-                    <label className={style.labelValue}>
-                      {roomSlice.roomData?.emptyRoom || roomData.emptyRoom}
-                    </label>
-                  </div>
-                </div>
+      <div className={style.mainEventMemorisContainer}>
+        <ToastContainer />
+        <label className={style.pageHeading}>Event Photos</label>
+        {Array.isArray(EventSlice.eventMemory) &&
+          EventSlice.eventMemory.length === 0 && (
+            <div className={style.noData}>No Data !</div>
+          )}
+        <Slider {...settings} className={style.sliderContainer}>
+          {Array.isArray(EventSlice.eventMemory) &&
+            EventSlice.eventMemory.length !== 0 &&
+            EventSlice.eventMemory.map((m) => (
+              <div className={style.eventCard} key={m.id}>
+                <img
+                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/event/${m.eventImg}`}
+                  className={style.eventImg}
+                  alt="eventimg"
+                />
+                <div className={style.eventTitle}>{m.eventTitle}</div>
               </div>
-              <div className={style.eventParentContainer}>
-                <EventList showHeading={false} />
+            ))}
+        </Slider>
+      </div>
+      <div className={style.twoColContainer}>
+        <div className={style.cardEventContainer}>
+          <div className={style.cardContainer}>
+            <div className={`${style.cardItem} ${style.primaryCard}`}>
+              <label className={style.cardLabel}>Total no.of rooms</label>
+              <div>
+                <label className={style.labelValue}>
+                  {roomSlice.roomData?.totalNoRoom || roomData.totalNoRoom}
+                </label>
               </div>
             </div>
-            {authData?.loginData.role === "superAdmin" ||
-            authData?.loginData.role === "staff" ||
-            authData?.loginData.role === "admin" ? (
-              <></>
-            ) : (
-              <div className={style.bookingFormContainer}>
-                <div className={style.formRow}>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Full name*</labal>
-                    <div className={style.formItem}>
-                      <input
-                        className={style.eventInput}
-                        value={boodkingData.fullName}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...boodkingData,
-                            fullName: e.target.value,
-                          })
-                        }
-                      />
-                      {formvalidation && boodkingData.fullName === "" && (
-                        <div className={style.formValidationError}>
-                          Full name is required.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Family members*</labal>
-                    <div className={style.formItem}>
-                      <input
-                        type="number"
-                        className={style.eventInput}
-                        value={boodkingData.familyMember}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...boodkingData,
-                            familyMember: parseInt(e.target.value),
-                          })
-                        }
-                      />
-                      {formvalidation && boodkingData.fullName === "" && (
-                        <div className={style.formValidationError}>
-                          Family members is required.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className={style.formRow}>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Identity proof*</labal>
-                    <div className={style.formItem}>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/gif,image/png,application/pdf"
-                        className={style.eventInput}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...boodkingData,
-                            identityProof: e.target.files[0],
-                          })
-                        }
-                      />
-                      {formvalidation && boodkingData.identityProof === "" && (
-                        <div className={style.formValidationError}>
-                          Identity proof is required.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Mobile number*</labal>
-                    <div className={style.formItem}>
-                      <input
-                        type="number"
-                        className={style.eventInput}
-                        value={boodkingData.mobileNumber}
-                        onChange={(e) =>
-                          setBookingData({
-                            ...boodkingData,
-                            mobileNumber: e.target.value,
-                          })
-                        }
-                      />
-                      {formvalidation && boodkingData.mobileNumber === "" && (
-                        <div className={style.formValidationError}>
-                          Mobile number is required.
-                        </div>
-                      )}
-                      {!validatemobile(boodkingData.mobileNumber) &&
-                        boodkingData.mobileNumber !== "" && (
-                          <div className={style.formValidationError}>
-                            Mobile number is not valid.
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                </div>
-                <div className={style.formRow}>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Booking from*</labal>
-                    <div className={style.formItem}>
-                      <ReactDatePicker
-                        selected={boodkingData.bookingFrom}
-                        onChange={(date) =>
-                          setBookingData({ ...boodkingData, bookingFrom: date })
-                        }
-                      />
-                      {formvalidation && boodkingData.bookingFrom === "" && (
-                        <div className={style.formValidationError}>
-                          Booking From date is required.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={style.formItem}>
-                    <labal className={style.eventLabel}>Booking till*</labal>
-                    <div className={style.formItem}>
-                      <ReactDatePicker
-                        selected={boodkingData.bookingTill}
-                        onChange={(date) =>
-                          setBookingData({ ...boodkingData, bookingTill: date })
-                        }
-                      />
-                      {formvalidation && boodkingData.bookingTill === "" && (
-                        <div className={style.formValidationError}>
-                          Booking till date is required.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className={style.btnContainer}>
-                  <button
-                    className={style.resetBtn}
-                    onClick={() => setBookingData({ ...initialState })}
-                  >
-                    Reset
-                  </button>
-
-                  <button
-                    className={style.submitbtn}
-                    onClick={() => submitBookingData()}
-                  >
-                    Book Room
-                  </button>
-                </div>
+            <div className={`${style.cardItem} ${style.secondaryCard}`}>
+              <label className={style.cardLabel}>Alotted rooms</label>
+              <div>
+                <label className={style.labelValue}>
+                  {roomSlice.roomData?.allotedRoom || roomData.allotedRoom}
+                </label>
               </div>
-            )}
+            </div>
+            <div className={`${style.cardItem} ${style.tertiaryCard}`}>
+              <label className={style.cardLabel}>Empty rooms</label>
+              <div>
+                <label className={style.labelValue}>
+                  {roomSlice.roomData?.emptyRoom || roomData.emptyRoom}
+                </label>
+              </div>
+            </div>
           </div>
-        </>
-      )}
+          <div className={style.eventParentContainer}>
+            <EventList showHeading={false} />
+          </div>
+        </div>
+        {(authData?.loginData.role !== "superAdmin" ||
+          authData?.loginData.role !== "staff" ||
+          authData?.loginData.role !== "admin") && (
+          <AddBooking noBgColor={true} />
+        )}
+      </div>
     </div>
   );
 }

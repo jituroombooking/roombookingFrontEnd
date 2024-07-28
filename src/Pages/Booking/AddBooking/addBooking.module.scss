@@ -1,0 +1,74 @@
+@import "../../../variable.module.scss";
+
+.addBookingContainer {
+  padding: 24px;
+  background-color: $whiteColor;
+  border-radius: 8px;
+
+  .bookingFormContainer {
+    box-shadow: 0 8px 12px 2px gray;
+    border-radius: 4px;
+    background-color: $whiteColor;
+    padding: 32px;
+    margin: 32px 0;
+    height: 100%;
+    .formRow {
+      display: flex;
+      align-items: center;
+      margin-bottom: 32px;
+      .formItem {
+        width: 50%;
+        .genRoomBtn {
+          background-color: $primaryBtnColor;
+          color: $whiteColor;
+          font-size: 16px;
+          font-weight: 600;
+        }
+        input[type="checkbox"] {
+          width: 5% !important;
+        }
+        .paidCheckbox::after {
+          content: attr(value);
+          margin: 8px 63px;
+          vertical-align: top;
+          white-space: nowrap;
+          display: inline-block;
+        }
+        div[class^="react-datepicker-wrapper"] {
+          width: 100%;
+        }
+        .eventLabel {
+          display: block;
+          margin-bottom: 8px;
+        }
+        .eventInput {
+        }
+        .dateInput {
+          width: 100%;
+        }
+      }
+    }
+    .btnContainer {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .resetBtn {
+        margin-right: 40px;
+      }
+      .submitbtn {
+        background-color: $secondaryBtnColor;
+        color: $whiteColor;
+      }
+    }
+  }
+}
+
+.formValidationError {
+  color: red;
+  margin-top: 4px;
+}
+
+.noBgColor {
+  background-color: transparent !important;
+}

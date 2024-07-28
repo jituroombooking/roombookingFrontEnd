@@ -24,6 +24,7 @@ import style from "./labourList.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
 import moment from "moment";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
+import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
 
 function LabourList() {
   const [qrId, setQrId] = useState({ id: "", name: "" });
@@ -226,33 +227,11 @@ function LabourList() {
         </div>
       )}
       {idProof.flag && (
-        <div className={style.idProofParentContainer}>
-          <div className={style.idProofContainer}>
-            <div className={style.header}>
-              <img
-                src={CloseIcon}
-                className={style.idProof}
-                onClick={() => setIdproof({ flag: false, id: "" })}
-              />
-            </div>
-            <div>
-              {idProof.id.split(".").pop() === "pdf" ? (
-                <embed
-                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/${idProof.id}`}
-                  type="application/pdf"
-                  width="100%"
-                  height="600px"
-                ></embed>
-              ) : (
-                <img
-                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/labour/${idProof.id}`}
-                  alt="userId"
-                  className={style.userIdImg}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        <ViewIdProof
+          onClose={() => setIdproof({ flag: false, id: "" })}
+          idProof={idProof.id}
+          path="labour"
+        />
       )}
     </div>
   );
