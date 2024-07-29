@@ -31,7 +31,14 @@ function RoomList() {
       key={`${rm.roomNumber}-${index}`}
       data-tooltip-id={`room-tool-tip-${index}`}
       className={style.roomCircle}
-      style={{ backgroundColor: rm.availabel ? "#19891c" : "red" }}
+      style={{
+        backgroundColor:
+          rm.noOfBed === rm.bookerIds.length
+            ? "red"
+            : rm.bookerIds.length === 0
+            ? "#19891c"
+            : "#F7EA00",
+      }}
       onClick={() => {
         navigate("/viewBooking", {
           state: {

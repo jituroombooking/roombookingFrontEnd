@@ -67,7 +67,8 @@ function RoomBookingList() {
                       key={`${m.roomNumber}`}
                       className={style.roomCircle}
                       style={{
-                        backgroundColor: m.availabel ? "#19891c" : "red",
+                        backgroundColor:
+                          m.noOfBed === m.bookerIds.length ? "red" : "#19891c",
                       }}
                       onClick={() => {
                         navigate("/viewBooking", {

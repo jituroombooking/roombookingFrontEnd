@@ -1,0 +1,51 @@
+@import "../../variable.module.scss";
+
+.popupContainer {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: hsl(300deg 2.04% 11.3% / 76%);
+  z-index: 100;
+  .popupModal {
+    background-color: $whiteColor;
+    padding: 24px;
+    width: 320px;
+    border-radius: 16px;
+    .popupModalHeader {
+      display: flex;
+      justify-content: flex-end;
+      .idProof {
+        height: 24px;
+        cursor: pointer;
+      }
+    }
+    .modalbody {
+      font-size: 24px;
+      margin-top: 24px;
+      margin-bottom: 24px;
+    }
+    .btnContainer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .successBtn {
+        background-color: $primaryBtnColor;
+        color: $whiteColor;
+        font-size: 600;
+        &:hover {
+          color: $whiteColor;
+          background-color: $tertiaryCardColor;
+        }
+      }
+      .cancleBtn {
+        background-color: $primaryCardColor;
+        color: $whiteColor;
+      }
+    }
+  }
+}

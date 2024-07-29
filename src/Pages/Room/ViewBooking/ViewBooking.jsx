@@ -14,10 +14,11 @@ import editIcon from "../../../util/Assets/Icon/edit.png";
 import Loading from "../../../Component/Loading/Loading";
 import { bookRoom, unAlottedMember } from "../../../Redux/Slice/booking";
 import EditPopup from "./EditPopup";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 import style from "./viewBooking.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
-import PageTitle from "../../../Component/PageTitle/PageTitle";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
 
 const initialState = {
   flag: false,
@@ -37,7 +38,10 @@ function ViewBooking() {
   const [formvalidation, setFormvalidation] = useState(false);
   const [selectFamily, setSelectFamily] = useState({ label: "", value: "" });
   const [userCount, setUserCount] = useState({ first: 0, last: 10 });
-  const [selected, setSelected] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState({
+    flag: false,
+    data: null,
+  });
 
   const roomSlice = useSelector((state) => state.room);
   const AuthSlice = useSelector((state) => state.login);
@@ -87,7 +91,9 @@ function ViewBooking() {
       fullName,
       identityProof,
       mobileNumber,
+      familyMember,
       userId,
+      bhavanData,
     } = data;
     const newData = {
       roomId: roomId,
@@ -98,7 +104,8 @@ function ViewBooking() {
       identityProof,
       mobileNumber,
       userId,
-      familyMember: 1,
+      familyMember,
+      bhavanId: bhavanData._id,
     };
     setEdit({ ...initialState });
     dispatch(editRoomNewMember(newData)).then((editRes) => {
@@ -162,6 +169,8 @@ function ViewBooking() {
                     className={style.addMemberBtn}
                     onClick={() =>
                       setEdit({
+                        bhavanData: rm.bhavanData[0],
+                        roomId: rm._id,
                         emptyBed: rm.noOfBed - rm.bookerIds.length,
                         flag: true,
                         newPerson: true,
@@ -233,6 +242,13 @@ function ViewBooking() {
                                 src={deleteIcon}
                                 className={style.actionIcon}
                                 onClick={() => {
+                                  setShowConfirmation({
+                                    flag: true,
+                                    data: {
+                                      ...um,
+                                      bhavanId: rm.bhavanData[0]._id,
+                                    },
+                                  });
                                   // dispatch(
                                   //   deleteLabour({
                                   //     labourId: m._id,
@@ -260,6 +276,14 @@ function ViewBooking() {
             </>
           ))}
       </div>
+      {showConfirmation.flag && (
+        <ConfirmModalPopup
+          onCancle={() => setShowConfirmation(false)}
+          onSuccess={() => {
+            console.log(showConfirmation.data, " <>?");
+          }}
+        />
+      )}
       {edit.flag && (
         <EditPopup
           setEdit={setEdit}

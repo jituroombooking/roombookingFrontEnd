@@ -30,9 +30,11 @@ function AddBooking({ noBgColor = false }) {
   const dispatch = useDispatch();
   const { state } = useLocation();
 
-  console.log(state.editBookingData, " <>?");
   useEffect(() => {
-    setBookingData({ ...state.editBookingData.userBookingData });
+    if (state) {
+      console.log(state, " <>?");
+      setBookingData({ ...state?.editBookingData?.userBookingData });
+    }
   }, [state]);
 
   const submitBookingData = () => {
@@ -120,7 +122,7 @@ function AddBooking({ noBgColor = false }) {
                   })
                 }
               />
-              {state.editBookingData && (
+              {state?.editBookingData && (
                 <button
                   onClick={() =>
                     setShowProof({ flag: true, id: boodkingData.identityProof })

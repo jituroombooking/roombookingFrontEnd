@@ -30,6 +30,7 @@ function EditPopup({
   };
 
   const submitBookingData = () => {
+    console.log(edit, " <>? Edit ");
     submitNewMemberData(edit);
   };
 
