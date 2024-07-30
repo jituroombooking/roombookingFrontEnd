@@ -5,6 +5,7 @@ import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 
 import {
+  deleteBooking,
   editRoom,
   editRoomNewMember,
   viewSingleRoom,
@@ -12,13 +13,13 @@ import {
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import Loading from "../../../Component/Loading/Loading";
-import { bookRoom, unAlottedMember } from "../../../Redux/Slice/booking";
+import { unAlottedMember } from "../../../Redux/Slice/booking";
 import EditPopup from "./EditPopup";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
 
 import style from "./viewBooking.module.scss";
 import "react-toastify/dist/ReactToastify.min.css";
-import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
 
 const initialState = {
   flag: false,
@@ -247,6 +248,7 @@ function ViewBooking() {
                                     data: {
                                       ...um,
                                       bhavanId: rm.bhavanData[0]._id,
+                                      roomId: state.roomId,
                                     },
                                   });
                                   // dispatch(
@@ -280,7 +282,20 @@ function ViewBooking() {
         <ConfirmModalPopup
           onCancle={() => setShowConfirmation(false)}
           onSuccess={() => {
-            console.log(showConfirmation.data, " <>?");
+            dispatch(
+              deleteBooking({
+                userId: showConfirmation.data._id,
+                roomId: showConfirmation.data.roomId,
+                bhavanId: showConfirmation.data.bhavanId,
+              })
+            ).then((deleteRes) => {
+              dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
+                if (getRes.payload.status === 200) {
+                  toast.success("Member deleted successfully");
+                  setShowConfirmation({ flag: false, data: null });
+                }
+              });
+            });
           }}
         />
       )}

@@ -401,6 +401,7 @@ function RoomBookingList() {
       : RoomBookingSlice.unAlottedMember;
 
   const renderRowSubComponent = ({ row }) => {
+    console.log(filterAlottedData[row.index], " <>?");
     return (
       <ReactTable
         columns={expandedRowColumn}

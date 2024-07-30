@@ -25,6 +25,7 @@ export const apiList = {
   unAlottedMember: `${roomBookingV1}/unAlottedMember`,
   editRoomWithUser: `${roomBookingV1}/editRoom`,
   editRoomWithNewUser: `${roomBookingV1}/editRoomWithNewUser`,
+  deleteRoomEdit: `${roomBookingV1}/deleteRoom`,
   addLabour: `${labourV1}/add`,
   deleteLabour: `${labourV1}`,
   updateLabour: `${labourV1}/update`,

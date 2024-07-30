@@ -111,6 +111,20 @@ export const editRoomNewMember = createAsyncThunk(
   }
 );
 
+export const deleteBooking = createAsyncThunk(
+  "room/deleteBooking",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    console.log(data, " <>?");
+    const payload = {
+      url: `${apiList.deleteRoomEdit}/${data.userId}/${data.roomId}/${data.bhavanId}`,
+      method: "delete",
+    };
+    return onAuthenticated(payload, true)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const roomSlice = createSlice({
   name: "room",
   initialState: {
@@ -276,6 +290,28 @@ const roomSlice = createSlice({
       };
     });
     builder.addCase(editRoomNewMember.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        error: true,
+        loading: false,
+        erromrMessage: payload.data,
+      };
+    });
+    builder.addCase(deleteBooking.fulfilled, (state, { payload }) => {
+      const existingArray = current(state);
+      return {
+        ...state,
+        loading: false,
+        error: false,
+      };
+    });
+    builder.addCase(deleteBooking.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(deleteBooking.rejected, (state, { payload }) => {
       return {
         ...state,
         error: true,
