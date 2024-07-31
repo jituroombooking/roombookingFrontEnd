@@ -51,8 +51,6 @@ function ViewBooking() {
   const { state } = useLocation();
   const dispatch = useDispatch();
 
-  console.log(roomSlice.singleRoomData, " <>?");
-
   useEffect(() => {
     dispatch(viewSingleRoom(state.roomId));
   }, []);
@@ -71,7 +69,8 @@ function ViewBooking() {
 
   const submitData = (data) => {
     setEdit({ ...initialState });
-    const { flag, ...restProps } = data;
+    const { flag, bhavanData, ...restProps } = data;
+    restProps.bhavanId = bhavanData._id;
     dispatch(editRoom(restProps)).then((editRes) => {
       if (editRes.payload.status === 200) {
         dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
@@ -105,19 +104,32 @@ function ViewBooking() {
       identityProof,
       mobileNumber,
       userId,
-      familyMember,
+      familyMember: 1,
       bhavanId: bhavanData._id,
     };
-    setEdit({ ...initialState });
-    dispatch(editRoomNewMember(newData)).then((editRes) => {
-      if (editRes.payload.status === 200) {
-        dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
-          if (getRes.payload.status === 200) {
-            toast.success("Room Edited Successfully");
-          }
-        });
-      }
-    });
+
+    if (data.newEdit) {
+      setEdit({ ...initialState });
+      dispatch(editRoomNewMember(newData)).then((editRes) => {
+        if (editRes.payload.status === 200) {
+          dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
+            if (getRes.payload.status === 200) {
+              toast.success("Room Edited Successfully");
+            }
+          });
+        }
+      });
+    } else {
+      dispatch(editRoom(newData)).then((editRes) => {
+        if (editRes.payload.status === 200) {
+          dispatch(viewSingleRoom(state.roomId)).then((getRes) => {
+            if (getRes.payload.status === 200) {
+              toast.success("Room Edited Successfully");
+            }
+          });
+        }
+      });
+    }
   };
 
   if (roomSlice.loading || BookingSlice.loading) {
@@ -175,6 +187,7 @@ function ViewBooking() {
                         emptyBed: rm.noOfBed - rm.bookerIds.length,
                         flag: true,
                         newPerson: true,
+                        newEdit: true,
                         familyMember: 1,
                         bookingFrom: new Date(Date.now()),
                         bookingTill: new Date(Date.now() + 3600 * 1000 * 48),
@@ -231,6 +244,7 @@ function ViewBooking() {
                                     bhavanData: rm.bhavanData[0],
                                     removePosition: i,
                                     newPerson: false,
+                                    newEdit: false,
                                     bookingFrom: new Date(Date.now()),
                                     bookingTill: new Date(
                                       Date.now() + 3600 * 1000 * 48

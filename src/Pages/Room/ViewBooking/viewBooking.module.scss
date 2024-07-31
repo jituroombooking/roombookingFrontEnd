@@ -107,9 +107,17 @@
       .newPersonContainer {
         display: flex;
         align-items: center;
+        .subheading {
+          display: flex;
+          align-items: center;
+          .alottedLabel {
+            margin-left: 8px;
+            font-size: 24px;
+          }
+        }
         .label {
           font-size: 24px;
-          width: 260px;
+          width: 100%;
         }
         .newPersonInput {
         }
@@ -295,4 +303,8 @@
 .btnDisable {
   background-color: $primarybgColor !important;
   cursor: not-allowed;
+}
+
+.alottedLabel {
+  display: block;
 }

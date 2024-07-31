@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReactSelect from "react-select";
 import moment from "moment";
 import ReactDatePicker from "react-datepicker";
+import ToggleButton from "react-toggle-button";
 
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
 
@@ -39,21 +40,20 @@ function EditPopup({
       <div className={style.idProofContainer}>
         <div className={style.header}>
           <div className={style.newPersonContainer}>
-            {!edit.newPerson && (
-              <>
-                <label htmlFor="newperson" className={style.label}>
-                  New Person
-                </label>
-                <input
-                  id="newperson"
-                  type="checkbox"
-                  className={style.newPersonInput}
+            {!edit.newEdit && (
+              <div className={style.subheading}>
+                <ToggleButton
+                  inactiveLabel=""
+                  activeLabel=""
                   value={edit.newPerson}
-                  onChange={() =>
-                    setEdit({ ...edit, newPerson: !edit.newPerson })
-                  }
+                  onToggle={() => {
+                    setEdit({ ...edit, newPerson: !edit.newPerson });
+                  }}
                 />
-              </>
+                <label className={style.alottedLabel}>
+                  {edit.newPerson ? "New" : "Existing"} Member
+                </label>
+              </div>
             )}
           </div>
           <img

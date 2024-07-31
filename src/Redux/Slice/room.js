@@ -91,7 +91,7 @@ export const editRoom = createAsyncThunk(
       method: "put",
       data,
     };
-    return onAuthenticated(payload)
+    return onAuthenticated(payload, true)
       .then((res) => fulfillWithValue(res))
       .catch((err) => rejectWithValue(err));
   }
