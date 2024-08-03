@@ -12,6 +12,7 @@ import {
 } from "../../../Redux/Slice/room";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
+import plusIcon from "../../../util/Assets/Icon/plus.png";
 import Loading from "../../../Component/Loading/Loading";
 import { unAlottedMember } from "../../../Redux/Slice/booking";
 import EditPopup from "./EditPopup";
@@ -32,6 +33,7 @@ const initialState = {
   memberAllotted: 0,
   mobileNumber: "",
   _id: "",
+  newFamilyMember: 0,
 };
 
 function ViewBooking() {
@@ -194,7 +196,28 @@ function ViewBooking() {
                       })
                     }
                   >
-                    Add Member
+                    <img src={plusIcon} alt="plus" className={style.addIcon} />
+                    New Member
+                  </button>
+                  <button
+                    className={style.addExistingMemberBtn}
+                    onClick={() => {
+                      dispatch(unAlottedMember());
+                      setEdit({
+                        bhavanData: rm.bhavanData[0],
+                        roomId: rm._id,
+                        emptyBed: rm.noOfBed - rm.bookerIds.length,
+                        flag: true,
+                        newPerson: false,
+                        newEdit: false,
+                        familyMember: 1,
+                        bookingFrom: new Date(Date.now()),
+                        bookingTill: new Date(Date.now() + 3600 * 1000 * 48),
+                      });
+                    }}
+                  >
+                    <img src={plusIcon} alt="plus" className={style.addIcon} />
+                    Existing Member
                   </button>
                 </div>
               )}
@@ -321,6 +344,7 @@ function ViewBooking() {
           submitNewMemberData={submitNewMemberData}
           reInitilize={() => setEdit({ ...initialState })}
           formvalidation={formvalidation}
+          setFormvalidation={setFormvalidation}
           setSelectFamily={setSelectFamily}
           selectFamily={selectFamily}
           userOption={userOption}

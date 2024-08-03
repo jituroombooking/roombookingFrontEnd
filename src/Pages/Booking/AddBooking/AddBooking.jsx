@@ -32,7 +32,6 @@ function AddBooking({ noBgColor = false }) {
 
   useEffect(() => {
     if (state) {
-      console.log(state, " <>?");
       setBookingData({ ...state?.editBookingData?.userBookingData });
     }
   }, [state]);

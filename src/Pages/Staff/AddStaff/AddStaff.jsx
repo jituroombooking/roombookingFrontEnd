@@ -29,7 +29,6 @@ function AddStaff() {
   const { state } = useLocation();
 
   useEffect(() => {
-    console.log(state, " <>?");
     if (state?.staffEditData && staffData.fullName === "") {
       setStaffData(state.staffEditData);
     }

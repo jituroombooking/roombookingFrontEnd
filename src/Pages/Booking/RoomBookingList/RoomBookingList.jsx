@@ -50,41 +50,58 @@ function RoomBookingList() {
           {
             id: "bhavanName",
             Header: "Name",
-            accessor: (data) => (
-              <div className={`${style.mainText} ${style.landmarkContainer}`}>
-                {data.bhavanData.map((m) => (
-                  <div className={style.landMarkItem}>{m.bhavanName}</div>
-                ))}
-              </div>
-            ),
+            accessor: (data) => {
+              const bhanavnMap = new Map();
+              data.bhavanData.map((m) => {
+                if (!bhanavnMap.get(m._id)) {
+                  bhanavnMap.set(m._id, m);
+                }
+              });
+              const filteredArray = Array.from(bhanavnMap, ([name, value]) => ({
+                ...value,
+              }));
+              return (
+                <div className={`${style.mainText} ${style.landmarkContainer}`}>
+                  {filteredArray.map((m) => (
+                    <div className={style.landMarkItem}>{m.bhavanName}</div>
+                  ))}
+                </div>
+              );
+            },
           },
           {
             Header: "Room #",
-            accessor: (data) => (
-              <div className={`${style.mainText} ${style.roomCircleContainer}`}>
-                {data.roomData.map((m) => (
-                  <div className={style.parentRoomCircle}>
-                    <div
-                      key={`${m.roomNumber}`}
-                      className={style.roomCircle}
-                      style={{
-                        backgroundColor:
-                          m.noOfBed === m.bookerIds.length ? "red" : "#19891c",
-                      }}
-                      onClick={() => {
-                        navigate("/viewBooking", {
-                          state: {
-                            roomId: m._id,
-                          },
-                        });
-                      }}
-                    >
-                      {m.roomNumber}
+            accessor: (data) => {
+              return (
+                <div
+                  className={`${style.mainText} ${style.roomCircleContainer}`}
+                >
+                  {data.roomData.map((m) => (
+                    <div className={style.parentRoomCircle}>
+                      <div
+                        key={`${m.roomNumber}`}
+                        className={style.roomCircle}
+                        style={{
+                          backgroundColor:
+                            m.noOfBed === m.bookerIds.length
+                              ? "red"
+                              : "#19891c",
+                        }}
+                        onClick={() => {
+                          navigate("/viewBooking", {
+                            state: {
+                              roomId: m._id,
+                            },
+                          });
+                        }}
+                      >
+                        {m.roomNumber}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ),
+                  ))}
+                </div>
+              );
+            },
           },
           {
             Header: "Landmark",
@@ -200,12 +217,6 @@ function RoomBookingList() {
               <button className={style.addRoomBtnContainer}>
                 <img src={AddRoomIcon} className={style.idProof} />
               </button>
-              // <button
-              //   className={style.addRoomBtn}
-              //   onClick={() => console.log(data)}
-              // >
-              //   Allote Room
-              // </button>
             ),
           },
           {
@@ -417,7 +428,6 @@ function RoomBookingList() {
       : RoomBookingSlice.unAlottedMember;
 
   const renderRowSubComponent = ({ row }) => {
-    console.log(filterAlottedData[row.index], " <>?");
     return (
       <ReactTable
         columns={expandedRowColumn}

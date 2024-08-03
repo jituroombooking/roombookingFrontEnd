@@ -108,7 +108,6 @@ function AttendenceView() {
               })
             ).then((getSingleLabourRes) => {
               toast.success("Marked Paid Successfully");
-              console.log(getSingleLabourRes.payload.data);
               setCurrentLabourData(getSingleLabourRes.payload.data);
             });
           }
@@ -117,8 +116,6 @@ function AttendenceView() {
     });
     // }
   };
-
-  console.log(currentLabourData, " <>?");
 
   const paidStatus =
     currentLabourData?.monthPaid > 0 &&
@@ -271,18 +268,6 @@ function AttendenceView() {
                           </a>
                         )}
                       </BlobProvider>
-                      {console.log(
-                        currentLabourData?.monthPaid?.includes(
-                          new Date(
-                            new Date().getFullYear(),
-                            monthDays.currentMonth - 1,
-                            2
-                          )
-                            .toISOString()
-                            .split("T")[0]
-                        ),
-                        " <>? JACK"
-                      )}
                       {!currentLabourData?.monthPaid?.includes(
                         new Date(
                           new Date().getFullYear(),

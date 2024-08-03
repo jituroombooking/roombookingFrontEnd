@@ -114,7 +114,6 @@ export const editRoomNewMember = createAsyncThunk(
 export const deleteBooking = createAsyncThunk(
   "room/deleteBooking",
   (data, { fulfillWithValue, rejectWithValue }) => {
-    console.log(data, " <>?");
     const payload = {
       url: `${apiList.deleteRoomEdit}/${data.userId}/${data.roomId}/${data.bhavanId}`,
       method: "delete",

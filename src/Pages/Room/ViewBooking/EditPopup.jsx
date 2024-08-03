@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReactSelect from "react-select";
 import moment from "moment";
 import ReactDatePicker from "react-datepicker";
 import ToggleButton from "react-toggle-button";
-
+import ReactTable from "../../../Component/ReactTable/ReactTable";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
+import IDProofIcon from "../../../util/Assets/Icon/id.png";
 
 import style from "./viewBooking.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
+import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
 
 function EditPopup({
   setEdit,
@@ -20,18 +22,74 @@ function EditPopup({
   unAlottedMember,
   submitData,
   submitNewMemberData,
+  setFormvalidation,
 }) {
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
 
-  console.log(edit, " <>? IN EDIT ");
+  const existingMemberColumn = useMemo(
+    () => [
+      {
+        id: "select",
+        Header: "Select",
+        accessor: (data) => {
+          return (
+            <input
+              type="checkbox"
+              className={style.selectmemberBox}
+              checked={selected._id === data._id}
+              onChange={() => {
+                setSelected(data);
+                setEdit({ ...edit, ...data });
+              }}
+            />
+          );
+        },
+      },
+      {
+        id: "name",
+        Header: "Name",
+        accessor: (data) => <div>{data.fullName}</div>,
+      },
+      {
+        id: "member",
+        Header: "Member",
+        columns: [
+          {
+            id: "familyMember",
+            Header: "Total",
+            accessor: (data) => <div>{data.familyMember}</div>,
+          },
+          {
+            id: "memberAllotted",
+            Header: "Allotted",
+            accessor: (data) => <div>{data.memberAllotted}</div>,
+          },
+          {
+            id: "pending",
+            Header: "Un-Allotted",
+            accessor: (data) => (
+              <div>{data.familyMember - data.memberAllotted}</div>
+            ),
+          },
+        ],
+      },
+    ],
+    [selected]
+  );
 
   const submitNewPerson = () => {
-    submitData(edit);
+    if (
+      edit.emptyBed > 1 &&
+      (edit.newFamilyMember === 0 || !edit.newFamilyMember)
+    ) {
+      setFormvalidation(true);
+    } else {
+      submitData(edit);
+    }
   };
 
   const submitBookingData = () => {
-    console.log(edit, " <>? Edit ");
     submitNewMemberData(edit);
   };
 
@@ -88,7 +146,7 @@ function EditPopup({
                 </div>
                 <div className={style.formItem}>
                   <labal className={style.eventLabel}>
-                    Family members* (Max {edit.emptyBed} member can be alotted)
+                    Family members* (Max {edit.emptyBed} member can be allotted)
                   </labal>
                   <div className={style.formItem}>
                     <input
@@ -157,12 +215,6 @@ function EditPopup({
                         Mobile number is required.
                       </div>
                     )}
-                    {/* {edit.mobileNumber !== "" &&
-          !validatemobile(edit.mobileNumber) && (
-            <div className={style.formValidationError}>
-              Mobile number is not valid.
-            </div>
-          )} */}
                   </div>
                 </div>
               </div>
@@ -220,118 +272,155 @@ function EditPopup({
           ) : (
             <div className={style.existingUserContainer}>
               <div className={style.bookingFormContainer}>
-                <div className={style.row}>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Full Name: {edit.fullName}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Mobile Number : {edit.mobileNumber}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      <button
-                        className={`${style.viewIdBtn} ${
-                          !edit.identityProof && style.btnDisable
-                        }`}
-                        onClick={() => {
-                          console.log("again clicked <>?");
-                          edit.identityProof && setOpen(true);
-                        }}
-                      >
-                        View ID Proof
-                      </button>
+                {selected !== "" ? (
+                  <>
+                    <div className={style.row}>
                       <div
-                        className={`${style.idProofParentContainer} ${
-                          open ? style.block : style.hidden
-                        }`}
+                        className={`${style.rowItem} ${style.nameIconContainer}`}
                       >
-                        <div className={style.idProofContainer}>
-                          <div className={style.closeHeader}>
-                            <button
-                              className={style.closeBtn}
-                              onClick={() => setOpen(false)}
-                            >
-                              Close
-                            </button>
+                        <label className={style.labelValue}>
+                          Full Name: {edit.fullName}
+                        </label>
+                        <label className={style.labelValue}>
+                          <img
+                            src={IDProofIcon}
+                            className={`${style.idProof} ${style.lmargin}`}
+                            onClick={() => {
+                              edit.identityProof && setOpen(true);
+                            }}
+                          />
+                          <div
+                            className={`${style.idProofParentContainer} ${
+                              open ? style.block : style.hidden
+                            }`}
+                          >
+                            <ViewIdProof
+                              idProof={edit.identityProof}
+                              path="userbooking"
+                              onClose={() => setOpen(false)}
+                            />
                           </div>
-                          <div>
-                            {edit.identityProof &&
-                            edit.identityProof.split(".").pop() === "pdf" ? (
-                              <div className={style.pdfContainer}>
-                                <embed
-                                  src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${edit.identityProof}`}
-                                  type="application/pdf"
-                                  width="100%"
-                                  height="600px"
-                                />
-                              </div>
-                            ) : (
-                              <img
-                                src={`https://jituroombooking.s3.eu-north-1.amazonaws.com/userbooking/${edit.identityProof}`}
-                                alt="userId"
-                                className={style.userIdImg}
+                        </label>
+                      </div>
+                      <div className={style.rowItem}>
+                        <label className={style.labelValue}>
+                          Mobile Number : {edit.mobileNumber}
+                        </label>
+                      </div>
+                      <div className={style.rowItem}>
+                        <label className={style.labelValue}></label>
+                      </div>
+                      <div className={style.rowItem}>
+                        <label className={style.labelValue}>
+                          Booking from:{" "}
+                          {moment(edit.bookingFrom).format("DD/MM/YYYY")}
+                        </label>
+                      </div>
+                      <div className={style.rowItem}>
+                        <label className={style.labelValue}>
+                          Booking TIll :{" "}
+                          {moment(edit.bookingTill).format("DD/MM/YYYY")}
+                        </label>
+                      </div>
+                      <div className={style.rowItem}>
+                        <label className={style.labelValue}>
+                          Total Members: {edit.familyMember}.
+                        </label>
+                        <label
+                          className={`${style.labelValue} ${style.lmargin}`}
+                        >
+                          Alotted Member: {edit.memberAllotted}
+                        </label>
+                      </div>
+                      {edit.emptyBed > 1 ? (
+                        <div>
+                          <div className={style.formItem}>
+                            <labal className={style.eventLabel}>
+                              Family members* (Max {edit.emptyBed} member can be
+                              allotted)
+                            </labal>
+                            <div className={style.formItem}>
+                              <input
+                                type="number"
+                                className={style.eventInput}
+                                value={
+                                  !edit.emptyBed ? 1 : edit.newFamilyMember
+                                }
+                                disabled={!edit.emptyBed}
+                                onBlur={(e) => {
+                                  if (
+                                    parseInt(e.target.value) > edit.emptyBed
+                                  ) {
+                                    setEdit({
+                                      ...edit,
+                                      newFamilyMember: edit.emptyBed,
+                                    });
+                                  }
+                                }}
+                                onChange={(e) =>
+                                  setEdit({
+                                    ...edit,
+                                    newFamilyMember: parseInt(e.target.value),
+                                  })
+                                }
                               />
-                            )}
+                              {formvalidation &&
+                                (edit.newFamilyMember === 0 ||
+                                  !edit.newFamilyMember) && (
+                                  <div className={style.formValidationError}>
+                                    New Family members is required.
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                          <div className={`${style.rowItem} ${style.tmargin}`}>
+                            <label className={`${style.labelValue} `}>
+                              {edit.newFamilyMember} Family Member from "
+                              {edit.fullName}" will be added to{" "}
+                              {edit.bhavanData.bhavanName} Bhavan
+                            </label>
                           </div>
                         </div>
-                      </div>
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Booking from:{" "}
-                      {moment(edit.bookingFrom).format("DD/MM/YYYY")}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Booking TIll :{" "}
-                      {moment(edit.bookingTill).format("DD/MM/YYYY")}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Family Members: {edit.familyMember}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      Alotted Member :{edit.memberAllotted}
-                    </label>
-                  </div>
-                  <div className={style.rowItem}>
-                    <label className={style.labelValue}>
-                      One Family Member from "{edit.fullName}" will be added to{" "}
-                      {edit.bhavanData.bhavanName} Bhavan
-                    </label>
-                  </div>
-                </div>
+                      ) : (
+                        <div className={style.rowItem}>
+                          <label className={style.labelValue}>
+                            One Family Member from "{edit.fullName}" will be
+                            added to {edit.bhavanData.bhavanName} Bhavan
+                          </label>
+                        </div>
+                      )}
+                    </div>
 
-                <div className={style.btnContainer}>
-                  <button
-                    className={style.resetBtn}
-                    // onClick={() => setEdit({ ...initialState })}
-                  >
-                    Reset
-                  </button>
+                    <div className={style.btnContainer}>
+                      <button
+                        className={style.resetBtn}
+                        // onClick={() => setEdit({ ...initialState })}
+                      >
+                        Reset
+                      </button>
 
-                  <button
-                    className={style.submitbtn}
-                    onClick={() => submitNewPerson()}
-                  >
-                    Add Family Member
-                  </button>
-                </div>
+                      <button
+                        className={style.submitbtn}
+                        onClick={() => submitNewPerson()}
+                      >
+                        Add Family Member
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className={style.row}>
+                    <div className={style.rowItem}>
+                      <label className={style.labelValue}>
+                        Select fammily member from table
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className={style.parentUserList}>
                 <div className={style.headerContainer}>
                   <ReactSelect
                     className={style.selectFilter}
-                    // styles={colourStyles}
                     placeholder={
                       selectFamily.value === ""
                         ? "Family Names"
@@ -348,30 +437,12 @@ function EditPopup({
                     </label>
                   </div>
                 </div>
-                <div className={style.userItem}>
-                  <div className={style.firstCol}>Name</div>
-                  <div className={style.secondCol}>Family Member</div>
-                  <div className={style.thirdCol}>Member Allotted</div>
-                </div>
-                <ul className={style.userList}>
-                  {unAlottedMember
-                    .filter((f) => f.fullName.includes(selectFamily.value))
-                    .map((m) => (
-                      <li
-                        className={`${style.userItem} ${
-                          selected === m._id && style.selectedCell
-                        }`}
-                        onClick={() => {
-                          setSelected(m._id);
-                          setEdit({ ...edit, ...m });
-                        }}
-                      >
-                        <div className={style.firstCol}>{m.fullName}</div>
-                        <div className={style.secondCol}>{m.familyMember}</div>
-                        <div className={style.thirdCol}>{m.memberAllotted}</div>
-                      </li>
-                    ))}
-                </ul>
+                <ReactTable
+                  columns={existingMemberColumn}
+                  data={unAlottedMember.filter((f) =>
+                    f.fullName.includes(selectFamily.value)
+                  )}
+                />
               </div>
             </div>
           )}

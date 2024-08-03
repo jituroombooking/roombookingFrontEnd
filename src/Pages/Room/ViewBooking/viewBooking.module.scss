@@ -23,9 +23,25 @@
       justify-content: flex-end;
       .addMemberBtn {
         background-color: $primaryBtnColor;
+        color: $whiteColor;
+        display: flex;
+        align-items: center;
         &:hover {
-          color: $whiteColor;
+          color: $black;
+          font-weight: 700;
           background-color: $secondaryBtnColor;
+        }
+      }
+      .addExistingMemberBtn {
+        margin-left: 16px;
+        background-color: $secondaryBtnColor;
+        color: $whiteColor;
+        display: flex;
+        align-items: center;
+        &:hover {
+          color: $black;
+          font-weight: 700;
+          background-color: $primaryBtnColor;
         }
       }
     }
@@ -207,6 +223,14 @@
   height: 32px;
   cursor: pointer;
 }
+.addIcon {
+  height: 16px;
+  margin-right: 8px;
+}
+.formValidationError {
+  color: red;
+  margin-top: 4px;
+}
 
 .formRow {
   display: flex;
@@ -307,4 +331,18 @@
 
 .alottedLabel {
   display: block;
+}
+.selectmemberBox {
+  height: 20px;
+}
+.lmargin {
+  margin-left: 8px;
+}
+.tmargin {
+  margin-top: 8px;
+}
+
+.nameIconContainer {
+  display: flex;
+  align-items: center;
 }
