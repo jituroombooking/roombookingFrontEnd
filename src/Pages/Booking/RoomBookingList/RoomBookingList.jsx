@@ -9,6 +9,7 @@ import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
+import AddRoomIcon from "../../../util/Assets/Icon/addRoomIcon.png";
 import {
   deleteBookedRoom,
   getBookedRooms,
@@ -192,6 +193,21 @@ function RoomBookingList() {
         Header: "Action",
         isVisiable: false,
         columns: [
+          {
+            id: "roomAllote",
+            Header: "Allote",
+            accessor: (data) => (
+              <button className={style.addRoomBtnContainer}>
+                <img src={AddRoomIcon} className={style.idProof} />
+              </button>
+              // <button
+              //   className={style.addRoomBtn}
+              //   onClick={() => console.log(data)}
+              // >
+              //   Allote Room
+              // </button>
+            ),
+          },
           {
             id: "delete",
             Header: "Delete",

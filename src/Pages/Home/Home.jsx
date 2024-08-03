@@ -11,12 +11,12 @@ import Loading from "../../Component/Loading/Loading";
 import { getEventData, getEventMemories } from "../../Redux/Slice/event";
 import EventList from "../Event/EventList/EventList";
 
+import AddBooking from "../Booking/AddBooking/AddBooking";
 import style from "./home.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "react-toastify/dist/ReactToastify.min.css";
-import AddBooking from "../Booking/AddBooking/AddBooking";
 
 const initialState = {
   fullName: "",

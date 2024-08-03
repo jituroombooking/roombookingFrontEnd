@@ -119,6 +119,22 @@
   }
 }
 
+.addRoomBtnContainer {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 48px;
+  &:hover {
+    color: $whiteColor;
+    background-color: $tertiaryCardColor;
+  }
+  .plusIcon {
+    font-size: 16px;
+  }
+}
+
 .extraCol {
   width: 6% !important;
 }
