@@ -1,19 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
+import { toast, ToastContainer } from "react-toastify";
 
 import { deleteRoom, getRooms } from "../../../Redux/Slice/room";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import Loading from "../../../Component/Loading/Loading";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
 
 import style from "./roomList.module.scss";
 import "react-tooltip/dist/react-tooltip.css";
-import PageTitle from "../../../Component/PageTitle/PageTitle";
+import "react-toastify/dist/ReactToastify.min.css";
 
 function RoomList() {
+  const [showConfirmation, setShowConfirmation] = useState({
+    flag: false,
+    data: "",
+  });
+
   const roomsSlice = useSelector((state) => state.room);
   const authData = useSelector((state) => state.login);
 
@@ -78,6 +86,7 @@ function RoomList() {
           </button>
         </div>
       </div>
+      <ToastContainer />
       <div className={style.roomTableContainer}>
         {Array.isArray(roomsSlice.roomData) && (
           <>
@@ -126,7 +135,9 @@ function RoomList() {
                       />
                       <img
                         src={deleteIcon}
-                        onClick={() => dispatch(deleteRoom(m._id))}
+                        onClick={() =>
+                          setShowConfirmation({ flag: true, data: m._id })
+                        }
                         className={style.actionIcon}
                       />
                     </td>
@@ -140,6 +151,20 @@ function RoomList() {
           </>
         )}
       </div>
+      {showConfirmation.flag && (
+        <ConfirmModalPopup
+          onCancle={() => setShowConfirmation({ flag: false, data: "" })}
+          descText="Deleting Bhnvan will delete the User Booking also"
+          onSuccess={() => {
+            dispatch(deleteRoom(showConfirmation.data)).then((delRes) => {
+              if (delRes.payload.status === 200) {
+                toast.success("Bhavan deleted successfully");
+                setShowConfirmation({ flag: false, data: "" });
+              }
+            });
+          }}
+        />
+      )}
     </div>
   );
 }

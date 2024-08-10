@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Slide, toast, ToastContainer } from "react-toastify";
 import QRCode from "qrcode";
+import moment from "moment";
 
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
@@ -19,18 +20,21 @@ import QrScaan from "../../../util/Assets/Icon/qrScan.png";
 import Scanner from "../Scanner/Scanner";
 import AttendenceView from "../../../util/Assets/Icon/eye.png";
 import CloseIcon from "../../../util/Assets/Icon/cross.png";
-
-import style from "./labourList.module.scss";
-import "react-toastify/dist/ReactToastify.min.css";
-import moment from "moment";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
 import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
 
+import style from "./labourList.module.scss";
+import "react-toastify/dist/ReactToastify.min.css";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
+
 function LabourList() {
-  const [qrId, setQrId] = useState({ id: "", name: "" });
   const [qrUrl, setQrUrl] = useState({ id: "", name: "", imgUrl: "" });
   const [openScanner, setOpenScanner] = useState({ flag: false, data: "" });
   const [idProof, setIdproof] = useState({ flag: false, id: "" });
+  const [showConfirmation, setShowConfirmation] = useState({
+    flag: false,
+    data: "",
+  });
 
   const LabourSlice = useSelector((state) => state.labour);
   const authData = useSelector((state) => state.login);
@@ -136,13 +140,9 @@ function LabourList() {
                         <img
                           src={QR}
                           alt="QR"
-                          onClick={() => {
-                            setQrId({
-                              id: m._id,
-                              name: m.labourName,
-                            });
-                            generateQR({ id: m._id, name: m.labourName });
-                          }}
+                          onClick={() =>
+                            generateQR({ id: m._id, name: m.labourName })
+                          }
                           className={style.actionIcon}
                         />
                         <img
@@ -176,15 +176,12 @@ function LabourList() {
                           src={deleteIcon}
                           className={style.actionIcon}
                           onClick={() => {
-                            dispatch(
-                              deleteLabour({
+                            setShowConfirmation({
+                              flag: true,
+                              data: {
                                 labourId: m._id,
                                 imgId: m.labourIdProof,
-                              })
-                            ).then((delRes) => {
-                              if (delRes.payload.status === 200) {
-                                toast.success("delete sucessfully");
-                              }
+                              },
                             });
                           }}
                         />
@@ -225,6 +222,25 @@ function LabourList() {
             />
           </div>
         </div>
+      )}
+      {showConfirmation.flag && (
+        <ConfirmModalPopup
+          descText="Are you sure to delete Labour"
+          onCancle={() => setShowConfirmation({ flag: false, data: "" })}
+          onSuccess={() =>
+            dispatch(
+              deleteLabour({
+                labourId: showConfirmation.data.labourId,
+                imgId: showConfirmation.data.labourIdProof,
+              })
+            ).then((delRes) => {
+              if (delRes.payload.status === 200) {
+                toast.success("delete sucessfully");
+                setShowConfirmation({ flag: false, data: "" });
+              }
+            })
+          }
+        />
       )}
       {idProof.flag && (
         <ViewIdProof

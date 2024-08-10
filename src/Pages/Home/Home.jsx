@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ReactDatePicker from "react-datepicker";
 import Slider from "react-slick";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -10,8 +9,8 @@ import { bookRoom } from "../../Redux/Slice/booking";
 import Loading from "../../Component/Loading/Loading";
 import { getEventData, getEventMemories } from "../../Redux/Slice/event";
 import EventList from "../Event/EventList/EventList";
-
 import AddBooking from "../Booking/AddBooking/AddBooking";
+
 import style from "./home.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import "slick-carousel/slick/slick.css";

@@ -33,10 +33,12 @@
     .actionContainer {
       display: flex;
       align-items: center;
+
       .selectFilter {
         margin-right: 24px;
       }
       .clearFilter {
+        padding: 16px !important;
         margin-right: 16px;
         &:hover {
           color: $whiteColor;
@@ -44,13 +46,20 @@
         }
       }
       .addRoomBtn {
+        display: flex;
+        align-items: center;
         background-color: $primaryBtnColor;
         color: $whiteColor;
         font-size: 600;
         margin-right: 8px;
+        svg {
+          height: 24px;
+          width: 24px;
+        }
         &:hover {
           color: $whiteColor;
           background-color: $tertiaryCardColor;
+          font-weight: 700;
         }
       }
       .refreshIocn {
@@ -60,13 +69,53 @@
       }
     }
   }
-  .subheading {
+  .subHeadingContainer {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 24px;
-    .alottedLabel {
-      margin-left: 4px;
-      font-weight: 700;
+    .roomIndicatorsParent {
+      display: flex;
+      align-items: center;
+      .roomIndicatorLabel {
+        font-weight: 700;
+        font-size: 24px;
+        text-align: center;
+        margin-right: 8px;
+      }
+      .roomIndicators {
+        display: flex;
+        margin-right: 16px;
+        color: $whiteColor;
+        font-weight: 700;
+        .primaryCard {
+          background-color: $primaryCardColor;
+        }
+        .secondaryCard {
+          background-color: $secondaryCardColor;
+        }
+        .tertiaryCard {
+          background-color: $tertiaryCardColor;
+        }
+        .indicatorContainer {
+          padding: 8px;
+          width: 90px;
+          box-shadow: 5px 5px 8px 3px gray;
+          border-radius: 8px;
+          margin-right: 12px;
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+    .subheading {
+      display: flex;
+      align-items: center;
+      .alottedLabel {
+        margin-left: 4px;
+        font-weight: 700;
+      }
     }
   }
   .roomBookingTableContainer {
@@ -189,25 +238,25 @@
 .roomCircleContainer {
   display: flex;
   flex-direction: column;
-  .parentRoomCircle {
-    height: 50px;
+}
+.parentRoomCircle {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .roomCircle {
+    margin-right: 4px;
+    margin-bottom: 2px;
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 14px;
+    padding: 6px 0px;
     display: flex;
     align-items: center;
     justify-content: center;
-    .roomCircle {
-      margin-right: 4px;
-      margin-bottom: 2px;
-      cursor: pointer;
-      border-radius: 50%;
-      font-size: 14px;
-      padding: 6px 0px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: $whiteColor;
-      font-weight: 600;
-      width: 32px;
-    }
+    color: $whiteColor;
+    font-weight: 600;
+    width: 32px;
   }
 }
 .headerInput {
@@ -238,4 +287,48 @@
 
 .selectFilter {
   width: 240px;
+}
+.addIcon {
+  height: 16px;
+  margin-right: 8px;
+}
+
+.bhavanCardContainer {
+  .bhavanCard {
+    padding: 8px 16px;
+    background-color: $primarybgColor;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    .bhavanCardHeader {
+      display: flex;
+      .bhavanCardLableContainer {
+        margin-right: 8px;
+        font-size: 18px;
+        .labelValue {
+          font-weight: 700;
+          font-size: 20px;
+        }
+      }
+    }
+    .bhavanRoomContainer {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-around;
+    }
+  }
+}
+
+.AddRoomIcon {
+  cursor: pointer;
+  height: 28px;
+  width: 28px;
+}
+
+.btnDisable {
+  background-color: $primarybgColor !important;
+  cursor: not-allowed;
+  color: black !important;
 }

@@ -9,7 +9,7 @@ import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
-import AddRoomIcon from "../../../util/Assets/Icon/addRoomIcon.png";
+import AddRoomIcon from "../../../util/Assets/Icon/addRoom.png";
 import {
   deleteBookedRoom,
   getBookedRooms,
@@ -22,8 +22,12 @@ import DownArrow from "../../../util/Assets/Icon/down.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
 import { getReactSelectData } from "../../../util/util";
+import Cross from "../../../util/Assets/Icon/cross.png";
+import Plus from "../../../util/Assets/SVG/Plus";
+import { getRoomCount } from "../../../Redux/Slice/room";
 
 import style from "./roomBookingList.module.scss";
+import RoomAllotteFromTable from "./RoomAllotteFromTable/RoomAllotteFromTable";
 
 const initialState = { flag: false, id: "" };
 
@@ -35,102 +39,21 @@ function RoomBookingList() {
   });
   const [idProof, setIdproof] = useState({ ...initialState });
   const [alottedMemberFlag, setAlottedMemberFlag] = useState(true);
+  const [showConfirmation, setShowConfirmation] = useState({
+    flage: false,
+    data: "",
+  });
+  const [showAllottement, setShowAllottement] = useState({
+    flag: false,
+    data: "",
+  });
 
   const RoomBookingSlice = useSelector((state) => state.booking);
   const AuthDataSlice = useSelector((state) => state.login);
+  const roomSlice = useSelector((state) => state.room);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const expandedRowColumn = React.useMemo(
-    () => [
-      {
-        Header: "Bhavan",
-        columns: [
-          {
-            id: "bhavanName",
-            Header: "Name",
-            accessor: (data) => {
-              const bhanavnMap = new Map();
-              data.bhavanData.map((m) => {
-                if (!bhanavnMap.get(m._id)) {
-                  bhanavnMap.set(m._id, m);
-                }
-              });
-              const filteredArray = Array.from(bhanavnMap, ([name, value]) => ({
-                ...value,
-              }));
-              return (
-                <div className={`${style.mainText} ${style.landmarkContainer}`}>
-                  {filteredArray.map((m) => (
-                    <div className={style.landMarkItem}>{m.bhavanName}</div>
-                  ))}
-                </div>
-              );
-            },
-          },
-          {
-            Header: "Room #",
-            accessor: (data) => {
-              return (
-                <div
-                  className={`${style.mainText} ${style.roomCircleContainer}`}
-                >
-                  {data.roomData.map((m) => (
-                    <div className={style.parentRoomCircle}>
-                      <div
-                        key={`${m.roomNumber}`}
-                        className={style.roomCircle}
-                        style={{
-                          backgroundColor:
-                            m.noOfBed === m.bookerIds.length
-                              ? "red"
-                              : "#19891c",
-                        }}
-                        onClick={() => {
-                          navigate("/viewBooking", {
-                            state: {
-                              roomId: m._id,
-                            },
-                          });
-                        }}
-                      >
-                        {m.roomNumber}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            },
-          },
-          {
-            Header: "Landmark",
-            className: style.landmarkHeader,
-            accessor: (data) => (
-              <div className={`${style.mainText} ${style.landmarkContainer}`}>
-                {data.bhavanData.map((m) => (
-                  <div className={style.landMarkItem}>{m.landmark}</div>
-                ))}
-              </div>
-            ),
-          },
-          {
-            Header: "No.Of Bed",
-            accessor: (data) => (
-              <div
-                className={`${style.mainText} ${style.noOfBedperRoomContainer}`}
-              >
-                {data.bhavanData.map((m) => (
-                  <div className={style.noOfBedItem}>{m.noOfBedperRoom}</div>
-                ))}
-              </div>
-            ),
-          },
-        ],
-      },
-    ],
-    []
-  );
 
   const unAlottedColumns = React.useMemo(
     () => [
@@ -158,8 +81,10 @@ function RoomBookingList() {
           },
           {
             id: "alotted",
-            Header: "Alotted",
-            accessor: (data) => <div>{data.memberAllotted}</div>,
+            Header: "Allotted",
+            accessor: (data) => {
+              return <div>{data.memberAllotted}</div>;
+            },
             width: 90,
           },
           {
@@ -212,17 +137,18 @@ function RoomBookingList() {
         columns: [
           {
             id: "roomAllote",
-            Header: "Allote",
+            Header: "Allotte",
             accessor: (data) => (
-              <button className={style.addRoomBtnContainer}>
-                <img src={AddRoomIcon} className={style.idProof} />
-              </button>
+              <img
+                onClick={() => setShowAllottement({ flag: true, data })}
+                className={style.AddRoomIcon}
+                src={AddRoomIcon}
+              />
             ),
           },
           {
             id: "delete",
             Header: "Delete",
-
             accessor: (data) => (
               <img
                 alt="delete icon"
@@ -310,10 +236,11 @@ function RoomBookingList() {
             width: 90,
           },
           {
-            Header: "Alotted",
-            accessor: (data) => (
-              <div>{data.userBookingData.memberAllotted}</div>
-            ),
+            Header: "Allotted",
+            accessor: (data) => {
+              console.log(data, " <>?");
+              return <div>{data.userBookingData.memberAllotted}</div>;
+            },
             width: 90,
           },
 
@@ -403,6 +330,12 @@ function RoomBookingList() {
   );
 
   useEffect(() => {
+    if (!roomSlice.roomData) {
+      dispatch(getRoomCount());
+    }
+  }, [roomSlice]);
+
+  useEffect(() => {
     if (!RoomBookingSlice.booking) {
       dispatch(getBookedRooms());
     }
@@ -428,11 +361,72 @@ function RoomBookingList() {
       : RoomBookingSlice.unAlottedMember;
 
   const renderRowSubComponent = ({ row }) => {
+    const { bhavanData, roomData } = filterAlottedData[row.index];
+    const bhavanMap = new Map();
+
+    bhavanData.map((m) => {
+      if (!bhavanMap.get(m._id)) {
+        bhavanMap.set(m._id, { ...m, roomData: [] });
+      }
+    });
+
+    roomData.map((rm) => {
+      if (bhavanMap.get(rm.bhavanId)) {
+        const bhavanData = bhavanMap.get(rm.bhavanId);
+        bhavanData.roomData.push(rm);
+      }
+    });
+
+    const finalArray = Array.from(bhavanMap, ([name, value]) => ({
+      ...value,
+    }));
+    console.log(finalArray, " <>?");
+
     return (
-      <ReactTable
-        columns={expandedRowColumn}
-        data={[filterAlottedData[row.index]]}
-      />
+      <div className={style.bhavanCardContainer}>
+        {finalArray.map((fm) => (
+          <div className={style.bhavanCard}>
+            <div className={style.bhavanCardHeader}>
+              <div className={style.bhavanCardLableContainer}>
+                <label className={style.label}>Bhavan Name: </label>
+                <label className={style.labelValue}>{fm.bhavanName}.</label>
+              </div>
+              <div className={style.bhavanCardLableContainer}>
+                <label className={style.label}>Bhavan landmark: </label>
+                <label className={style.labelValue}>{fm.landmark}.</label>
+              </div>
+              <div className={style.bhavanCardLableContainer}>
+                <label className={style.label}>No.of bed per room: </label>
+                <label className={style.labelValue}>{fm.noOfBedperRoom}.</label>
+              </div>
+            </div>
+            <div className={`${style.bhavanRoomContainer}`}>
+              <label className={style.label}>Room No. </label>
+              {fm.roomData.map((m) => (
+                <div className={style.parentRoomCircle}>
+                  <div
+                    key={`${m.roomNumber}`}
+                    className={style.roomCircle}
+                    style={{
+                      backgroundColor:
+                        m.noOfBed === m.bookerIds.length ? "red" : "#19891c",
+                    }}
+                    onClick={() => {
+                      navigate("/viewBooking", {
+                        state: {
+                          roomId: m._id,
+                        },
+                      });
+                    }}
+                  >
+                    {m.roomNumber}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     );
   };
 
@@ -500,66 +494,102 @@ function RoomBookingList() {
                 setSelectedBhavan({ value: "", label: "" });
               }}
             >
-              Clear Filter
+              <img className={style.addIcon} src={Cross} alt="Clear Filter" />
             </button>
             <button
-              className={style.addRoomBtn}
+              className={`${style.addRoomBtn} ${
+                (roomSlice.roomData?.emptyRoom || 0) === 0 && style.btnDisable
+              }`}
               onClick={() => navigate("/addBooking")}
             >
-              Add Booking
+              <Plus color="#fff" /> Booking
             </button>
             <img
               src={refreshIcon}
               onClick={() => {
                 dispatch(unAlottedMember());
                 dispatch(getBookedRooms());
+                dispatch(getRoomCount());
               }}
               className={style.refreshIocn}
             />
           </div>
         </div>
-        <div className={style.subheading}>
-          <ToggleButton
-            inactiveLabel=""
-            activeLabel=""
-            value={alottedMemberFlag}
-            onToggle={() => {
-              setAlottedMemberFlag(!alottedMemberFlag);
-            }}
-          />
-          <label className={style.alottedLabel}>
-            {alottedMemberFlag ? "Alotted" : "Un-Alotted"} Member Table
-          </label>
+        <div className={style.subHeadingContainer}>
+          <div className={style.subheading}>
+            <ToggleButton
+              inactiveLabel=""
+              activeLabel=""
+              value={alottedMemberFlag}
+              onToggle={() => {
+                setAlottedMemberFlag(!alottedMemberFlag);
+              }}
+            />
+            <label className={style.alottedLabel}>
+              {alottedMemberFlag ? "Alotted" : "Un-Alotted"} Member Table
+            </label>
+          </div>
+          {/* {!alottedMemberFlag && ( */}
+          <div className={style.roomIndicatorsParent}>
+            <div className={style.roomIndicatorLabel}>Room:</div>
+            <div className={style.roomIndicators}>
+              <div
+                className={`${style.indicatorContainer} ${style.primaryCard}`}
+              >
+                <label>Total: </label>
+                <label>{roomSlice.roomData?.totalNoRoom || 0}</label>
+              </div>
+              <div
+                className={`${style.indicatorContainer} ${style.secondaryCard}`}
+              >
+                <label>Allotted: </label>
+                <label>{roomSlice.roomData?.allotedRoom || 0}</label>
+              </div>
+              <div
+                className={`${style.indicatorContainer} ${style.tertiaryCard}`}
+              >
+                <label>Empty: </label>
+                <label>{roomSlice.roomData?.emptyRoom || 0}</label>
+              </div>
+            </div>
+          </div>
+          {/* )} */}
         </div>
         <div className={style.roomBookingTableContainer}>
           {alottedMemberFlag ? (
             <>
               {Array.isArray(RoomBookingSlice.booking) && (
-                <ReactTable
-                  data={filterAlottedData}
-                  columns={alottedColumns}
-                  key="alottedTable"
-                  renderRowSubComponent={renderRowSubComponent}
-                />
+                <>
+                  <ReactTable
+                    data={filterAlottedData}
+                    columns={alottedColumns}
+                    key="alottedTable"
+                    renderRowSubComponent={renderRowSubComponent}
+                  />
+                  {RoomBookingSlice.booking.length === 0 && (
+                    <div className={style.noData}>No Data !</div>
+                  )}
+                </>
               )}
             </>
           ) : (
             <>
               {Array.isArray(RoomBookingSlice.unAlottedMember) && (
-                <ReactTable
-                  columns={unAlottedColumns}
-                  data={filterUnAlottedData}
-                />
+                <>
+                  <ReactTable
+                    columns={unAlottedColumns}
+                    data={filterUnAlottedData}
+                  />
+                  {RoomBookingSlice.unAlottedMember.length === 0 && (
+                    <div className={style.noData}>No Data !</div>
+                  )}
+                </>
               )}
             </>
           )}
-
-          {Array.isArray(RoomBookingSlice.booking) &&
-            RoomBookingSlice.booking.length === 0 && (
-              <div className={style.noData}>No Data !</div>
-            )}
         </div>
       </div>
+      {showAllottement.flag && <RoomAllotteFromTable />}
       {idProof.flag && (
         <ViewIdProof
           idProof={idProof.id}

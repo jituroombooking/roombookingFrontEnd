@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
+import { ToastContainer, toast } from "react-toastify";
 
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
 import deleteIcon from "../../../util/Assets/Icon/delete.png";
@@ -9,10 +10,17 @@ import editIcon from "../../../util/Assets/Icon/edit.png";
 import { deleteEvent, getEventData } from "../../../Redux/Slice/event";
 import Loading from "../../../Component/Loading/Loading";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
 
 import style from "./eventList.module.scss";
+import "react-toastify/dist/ReactToastify.min.css";
 
 function EventList({ showHeading = true }) {
+  const [showConfirmation, setShowConfirmation] = useState({
+    flag: false,
+    data: "",
+  });
+
   const EventSlice = useSelector((state) => state.event);
 
   const dispatch = useDispatch();
@@ -31,6 +39,7 @@ function EventList({ showHeading = true }) {
 
   return (
     <div className={style.eventContainer}>
+      <ToastContainer />
       {showHeading && (
         <div className={style.roomHeading}>
           <PageTitle />
@@ -97,7 +106,9 @@ function EventList({ showHeading = true }) {
                         alt="delete icon"
                         src={deleteIcon}
                         className={style.actionIcon}
-                        onClick={() => dispatch(deleteEvent(m._id))}
+                        onClick={() =>
+                          setShowConfirmation({ flag: true, data: m._id })
+                        }
                       />
                     </td>
                   )}
@@ -111,6 +122,20 @@ function EventList({ showHeading = true }) {
           </>
         )}
       </div>
+      {showConfirmation.flag && (
+        <ConfirmModalPopup
+          onCancle={() => setShowConfirmation({ flag: false, data: "" })}
+          onSuccess={() =>
+            dispatch(deleteEvent(showConfirmation.data)).then((delRse) => {
+              if (delRse.payload.status === 200) {
+                toast.success("Event deleted successfully");
+                setShowConfirmation({ flag: false, data: "" });
+              }
+            })
+          }
+          descText="Are sure to delete the event"
+        />
+      )}
     </div>
   );
 }

@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 import { addEvent, editEvent } from "../../../Redux/Slice/event";
 import Loading from "../../../Component/Loading/Loading";
+import PageTitle from "../../../Component/PageTitle/PageTitle";
 
 import "react-datepicker/dist/react-datepicker.css";
 import style from "./event.module.scss";
-import PageTitle from "../../../Component/PageTitle/PageTitle";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = {
   eventStartDate: new Date(),
@@ -33,11 +35,21 @@ function DayEvent() {
   const dispatch = useDispatch();
 
   const submitEventData = () => {
-    dispatch(addEvent(eventData));
+    dispatch(addEvent(eventData)).then((addRes) => {
+      if (addRes.payload.status === 201) {
+        toast.success("Event added successfully");
+        setEventData({ ...initialState });
+      }
+    });
   };
 
   const editEventData = () => {
-    dispatch(editEvent(eventData));
+    dispatch(editEvent(eventData)).then((editRes) => {
+      if (editRes.payload.status === 200) {
+        toast.success("Event edited successfully");
+        setEventData({ ...initialState });
+      }
+    });
   };
 
   if (EventSlice.loading) {
@@ -46,6 +58,7 @@ function DayEvent() {
 
   return (
     <div className={style.eventContainer}>
+      <ToastContainer />
       <PageTitle />
       <div className={style.space} />
       <div className={style.formRow}>
