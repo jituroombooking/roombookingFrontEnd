@@ -76,11 +76,19 @@ export const validateEmail = (email) => {
     );
 };
 
-export const getReactSelectData = (array) => {
-  return array.map((m) => {
+export const getReactSelectData = (array, objName) => {
+  return array.map((item) => {
+    const objData =
+      objName === "allotted" ? item.userBookingData.fullName : item.fullName;
     return {
-      value: m,
-      label: m,
+      value: objData,
+      label: objData,
     };
   });
 };
+
+export const pageSizeOption = [
+  { label: "100", value: 100 },
+  { label: "150", value: 150 },
+  { label: "200", value: 200 },
+];

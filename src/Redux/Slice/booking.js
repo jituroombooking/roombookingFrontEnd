@@ -47,7 +47,7 @@ export const unAlottedMember = createAsyncThunk(
   "booking/unAlottedMember",
   (data, { rejectWithValue, fulfillWithValue }) => {
     const payload = {
-      url: apiList.unAlottedMember,
+      url: `${apiList.unAlottedMember}/${data.currentPage}/${data.pageSize}`,
       method: "get",
     };
     return onAuthenticated(payload)
@@ -70,6 +70,20 @@ export const editRoom = createAsyncThunk(
   }
 );
 
+export const uploadBulkUpload = createAsyncThunk(
+  "booking/uploadBulkUpload",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.bulkUpload,
+      method: "post",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 const boookingSlice = createSlice({
   name: "booking",
   initialState: {
@@ -77,6 +91,16 @@ const boookingSlice = createSlice({
     booking: null,
     unAlottedMember: null,
     error: null,
+    unAllottedPagination: {
+      currentPage: 1,
+      totalDocument: 0,
+      lastPage: 0,
+    },
+    allottedPagination: {
+      currentPage: 1,
+      totalDocument: 0,
+      lastPage: 0,
+    },
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -140,10 +164,16 @@ const boookingSlice = createSlice({
       };
     });
     builder.addCase(unAlottedMember.fulfilled, (state, { payload }) => {
+      const { data, lastPage, currentPage, totalDocument } = payload.data;
       return {
         ...state,
         loading: false,
-        unAlottedMember: payload.data,
+        unAlottedMember: data,
+        unAllottedPagination: {
+          lastPage,
+          currentPage: parseInt(currentPage),
+          totalDocument,
+        },
       };
     });
     builder.addCase(unAlottedMember.pending, (state, { payload }) => {
@@ -173,6 +203,26 @@ const boookingSlice = createSlice({
       };
     });
     builder.addCase(editRoom.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        error: payload.data,
+      };
+    });
+    builder.addCase(uploadBulkUpload.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        // unAlottedMember: payload.data,
+      };
+    });
+    builder.addCase(uploadBulkUpload.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(uploadBulkUpload.rejected, (state, { payload }) => {
       return {
         ...state,
         loading: false,

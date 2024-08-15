@@ -18,6 +18,7 @@ export const apiList = {
   updateRoom: `${roomV1}/updateRoom`,
   deleteRoom: roomV1,
   roomBooking: `${roomBookingV1}/addBooking`,
+  bulkUpload: `${roomBookingV1}/bulkUpload`,
   viewSingleRoom: `${roomV1}/viewSingleBooking`,
   editRoom: `${roomV1}/edit`,
   getBookedRooms: `${roomBookingV1}/getRooms`,

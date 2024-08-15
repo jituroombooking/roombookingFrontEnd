@@ -14,6 +14,7 @@ import {
   deleteBookedRoom,
   getBookedRooms,
   unAlottedMember,
+  uploadBulkUpload,
 } from "../../../Redux/Slice/booking";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
 import ReactTable from "../../../Component/ReactTable/ReactTable";
@@ -21,35 +22,41 @@ import RightArrow from "../../../util/Assets/Icon/next.png";
 import DownArrow from "../../../util/Assets/Icon/down.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
-import { getReactSelectData } from "../../../util/util";
+import { getReactSelectData, pageSizeOption } from "../../../util/util";
 import Cross from "../../../util/Assets/Icon/cross.png";
 import Plus from "../../../util/Assets/SVG/Plus";
 import { getRoomCount } from "../../../Redux/Slice/room";
+import ExcelUpload from "../../../util/Assets/Icon/excelUpload.png";
+import RoomAllotteFromTable from "./RoomAllotteFromTable/RoomAllotteFromTable";
+import PopupContainer from "../../../Component/PopupContainer/PopupContainer";
+import BulkUploadpopup from "./BulkUploadPopup/BulkUploadpopup";
+import LeftPagiationArrow from "../../../util/Assets/Icon/leftArrow.png";
+import RightPaginationArrow from "../../../util/Assets/Icon/rightArrow.png";
 
 import style from "./roomBookingList.module.scss";
-import RoomAllotteFromTable from "./RoomAllotteFromTable/RoomAllotteFromTable";
 
 const initialState = { flag: false, id: "" };
+const initialSelectData = { value: "", label: "" };
 
 function RoomBookingList() {
-  const [selectedName, setSelectedName] = useState({ value: "", label: "" });
-  const [selectedBhavan, setSelectedBhavan] = useState({
-    value: "",
-    label: "",
-  });
+  const [selectedName, setSelectedName] = useState(initialSelectData);
+  const [selectedBhavan, setSelectedBhavan] = useState(initialSelectData);
   const [idProof, setIdproof] = useState({ ...initialState });
   const [alottedMemberFlag, setAlottedMemberFlag] = useState(true);
-  const [showConfirmation, setShowConfirmation] = useState({
-    flage: false,
-    data: "",
-  });
   const [showAllottement, setShowAllottement] = useState({
     flag: false,
     data: "",
   });
+  const [showAddBooking, setShowAddBooking] = useState(false);
+  const [addBlukBooking, setAddBulkAddBooking] = useState(false);
+  const [unAllottedPagination, setunAllottedPagination] = useState({
+    lastPage: 0,
+    currentPage: 1,
+    pageSize: 100,
+  });
 
   const RoomBookingSlice = useSelector((state) => state.booking);
-  const AuthDataSlice = useSelector((state) => state.login);
+  // const AuthDataSlice = useSelector((state) => state.login);
   const roomSlice = useSelector((state) => state.room);
 
   const dispatch = useDispatch();
@@ -238,7 +245,6 @@ function RoomBookingList() {
           {
             Header: "Allotted",
             accessor: (data) => {
-              console.log(data, " <>?");
               return <div>{data.userBookingData.memberAllotted}</div>;
             },
             width: 90,
@@ -342,10 +348,9 @@ function RoomBookingList() {
   }, [RoomBookingSlice.booking]);
 
   useEffect(() => {
-    if (!RoomBookingSlice.unAlottedMember) {
-      dispatch(unAlottedMember());
-    }
-  }, []);
+    dispatch(unAlottedMember(unAllottedPagination));
+  }, [unAllottedPagination]);
+
   const filterAlottedData =
     selectedName.value !== ""
       ? RoomBookingSlice.booking.filter(
@@ -380,7 +385,6 @@ function RoomBookingList() {
     const finalArray = Array.from(bhavanMap, ([name, value]) => ({
       ...value,
     }));
-    console.log(finalArray, " <>?");
 
     return (
       <div className={style.bhavanCardContainer}>
@@ -430,18 +434,22 @@ function RoomBookingList() {
     );
   };
 
+  const handleBulkUpload = (bulkUploadData) => {
+    dispatch(uploadBulkUpload({ bulkUploadData }));
+  };
+
   if (RoomBookingSlice.loading) {
     return <Loading />;
   }
 
   const nameOption =
     (Array.isArray(RoomBookingSlice.booking) &&
-      getReactSelectData(RoomBookingSlice.booking)) ||
+      getReactSelectData(RoomBookingSlice.booking, "allotted")) ||
     [];
 
   const unAlottedNameOption =
     (Array.isArray(RoomBookingSlice.unAlottedMember) &&
-      getReactSelectData(RoomBookingSlice.unAlottedMember)) ||
+      getReactSelectData(RoomBookingSlice.unAlottedMember, "unAllotted")) ||
     [];
 
   const bhavanOption = [];
@@ -490,8 +498,8 @@ function RoomBookingList() {
             <button
               className={style.clearFilter}
               onClick={() => {
-                setSelectedName({ value: "", label: "" });
-                setSelectedBhavan({ value: "", label: "" });
+                setSelectedName(initialSelectData);
+                setSelectedBhavan(initialSelectData);
               }}
             >
               <img className={style.addIcon} src={Cross} alt="Clear Filter" />
@@ -503,6 +511,16 @@ function RoomBookingList() {
               onClick={() => navigate("/addBooking")}
             >
               <Plus color="#fff" /> Booking
+            </button>
+            <button
+              className={`${style.addRoomBtn}`}
+              onClick={() => setAddBulkAddBooking(true)}
+            >
+              <img
+                src={ExcelUpload}
+                alt="excel upload"
+                className={style.addIcon}
+              />
             </button>
             <img
               src={refreshIcon}
@@ -522,6 +540,8 @@ function RoomBookingList() {
               activeLabel=""
               value={alottedMemberFlag}
               onToggle={() => {
+                setSelectedName(initialSelectData);
+                setSelectedBhavan(initialSelectData);
                 setAlottedMemberFlag(!alottedMemberFlag);
               }}
             />
@@ -583,6 +603,115 @@ function RoomBookingList() {
                   {RoomBookingSlice.unAlottedMember.length === 0 && (
                     <div className={style.noData}>No Data !</div>
                   )}
+                  {RoomBookingSlice.unAllottedPagination.lastPage > 1 && (
+                    <div className={style.bottomParentContainer}>
+                      <div className={style.bottomContainer}>
+                        <div className={style.inforContainer}>
+                          <div className={style.leftContainer}>
+                            <div className={style.labelContaine}>
+                              <label className={style.paginationLabel}>
+                                Showing{" "}
+                              </label>
+                              <label className={style.paginationLabel}>
+                                {unAllottedPagination.pageSize *
+                                  (RoomBookingSlice.unAllottedPagination
+                                    .currentPage -
+                                    1) +
+                                  1}
+                              </label>
+                              <label className={style.paginationLabel}>
+                                to
+                              </label>
+                              <label className={style.paginationLabel}>
+                                {RoomBookingSlice.unAllottedPagination
+                                  .currentPage * unAllottedPagination.pageSize}
+                              </label>
+                              <label className={style.paginationLabel}>
+                                of
+                              </label>
+                              {
+                                RoomBookingSlice.unAllottedPagination
+                                  .totalDocument
+                              }
+                            </div>
+                            <div className={style.labelContaine}>
+                              <label>Page Size</label>
+                              <ReactSelect
+                                menuPlacement="top"
+                                className={style.pageFilter}
+                                value={unAllottedPagination.pageSize}
+                                placeholder={unAllottedPagination.pageSize}
+                                options={pageSizeOption}
+                                defaultValue={unAllottedPagination.pageSize}
+                                onChange={({ value }) => {
+                                  setunAllottedPagination({
+                                    ...unAllottedPagination,
+                                    pageSize: value || 0,
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <div className={style.rightContainer}>
+                            <div className={style.labelContaine}>
+                              <label className={style.paginationLabel}>
+                                Page
+                              </label>
+                              <label className={style.paginationLabel}>
+                                {unAllottedPagination.currentPage}
+                              </label>
+                              <label className={style.paginationLabel}>
+                                {" "}
+                                of
+                              </label>
+                              {RoomBookingSlice.unAllottedPagination.lastPage}
+                            </div>
+                            <div className={style.arrowContainer}>
+                              <img
+                                src={LeftPagiationArrow}
+                                alt="left arrow"
+                                className={style.paginationArrow}
+                                onClick={() =>
+                                  unAllottedPagination.currentPage > 1 &&
+                                  setunAllottedPagination({
+                                    ...unAllottedPagination,
+                                    currentPage:
+                                      unAllottedPagination.currentPage - 1,
+                                  })
+                                }
+                              />
+                              <input
+                                type="number"
+                                value={unAllottedPagination.currentPage}
+                                className={style.paginationInput}
+                                onChange={(e) =>
+                                  setunAllottedPagination({
+                                    ...unAllottedPagination,
+                                    currentPage: e.target.value,
+                                  })
+                                }
+                              />
+                              <img
+                                src={RightPaginationArrow}
+                                alt="Right arrow"
+                                className={style.paginationArrow}
+                                onClick={() =>
+                                  unAllottedPagination.currentPage <
+                                    RoomBookingSlice.unAllottedPagination
+                                      .lastPage &&
+                                  setunAllottedPagination({
+                                    ...unAllottedPagination,
+                                    currentPage:
+                                      unAllottedPagination.currentPage + 1,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </>
@@ -596,6 +725,14 @@ function RoomBookingList() {
           onClose={() => setIdproof({ ...initialState })}
           path="userbooking"
         />
+      )}
+      {addBlukBooking && (
+        <PopupContainer>
+          <BulkUploadpopup
+            onCancle={() => setAddBulkAddBooking(false)}
+            onSuccess={(data) => handleBulkUpload(data)}
+          />
+        </PopupContainer>
       )}
     </div>
   );
