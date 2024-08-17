@@ -1,6 +1,8 @@
 import moment from "moment";
 
 export const validatemobile = (mobileNumber) => {
+  console.log(mobileNumber, " <>??");
+
   return mobileNumber.match(/^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/);
 };
 

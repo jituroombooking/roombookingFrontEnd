@@ -14,7 +14,7 @@ import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import plusIcon from "../../../util/Assets/Icon/plus.png";
 import Loading from "../../../Component/Loading/Loading";
-import { unAlottedMember } from "../../../Redux/Slice/booking";
+import { getUnAlottedMember } from "../../../Redux/Slice/booking";
 import EditPopup from "./EditPopup";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
 import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
@@ -59,7 +59,7 @@ function ViewBooking() {
 
   useEffect(() => {
     if (!BookingSlice.unAlottedMember) {
-      dispatch(unAlottedMember());
+      dispatch(getUnAlottedMember());
     }
   }, [BookingSlice.unAlottedMember]);
 
@@ -202,7 +202,7 @@ function ViewBooking() {
                   <button
                     className={style.addExistingMemberBtn}
                     onClick={() => {
-                      dispatch(unAlottedMember());
+                      dispatch(getUnAlottedMember());
                       setEdit({
                         bhavanData: rm.bhavanData[0],
                         roomId: rm._id,
@@ -259,7 +259,7 @@ function ViewBooking() {
                                 src={editIcon}
                                 className={style.actionIcon}
                                 onClick={() => {
-                                  dispatch(unAlottedMember());
+                                  dispatch(getUnAlottedMember());
                                   setEdit({
                                     flag: true,
                                     roomId: rm._id,

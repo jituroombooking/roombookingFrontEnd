@@ -4,6 +4,8 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import ReactSelect from "react-select";
 import ToggleButton from "react-toggle-button";
+import { ToastContainer, toast } from "react-toastify";
+// import { Tooltip } from "react-tooltip";
 
 import Loading from "../../../Component/Loading/Loading";
 import refreshIcon from "../../../util/Assets/Icon/refresh.png";
@@ -11,9 +13,9 @@ import deleteIcon from "../../../util/Assets/Icon/delete.png";
 import IDProofIcon from "../../../util/Assets/Icon/id.png";
 import AddRoomIcon from "../../../util/Assets/Icon/addRoom.png";
 import {
-  deleteBookedRoom,
+  AutoAssignRoom,
   getBookedRooms,
-  unAlottedMember,
+  getUnAlottedMember,
   uploadBulkUpload,
 } from "../../../Redux/Slice/booking";
 import PageTitle from "../../../Component/PageTitle/PageTitle";
@@ -22,42 +24,50 @@ import RightArrow from "../../../util/Assets/Icon/next.png";
 import DownArrow from "../../../util/Assets/Icon/down.png";
 import editIcon from "../../../util/Assets/Icon/edit.png";
 import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
-import { getReactSelectData, pageSizeOption } from "../../../util/util";
+import { getReactSelectData } from "../../../util/util";
 import Cross from "../../../util/Assets/Icon/cross.png";
-import Plus from "../../../util/Assets/SVG/Plus";
 import { getRoomCount } from "../../../Redux/Slice/room";
-import ExcelUpload from "../../../util/Assets/Icon/excelUpload.png";
-import RoomAllotteFromTable from "./RoomAllotteFromTable/RoomAllotteFromTable";
+import ExcelUpload from "../../../util/Assets/Icon/file.png";
 import PopupContainer from "../../../Component/PopupContainer/PopupContainer";
 import BulkUploadpopup from "./BulkUploadPopup/BulkUploadpopup";
-import LeftPagiationArrow from "../../../util/Assets/Icon/leftArrow.png";
-import RightPaginationArrow from "../../../util/Assets/Icon/rightArrow.png";
+import AddBookingIcon from "../../../util/Assets/Icon/AddBooking.png";
+import AutoIcon from "../../../util/Assets/Icon/auto.png";
+import ConfirmModalPopup from "../../../Component/ConfirmModalPopup/ConfirmModalPopup";
+import Pagination from "../../../Component/Pagination/Pagination";
+import NoImage from "../../../util/Assets/Icon/noImage.png";
 
 import style from "./roomBookingList.module.scss";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const initialState = { flag: false, id: "" };
 const initialSelectData = { value: "", label: "" };
+const initialAllottement = {
+  flag: false,
+  data: "",
+};
 
 function RoomBookingList() {
   const [selectedName, setSelectedName] = useState(initialSelectData);
   const [selectedBhavan, setSelectedBhavan] = useState(initialSelectData);
   const [idProof, setIdproof] = useState({ ...initialState });
-  const [alottedMemberFlag, setAlottedMemberFlag] = useState(true);
-  const [showAllottement, setShowAllottement] = useState({
-    flag: false,
-    data: "",
-  });
-  const [showAddBooking, setShowAddBooking] = useState(false);
+  const [alottedMemberFlag, setAlottedMemberFlag] = useState(
+    sessionStorage.getItem("tableFlag") === "true" || false
+  );
+  const [showAllottement, setShowAllottement] = useState(initialAllottement);
+  // const [showAddBooking, setShowAddBooking] = useState(false);
   const [addBlukBooking, setAddBulkAddBooking] = useState(false);
-  const [unAllottedPagination, setunAllottedPagination] = useState({
+  const [unAllottedPaginationState, setunAllottedPaginationState] = useState({
     lastPage: 0,
     currentPage: 1,
     pageSize: 100,
   });
 
-  const RoomBookingSlice = useSelector((state) => state.booking);
+  const { unAllottedPagination, unAlottedMember, booking, roomData, loading } =
+    useSelector((state) => state.booking);
+
   // const AuthDataSlice = useSelector((state) => state.login);
   const roomSlice = useSelector((state) => state.room);
+  const { roomData: actualRoomData } = useSelector((state) => state.room);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -104,9 +114,12 @@ function RoomBookingList() {
             Header: "ID Proof",
             accessor: (data) => (
               <img
-                src={IDProofIcon}
-                className={style.idProof}
+                src={data.identityProof ? IDProofIcon : NoImage}
+                className={`${
+                  data.identityProof ? style.idProof : style.noCursor
+                }`}
                 onClick={() =>
+                  data.identityProof &&
                   setIdproof({
                     flag: true,
                     id: data.identityProof,
@@ -146,11 +159,18 @@ function RoomBookingList() {
             id: "roomAllote",
             Header: "Allotte",
             accessor: (data) => (
-              <img
-                onClick={() => setShowAllottement({ flag: true, data })}
-                className={style.AddRoomIcon}
-                src={AddRoomIcon}
-              />
+              <div className={style.allottmentContainer}>
+                <img
+                  // onClick={() => setShowAllottement({ flag: true, data })}
+                  className={style.AddRoomIcon}
+                  src={AddRoomIcon}
+                />
+                <img
+                  onClick={() => setShowAllottement({ flag: true, data })}
+                  className={style.AddRoomIcon}
+                  src={AutoIcon}
+                />
+              </div>
             ),
           },
           {
@@ -197,27 +217,21 @@ function RoomBookingList() {
         Header: "Bhavan Data",
         columns: [
           {
-            // Build our expander column
-            id: "expander", // Make sure it has an ID
+            id: "expander",
             Header: ({ getToggleAllRowsExpandedProps, isAllRowsExpanded }) => (
               <span {...getToggleAllRowsExpandedProps()}>
-                {isAllRowsExpanded ? (
-                  <img src={DownArrow} className={style.idProof} />
-                ) : (
-                  <img src={RightArrow} className={style.idProof} />
-                )}
+                <img
+                  src={isAllRowsExpanded ? DownArrow : RightArrow}
+                  className={style.idProof}
+                />
               </span>
             ),
             Cell: ({ row }) => (
-              // Use Cell to render an expander for each row.
-              // We can use the getToggleRowExpandedProps prop-getter
-              // to build the expander.
               <span {...row.getToggleRowExpandedProps()}>
-                {row.isExpanded ? (
-                  <img src={DownArrow} className={style.idProof} />
-                ) : (
-                  <img src={RightArrow} className={style.idProof} />
-                )}
+                <img
+                  src={row.isExpanded ? DownArrow : RightArrow}
+                  className={style.idProof}
+                />
               </span>
             ),
           },
@@ -257,16 +271,30 @@ function RoomBookingList() {
           {
             Header: "ID Proof",
             accessor: (data) => (
-              <img
-                src={IDProofIcon}
-                className={style.idProof}
-                onClick={() =>
-                  setIdproof({
-                    flag: true,
-                    id: data.userBookingData.identityProof,
-                  })
-                }
-              />
+              <>
+                <img
+                  data-tooltip-id={data.userBookingData._id}
+                  src={
+                    data.userBookingData.identityProof ? IDProofIcon : NoImage
+                  }
+                  className={`${
+                    data.userBookingData.identityProof
+                      ? style.idProof
+                      : style.noCursor
+                  }`}
+                  onClick={() =>
+                    setIdproof({
+                      flag: true,
+                      id: data.userBookingData.identityProof,
+                    })
+                  }
+                />
+                {/* <Tooltip
+                  id={data.userBookingData._id}
+                  place="bottom"
+                  content={<div>No ID</div>}
+                /> */}
+              </>
             ),
           },
         ],
@@ -322,7 +350,7 @@ function RoomBookingList() {
                   navigate("/addBooking", {
                     state: {
                       pageTitle: "Edit Booking",
-                      editBookingData: data,
+                      editBookingData: data.userBookingData,
                     },
                   })
                 }
@@ -336,34 +364,30 @@ function RoomBookingList() {
   );
 
   useEffect(() => {
-    if (!roomSlice.roomData) {
+    if (!roomData) {
       dispatch(getRoomCount());
     }
-  }, [roomSlice]);
+  }, [roomData]);
 
   useEffect(() => {
-    if (!RoomBookingSlice.booking) {
+    if (!booking) {
       dispatch(getBookedRooms());
     }
-  }, [RoomBookingSlice.booking]);
+  }, [booking]);
 
   useEffect(() => {
-    dispatch(unAlottedMember(unAllottedPagination));
-  }, [unAllottedPagination]);
+    dispatch(getUnAlottedMember(unAllottedPaginationState));
+  }, [unAllottedPaginationState]);
 
   const filterAlottedData =
     selectedName.value !== ""
-      ? RoomBookingSlice.booking.filter(
-          (f) => f.userBookingData.fullName === selectedName.value
-        )
-      : RoomBookingSlice.booking;
+      ? booking.filter((f) => f.userBookingData.fullName === selectedName.value)
+      : booking;
 
   const filterUnAlottedData =
     selectedName.value !== ""
-      ? RoomBookingSlice.unAlottedMember.filter(
-          (f) => f.fullName === selectedName.value
-        )
-      : RoomBookingSlice.unAlottedMember;
+      ? unAlottedMember.filter((f) => f.fullName === selectedName.value)
+      : unAlottedMember;
 
   const renderRowSubComponent = ({ row }) => {
     const { bhavanData, roomData } = filterAlottedData[row.index];
@@ -438,23 +462,21 @@ function RoomBookingList() {
     dispatch(uploadBulkUpload({ bulkUploadData }));
   };
 
-  if (RoomBookingSlice.loading) {
+  if (loading) {
     return <Loading />;
   }
 
   const nameOption =
-    (Array.isArray(RoomBookingSlice.booking) &&
-      getReactSelectData(RoomBookingSlice.booking, "allotted")) ||
-    [];
+    (Array.isArray(booking) && getReactSelectData(booking, "allotted")) || [];
 
   const unAlottedNameOption =
-    (Array.isArray(RoomBookingSlice.unAlottedMember) &&
-      getReactSelectData(RoomBookingSlice.unAlottedMember, "unAllotted")) ||
+    (Array.isArray(unAlottedMember) &&
+      getReactSelectData(unAlottedMember, "unAllotted")) ||
     [];
 
   const bhavanOption = [];
-  Array.isArray(RoomBookingSlice.booking) &&
-    RoomBookingSlice.booking.map((m) => {
+  Array.isArray(booking) &&
+    booking.map((m) => {
       m.bhavanData.map((im) => {
         if (
           bhavanOption.length === 0 ||
@@ -470,6 +492,7 @@ function RoomBookingList() {
 
   return (
     <div className={style.roomBookingContainer}>
+      <ToastContainer />
       <div>
         <div className={`${style.roomHeading} `}>
           <PageTitle />
@@ -504,28 +527,25 @@ function RoomBookingList() {
             >
               <img className={style.addIcon} src={Cross} alt="Clear Filter" />
             </button>
-            <button
-              className={`${style.addRoomBtn} ${
-                (roomSlice.roomData?.emptyRoom || 0) === 0 && style.btnDisable
-              }`}
-              onClick={() => navigate("/addBooking")}
-            >
-              <Plus color="#fff" /> Booking
-            </button>
-            <button
-              className={`${style.addRoomBtn}`}
+            <img
+              src={AddBookingIcon}
+              alt="addBooking"
+              className={style.uploadIcon}
+              onClick={() =>
+                (actualRoomData?.emptyRoom || 0) !== 0 &&
+                navigate("/addBooking")
+              }
+            />
+            <img
+              src={ExcelUpload}
+              alt="excel upload"
+              className={style.uploadIcon}
               onClick={() => setAddBulkAddBooking(true)}
-            >
-              <img
-                src={ExcelUpload}
-                alt="excel upload"
-                className={style.addIcon}
-              />
-            </button>
+            />
             <img
               src={refreshIcon}
               onClick={() => {
-                dispatch(unAlottedMember());
+                dispatch(getUnAlottedMember());
                 dispatch(getBookedRooms());
                 dispatch(getRoomCount());
               }}
@@ -543,13 +563,13 @@ function RoomBookingList() {
                 setSelectedName(initialSelectData);
                 setSelectedBhavan(initialSelectData);
                 setAlottedMemberFlag(!alottedMemberFlag);
+                sessionStorage.setItem("tableFlag", !alottedMemberFlag);
               }}
             />
             <label className={style.alottedLabel}>
               {alottedMemberFlag ? "Alotted" : "Un-Alotted"} Member Table
             </label>
           </div>
-          {/* {!alottedMemberFlag && ( */}
           <div className={style.roomIndicatorsParent}>
             <div className={style.roomIndicatorLabel}>Room:</div>
             <div className={style.roomIndicators}>
@@ -557,19 +577,19 @@ function RoomBookingList() {
                 className={`${style.indicatorContainer} ${style.primaryCard}`}
               >
                 <label>Total: </label>
-                <label>{roomSlice.roomData?.totalNoRoom || 0}</label>
+                <label>{actualRoomData?.totalNoRoom || 0}</label>
               </div>
               <div
                 className={`${style.indicatorContainer} ${style.secondaryCard}`}
               >
                 <label>Allotted: </label>
-                <label>{roomSlice.roomData?.allotedRoom || 0}</label>
+                <label>{actualRoomData?.allotedRoom || 0}</label>
               </div>
               <div
                 className={`${style.indicatorContainer} ${style.tertiaryCard}`}
               >
                 <label>Empty: </label>
-                <label>{roomSlice.roomData?.emptyRoom || 0}</label>
+                <label>{actualRoomData?.emptyRoom || 0}</label>
               </div>
             </div>
           </div>
@@ -578,7 +598,7 @@ function RoomBookingList() {
         <div className={style.roomBookingTableContainer}>
           {alottedMemberFlag ? (
             <>
-              {Array.isArray(RoomBookingSlice.booking) && (
+              {Array.isArray(booking) && (
                 <>
                   <ReactTable
                     data={filterAlottedData}
@@ -586,7 +606,7 @@ function RoomBookingList() {
                     key="alottedTable"
                     renderRowSubComponent={renderRowSubComponent}
                   />
-                  {RoomBookingSlice.booking.length === 0 && (
+                  {booking.length === 0 && (
                     <div className={style.noData}>No Data !</div>
                   )}
                 </>
@@ -594,123 +614,46 @@ function RoomBookingList() {
             </>
           ) : (
             <>
-              {Array.isArray(RoomBookingSlice.unAlottedMember) && (
+              {Array.isArray(unAlottedMember) && (
                 <>
                   <ReactTable
                     columns={unAlottedColumns}
                     data={filterUnAlottedData}
                   />
-                  {RoomBookingSlice.unAlottedMember.length === 0 && (
+                  {unAlottedMember.length === 0 && (
                     <div className={style.noData}>No Data !</div>
                   )}
-                  {RoomBookingSlice.unAllottedPagination.lastPage > 1 && (
-                    <div className={style.bottomParentContainer}>
-                      <div className={style.bottomContainer}>
-                        <div className={style.inforContainer}>
-                          <div className={style.leftContainer}>
-                            <div className={style.labelContaine}>
-                              <label className={style.paginationLabel}>
-                                Showing{" "}
-                              </label>
-                              <label className={style.paginationLabel}>
-                                {unAllottedPagination.pageSize *
-                                  (RoomBookingSlice.unAllottedPagination
-                                    .currentPage -
-                                    1) +
-                                  1}
-                              </label>
-                              <label className={style.paginationLabel}>
-                                to
-                              </label>
-                              <label className={style.paginationLabel}>
-                                {RoomBookingSlice.unAllottedPagination
-                                  .currentPage * unAllottedPagination.pageSize}
-                              </label>
-                              <label className={style.paginationLabel}>
-                                of
-                              </label>
-                              {
-                                RoomBookingSlice.unAllottedPagination
-                                  .totalDocument
-                              }
-                            </div>
-                            <div className={style.labelContaine}>
-                              <label>Page Size</label>
-                              <ReactSelect
-                                menuPlacement="top"
-                                className={style.pageFilter}
-                                value={unAllottedPagination.pageSize}
-                                placeholder={unAllottedPagination.pageSize}
-                                options={pageSizeOption}
-                                defaultValue={unAllottedPagination.pageSize}
-                                onChange={({ value }) => {
-                                  setunAllottedPagination({
-                                    ...unAllottedPagination,
-                                    pageSize: value || 0,
-                                  });
-                                }}
-                              />
-                            </div>
-                          </div>
-                          <div className={style.rightContainer}>
-                            <div className={style.labelContaine}>
-                              <label className={style.paginationLabel}>
-                                Page
-                              </label>
-                              <label className={style.paginationLabel}>
-                                {unAllottedPagination.currentPage}
-                              </label>
-                              <label className={style.paginationLabel}>
-                                {" "}
-                                of
-                              </label>
-                              {RoomBookingSlice.unAllottedPagination.lastPage}
-                            </div>
-                            <div className={style.arrowContainer}>
-                              <img
-                                src={LeftPagiationArrow}
-                                alt="left arrow"
-                                className={style.paginationArrow}
-                                onClick={() =>
-                                  unAllottedPagination.currentPage > 1 &&
-                                  setunAllottedPagination({
-                                    ...unAllottedPagination,
-                                    currentPage:
-                                      unAllottedPagination.currentPage - 1,
-                                  })
-                                }
-                              />
-                              <input
-                                type="number"
-                                value={unAllottedPagination.currentPage}
-                                className={style.paginationInput}
-                                onChange={(e) =>
-                                  setunAllottedPagination({
-                                    ...unAllottedPagination,
-                                    currentPage: e.target.value,
-                                  })
-                                }
-                              />
-                              <img
-                                src={RightPaginationArrow}
-                                alt="Right arrow"
-                                className={style.paginationArrow}
-                                onClick={() =>
-                                  unAllottedPagination.currentPage <
-                                    RoomBookingSlice.unAllottedPagination
-                                      .lastPage &&
-                                  setunAllottedPagination({
-                                    ...unAllottedPagination,
-                                    currentPage:
-                                      unAllottedPagination.currentPage + 1,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  {unAllottedPagination.lastPage > 1 && (
+                    <Pagination
+                      currentPage={unAllottedPaginationState.currentPage}
+                      onChange={(pageNum) =>
+                        setunAllottedPaginationState({
+                          ...unAllottedPaginationState,
+                          currentPage: pageNum,
+                        })
+                      }
+                      onLeftClick={(value) =>
+                        setunAllottedPaginationState({
+                          ...unAllottedPaginationState,
+                          currentPage: value,
+                        })
+                      }
+                      onRightClick={(value) =>
+                        setunAllottedPaginationState({
+                          ...unAllottedPaginationState,
+                          currentPage: value,
+                        })
+                      }
+                      totalDocument={unAllottedPagination.totalDocument}
+                      onPageSizeChange={(value) =>
+                        setunAllottedPaginationState({
+                          ...unAllottedPaginationState,
+                          pageSize: value,
+                        })
+                      }
+                      lastPage={unAllottedPagination.lastPage}
+                      pageSize={unAllottedPaginationState.pageSize}
+                    />
                   )}
                 </>
               )}
@@ -718,7 +661,22 @@ function RoomBookingList() {
           )}
         </div>
       </div>
-      {showAllottement.flag && <RoomAllotteFromTable />}
+      {showAllottement.flag && (
+        <ConfirmModalPopup
+          onCancle={() => setShowAllottement(initialAllottement)}
+          onSuccess={() => {
+            setShowAllottement(initialAllottement);
+            dispatch(AutoAssignRoom(showAllottement.data)).then(
+              (autoAddRes) => {
+                if (autoAddRes.payload.status === 200) {
+                  toast.success("Room Assigned Sucessfully");
+                }
+              }
+            );
+          }}
+          descText="Clicking on Confirm will allotte room automatically"
+        />
+      )}
       {idProof.flag && (
         <ViewIdProof
           idProof={idProof.id}

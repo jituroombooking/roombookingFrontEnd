@@ -62,6 +62,15 @@
           font-weight: 700;
         }
       }
+      .uploadIcon {
+        cursor: pointer;
+        height: 32px;
+        margin-right: 8px;
+        animation: heightIncrease;
+        &:hover {
+          height: 40px;
+        }
+      }
       .refreshIocn {
         cursor: pointer;
         height: 32px;
@@ -196,6 +205,10 @@
   height: 32px;
   cursor: pointer;
 }
+.noCursor {
+  height: 32px;
+  cursor: not-allowed;
+}
 .mainText {
   text-transform: capitalize;
 }
@@ -290,7 +303,6 @@
 }
 .addIcon {
   height: 16px;
-  margin-right: 8px;
 }
 
 .bhavanCardContainer {
@@ -325,6 +337,9 @@
   cursor: pointer;
   height: 28px;
   width: 28px;
+  &:hover {
+    transform: scale(1.2);
+  }
 }
 
 .btnDisable {
@@ -366,7 +381,7 @@
             }
           }
           .paginationInput {
-            width: 24px;
+            width: 32px;
             margin: 0 4px;
             border-radius: 8px;
           }
@@ -390,4 +405,10 @@
       }
     }
   }
+}
+
+.allottmentContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

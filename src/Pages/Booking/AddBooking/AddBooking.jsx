@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ReactDatePicker from "react-datepicker";
 import { toast, ToastContainer } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
 import PageTitle from "../../../Component/PageTitle/PageTitle";
-import { bookRoom } from "../../../Redux/Slice/booking";
+import { bookRoom, updateBook } from "../../../Redux/Slice/booking";
 import { validatemobile } from "../../../util/util";
 import ViewIdProof from "../../../Component/ViewIdProof/ViewIdProof";
+import Loading from "../../../Component/Loading/Loading";
 
 import style from "./addBooking.module.scss";
 import "react-datepicker/dist/react-datepicker.css";
@@ -27,14 +28,18 @@ function AddBooking({ noBgColor = false }) {
   const [formvalidation, setFormValidation] = useState(false);
   const [showProof, setShowProof] = useState({ flag: false, id: "" });
 
+  const { loading } = useSelector((state) => state.booking);
+
   const dispatch = useDispatch();
   const { state } = useLocation();
 
-  useEffect(() => {
-    if (state) {
-      setBookingData({ ...state?.editBookingData?.userBookingData });
+  useLayoutEffect(() => {
+    console.log(state, " <>??");
+
+    if (state?.editBookingData) {
+      setBookingData({ ...state.editBookingData });
     }
-  }, [state]);
+  }, []);
 
   const submitBookingData = () => {
     if (
@@ -48,13 +53,23 @@ function AddBooking({ noBgColor = false }) {
       setFormValidation(true);
     } else {
       setFormValidation(false);
-      dispatch(bookRoom(boodkingData)).then((addRes) => {
-        if (addRes.payload.status === 200) {
-          toast.success("Room Booked Successfully");
-        }
-      });
+      state?.editBookingData
+        ? dispatch(updateBook(boodkingData)).then((addRes) => {
+            if (addRes.payload.status === 200) {
+              toast.success("Room Booked Successfully");
+            }
+          })
+        : dispatch(bookRoom(boodkingData)).then((addRes) => {
+            if (addRes.payload.status === 200) {
+              toast.success("Room Booked Successfully");
+            }
+          });
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div
@@ -151,14 +166,13 @@ function AddBooking({ noBgColor = false }) {
                   })
                 }
               />
-
               {formvalidation && boodkingData.mobileNumber === "" && (
                 <div className={style.formValidationError}>
                   Mobile number is required.
                 </div>
               )}
-              {!validatemobile(boodkingData.mobileNumber) &&
-                boodkingData.mobileNumber !== "" && (
+              {boodkingData.mobileNumber !== "" &&
+                !validatemobile(boodkingData.mobileNumber) && (
                   <div className={style.formValidationError}>
                     Mobile number is not valid.
                   </div>
@@ -214,7 +228,7 @@ function AddBooking({ noBgColor = false }) {
             className={style.submitbtn}
             onClick={() => submitBookingData()}
           >
-            Book Room
+            {state?.editBookingData ? "Update" : "Add"} Booking
           </button>
         </div>
       </div>

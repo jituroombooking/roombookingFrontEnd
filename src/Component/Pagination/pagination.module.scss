@@ -1,0 +1,60 @@
+@import "../../variable.module.scss";
+
+.bottomParentContainer {
+  position: relative;
+  .bottomContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: $whiteColor;
+    box-shadow: 0 7px 18px 21px gray;
+    .inforContainer {
+      padding: 4px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      .leftContainer {
+        display: flex;
+        align-items: center;
+      }
+      .rightContainer {
+        display: flex;
+        align-items: center;
+        .arrowContainer {
+          display: flex;
+          align-items: center;
+          margin-right: 24px;
+          .paginationArrow {
+            cursor: pointer;
+            height: 16px;
+            &:hover {
+              height: 20px;
+            }
+          }
+          .paginationInput {
+            width: 32px;
+            margin: 0 4px;
+            border-radius: 8px;
+          }
+          .currentPagelabel {
+            font-size: 24px;
+            margin: 0 8px;
+          }
+        }
+      }
+      .labelContaine {
+        display: flex;
+        align-items: center;
+        margin-right: 24px;
+        .paginationLabel {
+          margin-right: 4px;
+        }
+        .pageFilter {
+          margin-left: 16px;
+          width: 120px;
+        }
+      }
+    }
+  }
+}

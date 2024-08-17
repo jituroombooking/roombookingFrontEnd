@@ -17,6 +17,20 @@ export const bookRoom = createAsyncThunk(
   }
 );
 
+export const updateBook = createAsyncThunk(
+  "booking/updateBooking",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.updateBooking,
+      method: "put",
+      data,
+    };
+    return onAuthenticated(payload, true)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
 export const getBookedRooms = createAsyncThunk(
   "booking/getBookedRoom",
   (data, { fulfillWithValue, rejectWithValue }) => {
@@ -43,7 +57,7 @@ export const deleteBookedRoom = createAsyncThunk(
   }
 );
 
-export const unAlottedMember = createAsyncThunk(
+export const getUnAlottedMember = createAsyncThunk(
   "booking/unAlottedMember",
   (data, { rejectWithValue, fulfillWithValue }) => {
     const payload = {
@@ -75,6 +89,20 @@ export const uploadBulkUpload = createAsyncThunk(
   (data, { fulfillWithValue, rejectWithValue }) => {
     const payload = {
       url: apiList.bulkUpload,
+      method: "post",
+      data,
+    };
+    return onAuthenticated(payload)
+      .then((res) => fulfillWithValue(res))
+      .catch((err) => rejectWithValue(err));
+  }
+);
+
+export const AutoAssignRoom = createAsyncThunk(
+  "booking/AutoAssignRoom",
+  (data, { fulfillWithValue, rejectWithValue }) => {
+    const payload = {
+      url: apiList.autoAssign,
       method: "post",
       data,
     };
@@ -163,7 +191,7 @@ const boookingSlice = createSlice({
         error: payload.data,
       };
     });
-    builder.addCase(unAlottedMember.fulfilled, (state, { payload }) => {
+    builder.addCase(getUnAlottedMember.fulfilled, (state, { payload }) => {
       const { data, lastPage, currentPage, totalDocument } = payload.data;
       return {
         ...state,
@@ -176,17 +204,17 @@ const boookingSlice = createSlice({
         },
       };
     });
-    builder.addCase(unAlottedMember.pending, (state, { payload }) => {
+    builder.addCase(getUnAlottedMember.pending, (state, { payload }) => {
       return {
         ...state,
         loading: true,
       };
     });
-    builder.addCase(unAlottedMember.rejected, (state, { payload }) => {
+    builder.addCase(getUnAlottedMember.rejected, (state, { payload }) => {
       return {
         ...state,
         loading: false,
-        error: payload.data,
+        // error: payload.data,
       };
     });
     builder.addCase(editRoom.fulfilled, (state, { payload }) => {
@@ -223,6 +251,46 @@ const boookingSlice = createSlice({
       };
     });
     builder.addCase(uploadBulkUpload.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        error: payload.data,
+      };
+    });
+    builder.addCase(AutoAssignRoom.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        // unAlottedMember: payload.data,
+      };
+    });
+    builder.addCase(AutoAssignRoom.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(AutoAssignRoom.rejected, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        error: payload.data,
+      };
+    });
+    builder.addCase(updateBook.fulfilled, (state, { payload }) => {
+      return {
+        ...state,
+        loading: false,
+        // unAlottedMember: payload.data,
+      };
+    });
+    builder.addCase(updateBook.pending, (state, { payload }) => {
+      return {
+        ...state,
+        loading: true,
+      };
+    });
+    builder.addCase(updateBook.rejected, (state, { payload }) => {
       return {
         ...state,
         loading: false,

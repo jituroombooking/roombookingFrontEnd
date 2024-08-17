@@ -1,8 +1,12 @@
 import React from "react";
+import { Tooltip } from "react-tooltip";
 
 import CloseIcon from "../../util/Assets/Icon/cross.png";
+import ConfirmIcon from "../../util/Assets/Icon/confirm.png";
+import CancleIcon from "../../util/Assets/Icon/multiply.png";
 
 import style from "./confirmModalPopup.module.scss";
+import "react-tooltip/dist/react-tooltip.css";
 
 function ConfirmModalPopup({
   onCancle,
@@ -17,12 +21,20 @@ function ConfirmModalPopup({
         </div>
         <div className={style.modalbody}>{descText}</div>
         <div className={style.btnContainer}>
-          <button className={style.successBtn} onClick={onSuccess}>
-            Confirm
-          </button>
-          <button className={style.cancleBtn} onClick={onCancle}>
-            Cancle
-          </button>
+          <img
+            data-tooltip-id="confirm"
+            className={style.successBtn}
+            src={ConfirmIcon}
+            onClick={onSuccess}
+          />
+          <Tooltip id="confirm" place="bottom" content={<div>Confirm</div>} />
+          <img
+            data-tooltip-id="cancle"
+            className={style.successBtn}
+            onClick={onCancle}
+            src={CancleIcon}
+          />
+          <Tooltip id="cancle" place="bottom" content={<div>Cancle</div>} />
         </div>
       </div>
     </div>
